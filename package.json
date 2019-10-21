@@ -1,0 +1,11 @@
+{
+  "name": "@tervis/tervisshopifyadminpluspersonalizeit",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "TervisShopifyAdminPlusPersonalizeIt.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tervis-Tumbler/TervisShopifyAdminPlusPersonalizeIt"
+  },
+  "license": "MIT"
+}
