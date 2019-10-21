@@ -756,6 +756,23 @@ function getCupPropertiesFromTitle(title) {
     };
 }
 
+var $Content = html`
+<table id='property-editor' class='table table-striped'>
+    <tr>
+        <th>PersonalizeIt</th>
+    </tr>
+    <tr id="noitems"></tr>
+    <tr>
+       <td><button id='save-button' class='btn btn-success' style='width:100%;'>Save</button></td> 
+    </tr>
+</table>
+`
+
+render(
+    $Content,
+    document.querySelector("#content")
+)
+
 ShopifyPOS.fetchCart({
     success: function(cart) {
         let personalizeItConfig;
@@ -875,20 +892,3 @@ ShopifyPOS.fetchCart({
         
     }
 });
-
-var $Content = html`
-<table id='property-editor' class='table table-striped'>
-    <tr>
-        <th>PersonalizeIt</th>
-    </tr>
-    <tr id="noitems"></tr>
-    <tr>
-       <td><button id='save-button' class='btn btn-success' style='width:100%;'>Save</button></td> 
-    </tr>
-</table>
-`
-
-render(
-    $Content,
-    document.querySelector("#content")
-)
