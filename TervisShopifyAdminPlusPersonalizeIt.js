@@ -4,7 +4,10 @@ import {
     directive
 } from 'https://unpkg.com/lit-html?module'
 
-
+render(
+    html`test`,
+    document.querySelector("#content")
+)
 
 // html`
 // <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
