@@ -754,9 +754,9 @@ function getPersonalizeItConfig() {
 function getCupPropertiesFromTitle(title) {
     let titleArray = title.split(".");
     return {
-        name: `${titleArray[0]}`,
-        size: `${titleArray[4]}`,
-        category: `${titleArray[1]}`,
+        name: \`${titleArray[0]}\`,
+        size: \`${titleArray[4]}\`,
+        category: \`${titleArray[1]}\`,
     };
 }
 
@@ -793,23 +793,23 @@ ShopifyPOS.fetchCart({
             //  Set up font
             let fontNames = [];
             personalizeItConfig.fonts.forEach(font => fontNames.push(font.name));
-            $(`<tr><td><select required class=item-${i} id="${i}-font"><option value=""></option></select>`)
+            $(\`<tr><td><select required class=item-${i} id="${i}-font"><option value=""></option></select>\`)
                 .insertBefore($('#property-editor tr').last());
             // console.log(s);
             fontNames.forEach( fontName => {
                 $("<option />", {value: fontName, text: fontName})
-                    .appendTo($(`#${i}-font`));
+                    .appendTo($(\`#${i}-font\`));
             });
 
             // Set up color
             let colorNames = [];
             personalizeItConfig.colors.forEach(color => colorNames.push(color.name));
-            $(`<tr><td><select required class=item-${i} id="${i}-color"><option value=""></option></select>`)
+            $(\`<tr><td><select required class=item-${i} id="${i}-color"><option value=""></option></select>\`)
                 .insertBefore($('#property-editor tr').last());
             // console.log(s);
             colorNames.forEach( colorName => {
                 $("<option />", {value: colorName, text: colorName})
-                    .appendTo($(`#${i}-color`));
+                    .appendTo($(\`#${i}-color\`));
             });
 
             // Based on font and cup, add text lines
