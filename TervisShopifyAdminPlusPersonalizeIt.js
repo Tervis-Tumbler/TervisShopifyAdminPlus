@@ -4,10 +4,6 @@ import {
     directive
 } from 'https://unpkg.com/lit-html?module'
 
-var $Content = html`
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
-<script type='text/javascript'>
 function getItemHash(item) {
     var oldHash = {};
     if (item.properties) {
@@ -754,29 +750,12 @@ function getPersonalizeItConfig() {
 function getCupPropertiesFromTitle(title) {
     let titleArray = title.split(".");
     return {
-        name: \`${titleArray[0]}\`,
-        size: \`${titleArray[4]}\`,
-        category: \`${titleArray[1]}\`,
+        name: `${titleArray[0]}`,
+        size: `${titleArray[4]}`,
+        category: `${titleArray[1]}`,
     };
 }
 
-</script>
-<style type='text/css'>
-    input[type='text'] {
-        width: 100%;
-        height: 24px;
-    }
-</style>
-<table id='property-editor' class='table table-striped'>
-    <tr>
-        <th>PersonalizeIt</th>
-    </tr>
-    <tr id="noitems"></tr>
-    <tr>
-       <td><button id='save-button' class='btn btn-success' style='width:100%;'>Save</button></td> 
-    </tr>
-</table>
-<script>
 ShopifyPOS.fetchCart({
     success: function(cart) {
         let personalizeItConfig;
@@ -793,23 +772,23 @@ ShopifyPOS.fetchCart({
             //  Set up font
             let fontNames = [];
             personalizeItConfig.fonts.forEach(font => fontNames.push(font.name));
-            $(\`<tr><td><select required class=item-${i} id="${i}-font"><option value=""></option></select>\`)
+            $(`<tr><td><select required class=item-${i} id="${i}-font"><option value=""></option></select>`)
                 .insertBefore($('#property-editor tr').last());
             // console.log(s);
             fontNames.forEach( fontName => {
                 $("<option />", {value: fontName, text: fontName})
-                    .appendTo($(\`#${i}-font\`));
+                    .appendTo($(`#${i}-font`));
             });
 
             // Set up color
             let colorNames = [];
             personalizeItConfig.colors.forEach(color => colorNames.push(color.name));
-            $(\`<tr><td><select required class=item-${i} id="${i}-color"><option value=""></option></select>\`)
+            $(`<tr><td><select required class=item-${i} id="${i}-color"><option value=""></option></select>`)
                 .insertBefore($('#property-editor tr').last());
             // console.log(s);
             colorNames.forEach( colorName => {
                 $("<option />", {value: colorName, text: colorName})
-                    .appendTo($(\`#${i}-color\`));
+                    .appendTo($(`#${i}-color`));
             });
 
             // Based on font and cup, add text lines
@@ -896,7 +875,17 @@ ShopifyPOS.fetchCart({
         
     }
 });
-</script>
+
+var $Content = html`
+<table id='property-editor' class='table table-striped'>
+    <tr>
+        <th>PersonalizeIt</th>
+    </tr>
+    <tr id="noitems"></tr>
+    <tr>
+       <td><button id='save-button' class='btn btn-success' style='width:100%;'>Save</button></td> 
+    </tr>
+</table>
 `
 
 render(
