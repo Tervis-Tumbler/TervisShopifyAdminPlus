@@ -69,9 +69,9 @@ function Set_ContainerContent ({
 }
 
 async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
-    // $PersonalizableLineItems = $Cart.line_items.filter( 
-    //     $LineItem => $LineItem.sku.slice(-1) === "P"
-    // )
+    var $PersonalizableLineItems = $Cart.line_items.filter( 
+        $LineItem => $LineItem.sku.slice(-1) === "P"
+    )
 
     // var $ContentPromises = $PersonalizableLineItems.map(
     //     $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
@@ -85,7 +85,7 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
 
     Set_ContainerContent({
         $TargetElementSelector: "#content",
-        $Content: html`Hello World ${JSON.stringify($Cart)}`
+        $Content: html`Hello World ${JSON.stringify($PersonalizableLineItems)}`
     })
 
     // if(!$Cart.line_items) {
