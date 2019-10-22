@@ -73,20 +73,20 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
         $LineItem => $LineItem.sku.slice(-1) === "P"
     )
 
-    // var $ContentPromises = $PersonalizableLineItems.map(
-    //     $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
-    // )
-    // var $Content = await Promise.all($ContentPromises)
-
-    // Set_ContainerContent({
-    //     $TargetElementSelector: "#content",
-    //     $Content
-    // })
+    var $ContentPromises = $PersonalizableLineItems.map(
+        $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
+    )
+    var $Content = await Promise.all($ContentPromises)
 
     Set_ContainerContent({
         $TargetElementSelector: "#content",
-        $Content: html`Hello World ${JSON.stringify($PersonalizableLineItems)}`
+        $Content
     })
+
+    // Set_ContainerContent({
+    //     $TargetElementSelector: "#content",
+    //     $Content: html`Hello World ${JSON.stringify($PersonalizableLineItems)}`
+    // })
 
     // if(!$Cart.line_items) {
     //     ShopifyPOS.flashError("You have no items in your cart.")
