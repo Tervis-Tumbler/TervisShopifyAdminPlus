@@ -69,19 +69,19 @@ function Set_ContainerContent ({
 }
 
 function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
-    // var $Content = $Cart.line_items.map(
-    //     $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
-    // )
-
-    // Set_ContainerContent({
-    //     $TargetElementSelector: "#content",
-    //     $Content
-    // })
+    var $Content = $Cart.line_items.map(
+        $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
+    )
 
     Set_ContainerContent({
         $TargetElementSelector: "#content",
-        $Content: html`Hello World`
+        $Content
     })
+
+    // Set_ContainerContent({
+    //     $TargetElementSelector: "#content",
+    //     $Content: html`Hello World`
+    // })
 
     // if(!$Cart.line_items) {
     //     ShopifyPOS.flashError("You have no items in your cart.")
