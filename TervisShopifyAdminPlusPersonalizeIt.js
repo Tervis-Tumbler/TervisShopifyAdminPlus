@@ -69,7 +69,11 @@ function Set_ContainerContent ({
 }
 
 async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
-    var $ContentPromises = $Cart.line_items.map(
+    $PersonalizableLineItems = $Cart.line_items.filter( 
+        $LineItem => $LineItem.sku.slice(-1) === "P"
+    )
+
+    var $ContentPromises = $PersonalizableLineItems.map(
         $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
     )
     var $Content = await Promise.all($ContentPromises)
@@ -208,7 +212,8 @@ Receive_ShopifyPOSPersonalizationCart(
     {
         line_items: [
             {
-                title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA"
+                title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
+                sku: "1234P"
             }
         ]
     }
