@@ -204,15 +204,15 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
 //     success: Receive_ShopifyPOSPersonalizationCart
 // });
 
-Receive_ShopifyPOSPersonalizationCart({
-    $Cart: {
+Receive_ShopifyPOSPersonalizationCart( 
+    {
         line_items: [
             {
                 title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA"
             }
         ]
     }
-})
+)
 
 // function getItemHash(item) {
 //     var oldHash = {};
