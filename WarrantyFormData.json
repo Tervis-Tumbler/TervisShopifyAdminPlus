@@ -1,0 +1,150 @@
+"sizeVariants": [
+            {
+                "size": "10oz (5 1/2\")"
+            },
+            {
+                "size": "12oz (4 1/4\")"
+            },
+            {
+                "size": "16oz (6\")"
+            },
+            {
+                "size": "24oz (7 7/8\")"
+            },
+            {
+                "size": "8oz (4\")"
+            },
+            {
+                "size": "My First Tervis Sippy Cup (5 1/5\")"
+            },
+            {
+                "size": "Collectible (2 3/4\")"
+            },
+            {
+                "size": "Goblet (7 7/8\")"
+            },
+            {
+                "size": "Mug (5\")"
+            },
+            {
+                "size": "Beer Mug"
+            },
+            {
+                "size": "Stout (3 1/2\")"
+            },
+            {
+                "size": "Tall (6 1/4\")"
+            },
+            {
+                "size": "Water Bottle (10.4\")"
+            },
+            {
+                "size": "Wavy (5 1/2\")"
+            },
+            {
+                "size": "Ice Bucket"
+            },
+            {
+                "size": "Wine Glass"
+            },
+            {
+                "size": "Stemless Wine Glass"
+            },
+            {
+                "size": "Stainless 12oz"
+            },
+            {
+                "size": "Stainless 20oz"
+            },
+            {
+                "size": "Stainless 27oz"
+            },
+            {
+                "size": "Stainless 30oz"
+            },
+            {
+                "size": "Stainless Water Bottle"
+            }
+        ],
+        "returnReasons": [
+            {
+                "code": "02.100.01",
+                "description": "02-Product.100-Weld/Seal.01-Tumbler in Two Pieces"
+            },
+            {
+                "code": "02.100.07",
+                "description": "02-Product.100-Weld/Seal.07-Moisture Between Walls"
+            },
+            {
+                "code": "02.110.01",
+                "description": "02-Product.110 Cracked.01-Cracked at Weld"
+            },
+            {
+                "code": "02.110.02",
+                "description": "02-Product.110 Cracked.02-Stress Cracks"
+            },
+            {
+                "code": "02.110.03",
+                "description": "02-Product.110 Cracked.03-Not at weld"
+            },
+            {
+                "code": "02.110.04",
+                "description": "02-Product.110 Cracked.04-Lid"
+            },
+            {
+                "code": "02.120.01",
+                "description": "02-Product.120 Leak.01-Lid"
+            },
+            {
+                "code": "02.130.01",
+                "description": "02-Product.130 Missing Component.01-Lid"
+            },
+            {
+                "code": "02.130.02",
+                "description": "02-Product.130 Missing Component.02-Valve"
+            },
+            {
+                "code": "02.130.03",
+                "description": "02-Product.130 Missing Component.03-O-ring"
+            },
+            {
+                "code": "02.130.04",
+                "description": "02-Product.130 Missing Component.04-Strainer"
+            },
+            {
+                "code": "02.200.02",
+                "description": "02-Product.200-Surface.02-Film/Stains"
+            },
+            {
+                "code": "02.200.03",
+                "description": "02-Product.200-Surface.03-Sunscreen"
+            },
+            {
+                "code": "02.500.01",
+                "description": "02-Product.500-Foreign Object.01-Foreign Object"
+            },
+            {
+                "code": "02.600.01",
+                "description": "02-Product.600-Decoration.01-Damaged"
+            },
+            {
+                "code": "02.900.00",
+                "description": "02-Product.900-Deformed.00"
+            },
+            {
+                "code": "02.090.90",
+                "description": "02-Product.090-Supplier.90-Supplier Defect"
+            },
+            {
+                "code": "02.090.95",
+                "description": "02-Product.090-Supplier.95-Poor Thermal Performance"
+            },
+            {
+                "code": "02.090.96",
+                "description": "02-Product.090-Supplier.96-Stainless Rattle"
+            },
+            {
+                "code": "02.090.97",
+                "description": "02-Product.090-Stainless Lid.97 Stainless Lid Defective"
+            }
+        ]

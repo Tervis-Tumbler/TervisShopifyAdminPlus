@@ -1,0 +1,28 @@
+{
+    "Fonts": {
+        "Script": {
+            "MinimumCharacters": "0",
+            "MaximumCharacters": "13"
+        },
+        "Block U/L": {
+            "MinimumCharacters": "0",
+            "MaximumCharacters": "13"
+        },
+        "Monogram": {
+            "MonogramStyle": true,
+            "MinimumCharacters": "3",
+            "MaximumCharacters": "3"
+        },
+        "Initials Block": {
+            "MonogramStyle": true,
+            "MinimumCharacters": "0",
+            "MaximumCharacters": "3"
+        },
+        "Initials Script": {
+            "MonogramStyle": true,
+            "MinimumCharacters": "0",
+            "MaximumCharacters": "3"
+        }
+    }
+    
+}
