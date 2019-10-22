@@ -73,7 +73,7 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
         $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
     )
     var $Content = await Promise.all($ContentPromises)
-    
+
     Set_ContainerContent({
         $TargetElementSelector: "#content",
         $Content
@@ -200,9 +200,19 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     // });
 }
 
-ShopifyPOS.fetchCart({
-    success: Receive_ShopifyPOSPersonalizationCart
-});
+// ShopifyPOS.fetchCart({
+//     success: Receive_ShopifyPOSPersonalizationCart
+// });
+
+Receive_ShopifyPOSPersonalizationCart({
+    $Cart: {
+        line_items: [
+            {
+                title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA"
+            }
+        ]
+    }
+})
 
 // function getItemHash(item) {
 //     var oldHash = {};
