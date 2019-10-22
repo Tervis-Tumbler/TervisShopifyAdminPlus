@@ -68,11 +68,12 @@ function Set_ContainerContent ({
     )
 }
 
-function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
-    var $Content = $Cart.line_items.map(
+async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
+    var $ContentPromises = $Cart.line_items.map(
         $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
     )
-
+    var $Content = await Promise.all($ContentPromises)
+    
     Set_ContainerContent({
         $TargetElementSelector: "#content",
         $Content
