@@ -1,6 +1,6 @@
 {
   "name": "@tervis/tervisshopifyadminpluspersonalizeit",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "type": "module",
   "main": "TervisShopifyAdminPlusPersonalizeIt.js",
   "repository": {
