@@ -69,24 +69,25 @@ function Set_ContainerContent ({
 }
 
 async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
-    $PersonalizableLineItems = $Cart.line_items.filter( 
-        $LineItem => $LineItem.sku.slice(-1) === "P"
-    )
+    // $PersonalizableLineItems = $Cart.line_items.filter( 
+    //     $LineItem => $LineItem.sku.slice(-1) === "P"
+    // )
 
-    var $ContentPromises = $PersonalizableLineItems.map(
-        $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
-    )
-    var $Content = await Promise.all($ContentPromises)
-
-    Set_ContainerContent({
-        $TargetElementSelector: "#content",
-        $Content
-    })
+    // var $ContentPromises = $PersonalizableLineItems.map(
+    //     $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
+    // )
+    // var $Content = await Promise.all($ContentPromises)
 
     // Set_ContainerContent({
     //     $TargetElementSelector: "#content",
-    //     $Content: html`Hello World`
+    //     $Content
     // })
+
+    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize: 16, $ProductFormType: "DWT"})
+    Set_ContainerContent({
+        $TargetElementSelector: "#content",
+        $Content: html`Hello World ${$ProductMetadata.Size}`
+    })
 
     // if(!$Cart.line_items) {
     //     ShopifyPOS.flashError("You have no items in your cart.")
