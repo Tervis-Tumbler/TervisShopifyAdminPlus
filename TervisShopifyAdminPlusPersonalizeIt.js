@@ -83,10 +83,9 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     //     $Content
     // })
 
-    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize: 16, $ProductFormType: "DWT"})
     Set_ContainerContent({
         $TargetElementSelector: "#content",
-        $Content: html`Hello World ${$ProductMetadata.Size}`
+        $Content: html`Hello World ${JSON.stringify($Cart)}`
     })
 
     // if(!$Cart.line_items) {
