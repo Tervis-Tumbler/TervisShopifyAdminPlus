@@ -80,19 +80,32 @@ function Set_ContainerContent ({
     )
 }
 
+function Receive_TervisPersonalizationLineItemSelectOnChange () {
+
+}
+
 async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
+    var $ContentArray = []
     var $PersonalizableLineItems = $Cart.line_items.filter( 
         $LineItem => $LineItem.sku.slice(-1) === "P"
     )
 
+    var $SelectLineItemContent = New_TervisSelect({
+        $Title: "Select Line Item To Personalize",
+        $Options: $PersonalizableLineItems,
+        $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
+    })
+
+    $ContentArray.push($SelectLineItemContent)
+
     var $ContentPromises = $PersonalizableLineItems.map(
         $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
     )
-    var $Content = await Promise.all($ContentPromises)
+    $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
 
     Set_ContainerContent({
         $TargetElementSelector: "#content",
-        $Content
+        $ContentArray
     })
 
     // Set_ContainerContent({
