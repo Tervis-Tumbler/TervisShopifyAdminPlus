@@ -89,18 +89,18 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOpt
     var $SelectedLineItemKey = $SelectedOptionNode.target.value
     var $SelectedLineItem = $Cart.line_items.filter( $LinteItem => $LinteItem.key = $SelectedLineItemKey )[0]
 
-    var $ContentArray = []
+    // var $ContentArray = []
 
-    var $ContentPromises = New_PersonalizationCartLineItemForm({$LineItem: $SelectedLineItem})
+    // var $ContentPromises = New_PersonalizationCartLineItemForm({$LineItem: $SelectedLineItem})
     // var $ContentPromises = $PersonalizableLineItems.map(
     //     $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
     // )
 
-    $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
+    // $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
 
     Set_ContainerContent({
         $TargetElementSelector: "#FontSelectContainer",
-        $Content: $ContentArray
+        $Content: await New_PersonalizationCartLineItemForm({$LineItem: $SelectedLineItem})
     })
 }
 
