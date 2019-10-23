@@ -48,7 +48,7 @@ function New_TervisSelect ({
         <option selected disabled>${$Title}</option>
         ${
             $Options
-            .map( 
+            .map(
                 $Option => html`<option>${$Option}</option>`
             )
         }
@@ -85,8 +85,8 @@ function Receive_TervisPersonalizationLineItemSelectOnChange () {
 }
 
 async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
-    var $ContentArray = []
-    var $PersonalizableLineItems = $Cart.line_items.filter( 
+    // var $ContentArray = []
+    var $PersonalizableLineItems = $Cart.line_items.filter(
         $LineItem => $LineItem.sku.slice(-1) === "P"
     )
 
@@ -101,8 +101,8 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     var $ContentPromises = $PersonalizableLineItems.map(
         $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
     )
-
-    $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
+    var $ContentArray = await Promise.all($ContentPromises)
+    // $ContentArray = $ContentArray.concat()
 
     Set_ContainerContent({
         $TargetElementSelector: "#content",
@@ -118,7 +118,7 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     //     ShopifyPOS.flashError("You have no items in your cart.")
     //     ShopifyPOS.Modal.close()
     // }
-        
+
     // var personalizeItConfig = getPersonalizeItConfig();
 
     // for (var i in $Cart.line_items) {
@@ -159,13 +159,13 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     //             .find("input")
     //             .val(hash[properties[j]]);
     //     }
-    // }        
-    
+    // }
+
     // $('#save-button').click(function() {
     //     $('button, input').prop('disabled', true);
     //     var additions = [];
     //     var removals = [];
-    
+
     //     for (var i in $Cart.line_items) {
     //         var newHash = {};
     //         var oldHash = getItemHash($Cart.line_items[i]);
@@ -183,10 +183,10 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     //         if (Object.keys(newHash).length > 0)
     //             additions.push({ index: i, additions: newHash });
     //     }
-        
+
     //     var totalToDo = additions.length + removals.length;
     //     var errorList = [];
-        
+
     //     var onFinish = function() {
     //         if (errorList.length == 0) {
     //                 ShopifyPOS.flashNotice("Successfully modified line item properties!");
@@ -195,8 +195,8 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     //         }
     //         ShopifyPOS.Modal.close();
     //     };
-        
-        
+
+
     //     if (totalToDo == 0) {
     //         onFinish();
     //     } else {
@@ -234,7 +234,7 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
 //     success: Receive_ShopifyPOSPersonalizationCart
 // });
 
-Receive_ShopifyPOSPersonalizationCart( 
+Receive_ShopifyPOSPersonalizationCart(
     {
         line_items: [
             {
@@ -260,7 +260,7 @@ Receive_ShopifyPOSPersonalizationCart(
 
 // function getPersonalizeItConfig() {
 //     return {
-       
+
 //         "colors": [
 //             {
 //                 "name": "Black",
@@ -366,7 +366,7 @@ Receive_ShopifyPOSPersonalizationCart(
 //     <tr>
 //         <td>
 //            <button id='save-button' class='btn btn-success' style='width:100%;'>Save</button>
-//         </td> 
+//         </td>
 //     </tr>
 // </table> -->
 // `
