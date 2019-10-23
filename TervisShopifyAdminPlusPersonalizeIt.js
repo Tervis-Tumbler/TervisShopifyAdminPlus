@@ -84,21 +84,20 @@ function Set_ContainerContent ({
     )
 }
 
-function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOptionNode) {
-    var $LinteItemKey = $SelectedOptionNode.value
+async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOptionNode) {
+    // var $LinteItemKey = $SelectedOptionNode.value
 
+    // var $ContentArray = []
+    // var $ContentPromises = $PersonalizableLineItems.map(
+    //     $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
+    // )
 
-    var $ContentArray = []
-    var $ContentPromises = $PersonalizableLineItems.map(
-        $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
-    )
+    // $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
 
-    $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
-
-    Set_ContainerContent({
-        $TargetElementSelector: "#FontSelectContainer",
-        $Content: $ContentArray
-    })
+    // Set_ContainerContent({
+    //     $TargetElementSelector: "#FontSelectContainer",
+    //     $Content: $ContentArray
+    // })
 }
 
 function Initialize_TervisPersonalizationFormStructure ({
