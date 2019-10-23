@@ -281,7 +281,7 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
 async function main () {
     Initialize_TervisShopifyPOSPersonalizationFormStructure()
     var $Cart 
-    if (ShopifyPOS) {
+    if (typeof ShopifyPOS !== 'undefined') {
         $Cart = await Get_ShopifyCart()
     } else {
         $Cart =  {
