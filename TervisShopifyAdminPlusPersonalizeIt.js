@@ -36,7 +36,7 @@ function ConvertFrom_TervisShopifyPOSProductTitle ({
 //     `
 // }
 
-function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionNode) {
+async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionNode) {
     var $FontName = $SelectedOptionNode.target.value
     var $Cart = await Get_ShopifyCart()
     var $SelectedLineItemKey = document.querySelector("#LineItemSelectContainer > select").value
