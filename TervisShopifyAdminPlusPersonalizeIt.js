@@ -36,25 +36,37 @@ function Receive_TervisPersonalizationFontPickerOnChange () {
     //trigger rerender of the lines controls as based on the font there will be different numbers of lines available/characters available for monogram
 }
 
+function New_TervisSelect ({
+    $Title,
+    $Options,
+    $OnChange
+}) {
+    return html`
+        <select
+            @change=${$OnChange}
+        >
+        <option selected disabled>${$Title}</option>
+        ${
+            $Options
+            .map( 
+                $Option => html`<option>${$Option}</option>`
+            )
+        }
+        </select>
+    `
+}
+
 async function New_TervisPersonalizationFontPicker ({
     $ProductSize,
     $ProductFormType
 }) {
     var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
     var $FontNames = $ProductMetadata.Personalization.Font.Name
-    return html`
-        <select
-            @change=${Receive_TervisPersonalizationFontPickerOnChange}
-        >
-        <option selected disabled>Font Name</option>
-        ${
-            $FontNames
-            .map( 
-                $FontName => html`<option>${$FontName}</option>`
-            )
-        }
-        </select>
-    `
+    return New_TervisSelect({
+        $Title: "Font Name",
+        $Options: $FontNames,
+        $OnChange: Receive_TervisPersonalizationFontPickerOnChange
+    })
 }
 
 function Set_ContainerContent ({
