@@ -280,10 +280,10 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
 
 async function main () {
     Initialize_TervisShopifyPOSPersonalizationFormStructure()
-    var $Cart = await Get_ShopifyCart()
-
-    var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
-    if (isChrome) {
+    var $Cart 
+    if (ShopifyPOS) {
+        $Cart = await Get_ShopifyCart()
+    } else {
         $Cart =  {
             line_items: [
                 {
@@ -294,6 +294,7 @@ async function main () {
             ]
         }
     }
+    
     Receive_ShopifyPOSPersonalizationCart($Cart)
 }
 
