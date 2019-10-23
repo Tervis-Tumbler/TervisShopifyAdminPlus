@@ -84,8 +84,21 @@ function Set_ContainerContent ({
     )
 }
 
-function Receive_TervisPersonalizationLineItemSelectOnChange () {
+function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOptionNode) {
+    var $LinteItemKey = $SelectedOptionNode.value
 
+
+    var $ContentArray = []
+    var $ContentPromises = $PersonalizableLineItems.map(
+        $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
+    )
+
+    $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
+
+    Set_ContainerContent({
+        $TargetElementSelector: "#FontSelectContainer",
+        $Content: $ContentArray
+    })
 }
 
 function Initialize_TervisPersonalizationFormStructure ({
@@ -112,7 +125,15 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
     Initialize_TervisPersonalizationFormStructure({$TargetElementSelector: "#PersonalizationFormContainer"})
 }
 
-Initialize_TervisShopifyPOSPersonalizationFormStructure()
+async function Get_ShopifyCart () {
+    return new Promise((resolve, reject) => {
+        ShopifyPOS.fetchCart({
+            success: resolve($Cart),
+            error: reject(errors)
+        })
+    })
+}
+
 
 async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     var $PersonalizableLineItems = $Cart.line_items.filter(
@@ -130,17 +151,6 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
         $Content: $SelectLineItemContent
     })
 
-    var $ContentArray = []
-    var $ContentPromises = $PersonalizableLineItems.map(
-        $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
-    )
-
-    $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
-
-    Set_ContainerContent({
-        $TargetElementSelector: "#FontSelectContainer",
-        $Content: $ContentArray
-    })
 
     // Set_ContainerContent({
     //     $TargetElementSelector: "#content",
@@ -263,21 +273,32 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     // });
 }
 
+
+
 // ShopifyPOS.fetchCart({
 //     success: Receive_ShopifyPOSPersonalizationCart
 // });
 
-Receive_ShopifyPOSPersonalizationCart(
-    {
-        line_items: [
-            {
-                title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
-                sku: "1234P",
-                key: "17285644550:70ff98a797ed385f6ef25e6e974708ca"
-            }
-        ]
+async function main () {
+    Initialize_TervisShopifyPOSPersonalizationFormStructure()
+    var $Cart = await Get_ShopifyCart()
+
+    var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+    if (isChrome) {
+        $Cart =  {
+            line_items: [
+                {
+                    title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
+                    sku: "1234P",
+                    key: "17285644550:70ff98a797ed385f6ef25e6e974708ca"
+                }
+            ]
+        }
     }
-)
+    Receive_ShopifyPOSPersonalizationCart($Cart)
+}
+
+main ()
 
 // function getItemHash(item) {
 //     var oldHash = {};
