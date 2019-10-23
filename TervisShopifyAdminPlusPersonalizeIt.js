@@ -97,8 +97,8 @@ function Set_ContainerContent ({
 }
 
 async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOptionNode) {
-    var $Cart = await Get_ShopifyCart()
-    var $SelectedLineItemKey = $SelectedOptionNode.target.value
+    // var $Cart = await Get_ShopifyCart()
+    // var $SelectedLineItemKey = $SelectedOptionNode.target.value
 
     Set_ContainerContent({
         $TargetElementSelector: "#FontSelectContainer",
