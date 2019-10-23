@@ -88,8 +88,33 @@ function Receive_TervisPersonalizationLineItemSelectOnChange () {
 
 }
 
+function Initialize_TervisPersonalizationFormStructure ({
+    $TargetElementSelector
+}) {
+    Set_ContainerContent({
+        $TargetElementSelector,
+        $Content: html`
+            <div id="FontSelectContainer"></div>
+            <div id="LineTextBoxContainer"></div>
+        `
+    })
+}
+
+function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
+    Set_ContainerContent({
+        $TargetElementSelector: "#content",
+        $Content: html`
+            <div id="LineItemSelectContainer"></div>
+            <div id="PersonalizationFormContainer"></div>
+        `
+    })
+
+    Initialize_TervisPersonalizationFormStructure({$TargetElementSelector: "#PersonalizationFormContainer"})
+}
+
+Initialize_TervisShopifyPOSPersonalizationFormStructure()
+
 async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
-    var $ContentArray = []
     var $PersonalizableLineItems = $Cart.line_items.filter(
         $LineItem => $LineItem.sku.slice(-1) === "P"
     )
@@ -100,6 +125,12 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
         $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
     })
 
+    Set_ContainerContent({
+        $TargetElementSelector: "#LineItemSelectContainer",
+        $Content: $SelectLineItemContent
+    })
+
+    var $ContentArray = []
     $ContentArray.push($SelectLineItemContent)
 
     var $ContentPromises = $PersonalizableLineItems.map(
@@ -109,7 +140,7 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
 
     Set_ContainerContent({
-        $TargetElementSelector: "#content",
+        $TargetElementSelector: "#FontSelectContainer",
         $Content: $ContentArray
     })
 
