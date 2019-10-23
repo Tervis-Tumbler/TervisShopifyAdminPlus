@@ -21,23 +21,35 @@ function ConvertFrom_TervisShopifyPOSProductTitle ({
     return {$ProductSize, $ProductFormType}
 }
 
-async function New_PersonalizationCartLineItemForm ({
-    $LineItem
-}) {
+// async function New_PersonalizationCartLineItemForm ({
+//     $LineItem
+// }) {
+//     var {
+//         $ProductSize,
+//         $ProductFormType
+//     } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $LineItem.title })
+
+//     // var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+
+//     return html`
+//         ${await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})}
+//     `
+// }
+
+function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionNode) {
+    var $FontName = $SelectedOptionNode.target.value
+    var $Cart = await Get_ShopifyCart()
+    var $SelectedLineItemKey = document.querySelector("#LineItemSelectContainer > select").value
+    var $SelectedLineItem = $Cart.line_items.filter( $LinteItem => $LinteItem.key = $SelectedLineItemKey )[0]
     var {
         $ProductSize,
         $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $LineItem.title })
+    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
+    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
 
-    // var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-
-    return html`
-        ${await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})}
-    `
-}
-
-function Receive_TervisPersonalizationFontPickerOnChange () {
     //trigger rerender of the lines controls as based on the font there will be different numbers of lines available/characters available for monogram
+
+
 }
 
 function New_TervisSelect ({
@@ -65,7 +77,7 @@ async function New_TervisPersonalizationFontPicker ({
     $ProductFormType
 }) {
     var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-    var $FontNames = $ProductMetadata.Personalization.Font.Name
+    var $FontNames = $ProductMetadata.Personalization.SupportedFontName
     return New_TervisSelect({
         $Title: "Font Name",
         $Options: $FontNames.map( $FontName => ({Text: $FontName}) ),
@@ -88,19 +100,14 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOpt
     var $Cart = await Get_ShopifyCart()
     var $SelectedLineItemKey = $SelectedOptionNode.target.value
     var $SelectedLineItem = $Cart.line_items.filter( $LinteItem => $LinteItem.key = $SelectedLineItemKey )[0]
-
-    // var $ContentArray = []
-
-    // var $ContentPromises = New_PersonalizationCartLineItemForm({$LineItem: $SelectedLineItem})
-    // var $ContentPromises = $PersonalizableLineItems.map(
-    //     $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
-    // )
-
-    // $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
+    var {
+        $ProductSize,
+        $ProductFormType
+    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
 
     Set_ContainerContent({
         $TargetElementSelector: "#FontSelectContainer",
-        $Content: await New_PersonalizationCartLineItemForm({$LineItem: $SelectedLineItem})
+        $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType}
     })
 }
 
