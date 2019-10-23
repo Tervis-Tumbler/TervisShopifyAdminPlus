@@ -149,6 +149,11 @@ async function Get_ShopifyCart () {
                         title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
                         sku: "1001837P",
                         key: "17285644550:70ff98a797ed385f6ef25e6e974708ca"
+                    },
+                    {
+                        title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
+                        sku: "1001842P",
+                        key: "82342224550:abdd98a797ed385f6ef25e6e974708ca"
                     }
                 ]
             })
