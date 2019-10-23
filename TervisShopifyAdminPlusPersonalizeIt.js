@@ -106,7 +106,7 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
 
     Set_ContainerContent({
         $TargetElementSelector: "#content",
-        $ContentArray[0]
+        $Content: $ContentArray
     })
 
     // Set_ContainerContent({
