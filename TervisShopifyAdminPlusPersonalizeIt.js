@@ -132,8 +132,8 @@ async function Get_ShopifyCart () {
     return new Promise((resolve, reject) => {
         if (typeof ShopifyPOS !== 'undefined') {
             ShopifyPOS.fetchCart({
-                success: resolve($Cart),
-                error: reject(errors)
+                success: resolve,
+                error: reject
             })
         } else {
             resolve({
