@@ -85,19 +85,23 @@ function Set_ContainerContent ({
 }
 
 async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOptionNode) {
-    // var $LinteItemKey = $SelectedOptionNode.value
+    var $Cart = await Get_ShopifyCart()
+    var $SelectedLineItemKey = $SelectedOptionNode.value
+    var $SelectedLineItem = $Cart.line_items.filter( $LinteItem => $LinteItem.key = $SelectedLineItemKey )[0]
 
-    // var $ContentArray = []
+    var $ContentArray = []
+
+    var $ContentPromises = New_PersonalizationCartLineItemForm({$SelectedLineItem})
     // var $ContentPromises = $PersonalizableLineItems.map(
     //     $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
     // )
 
-    // $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
+    $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
 
-    // Set_ContainerContent({
-    //     $TargetElementSelector: "#FontSelectContainer",
-    //     $Content: $ContentArray
-    // })
+    Set_ContainerContent({
+        $TargetElementSelector: "#FontSelectContainer",
+        $Content: $ContentArray
+    })
 }
 
 function Initialize_TervisPersonalizationFormStructure ({
