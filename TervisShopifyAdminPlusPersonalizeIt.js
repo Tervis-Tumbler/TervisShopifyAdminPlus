@@ -90,17 +90,18 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
         $LineItem => $LineItem.sku.slice(-1) === "P"
     )
 
-    var $SelectLineItemContent = New_TervisSelect({
-        $Title: "Select Line Item To Personalize",
-        $Options: $PersonalizableLineItems,
-        $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
-    })
+    // var $SelectLineItemContent = New_TervisSelect({
+    //     $Title: "Select Line Item To Personalize",
+    //     $Options: $PersonalizableLineItems,
+    //     $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
+    // })
 
-    $ContentArray.push($SelectLineItemContent)
+    // $ContentArray.push($SelectLineItemContent)
 
     var $ContentPromises = $PersonalizableLineItems.map(
         $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
     )
+
     $ContentArray = $ContentArray.concat(await Promise.all($ContentPromises))
 
     Set_ContainerContent({
