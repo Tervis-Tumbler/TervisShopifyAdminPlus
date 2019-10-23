@@ -99,16 +99,22 @@ function Set_ContainerContent ({
 async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOptionNode) {
     var $Cart = await Get_ShopifyCart()
     var $SelectedLineItemKey = $SelectedOptionNode.target.value
-    var $SelectedLineItem = $Cart.line_items.filter( $LinteItem => $LinteItem.key === $SelectedLineItemKey )[0]
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
 
     Set_ContainerContent({
         $TargetElementSelector: "#FontSelectContainer",
-        $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})
+        $Content: html`Key ${$SelectedLineItemKey} Json: ${JSON.stringify($Cart.line_items)}`
     })
+    
+    // var $SelectedLineItem = $Cart.line_items.filter( $LinteItem => $LinteItem.key === $SelectedLineItemKey )[0]
+    // var {
+    //     $ProductSize,
+    //     $ProductFormType
+    // } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
+
+    // Set_ContainerContent({
+    //     $TargetElementSelector: "#FontSelectContainer",
+    //     $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})
+    // })
 }
 
 function Initialize_TervisPersonalizationFormStructure ({
