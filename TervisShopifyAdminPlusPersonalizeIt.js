@@ -91,7 +91,7 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOpt
 
     var $ContentArray = []
 
-    var $ContentPromises = New_PersonalizationCartLineItemForm({$SelectedLineItem})
+    var $ContentPromises = New_PersonalizationCartLineItemForm({$LineItem: $SelectedLineItem})
     // var $ContentPromises = $PersonalizableLineItems.map(
     //     $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
     // )
