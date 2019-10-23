@@ -86,7 +86,7 @@ function Set_ContainerContent ({
 
 async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOptionNode) {
     var $Cart = await Get_ShopifyCart()
-    var $SelectedLineItemKey = $SelectedOptionNode.value
+    var $SelectedLineItemKey = $SelectedOptionNode.currentTarget.value
     var $SelectedLineItem = $Cart.line_items.filter( $LinteItem => $LinteItem.key = $SelectedLineItemKey )[0]
 
     var $ContentArray = []
