@@ -107,7 +107,7 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOpt
 
     Set_ContainerContent({
         $TargetElementSelector: "#FontSelectContainer",
-        $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType}
+        $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})
     })
 }
 
