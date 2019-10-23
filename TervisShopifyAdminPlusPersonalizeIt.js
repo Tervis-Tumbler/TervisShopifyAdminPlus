@@ -4,6 +4,10 @@ import {
 } from 'https://unpkg.com/lit-html?module'
 
 import {
+    ifDefined
+} from 'https://unpkg.com/lit-html@1.1.2/directives/if-defined.js?module'
+
+import {
     Get_TervisProductMetaDataUsingIndex
 } from 'https://unpkg.com/@tervis/tervisproductmetadata?module'
 
@@ -49,7 +53,7 @@ function New_TervisSelect ({
         ${
             $Options
             .map(
-                $Option => html`<option>${$Option}</option>`
+                $Option => html`<option .value=${ifDefined($Option.Value)}>${$Option.Text}</option>`
             )
         }
         </select>
@@ -64,7 +68,7 @@ async function New_TervisPersonalizationFontPicker ({
     var $FontNames = $ProductMetadata.Personalization.Font.Name
     return New_TervisSelect({
         $Title: "Font Name",
-        $Options: $FontNames,
+        $Options: $FontNames.map( $FontName => ({Text: $FontName}) ),
         $OnChange: Receive_TervisPersonalizationFontPickerOnChange
     })
 }
@@ -92,7 +96,7 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
 
     var $SelectLineItemContent = New_TervisSelect({
         $Title: "Select Line Item To Personalize",
-        $Options: $PersonalizableLineItems,
+        $Options: $PersonalizableLineItems.map($LineItem => ({Value: $LineItem.key, Text: $LineItem.title}) ),
         $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
     })
 
@@ -239,7 +243,8 @@ Receive_ShopifyPOSPersonalizationCart(
         line_items: [
             {
                 title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
-                sku: "1234P"
+                sku: "1234P",
+                key: "17285644550:70ff98a797ed385f6ef25e6e974708ca"
             }
         ]
     }
