@@ -126,10 +126,22 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
 
 async function Get_ShopifyCart () {
     return new Promise((resolve, reject) => {
-        ShopifyPOS.fetchCart({
-            success: resolve($Cart),
-            error: reject(errors)
-        })
+        if (typeof ShopifyPOS !== 'undefined') {
+            ShopifyPOS.fetchCart({
+                success: resolve($Cart),
+                error: reject(errors)
+            })
+        } else {
+            resolve({
+                line_items: [
+                    {
+                        title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
+                        sku: "1001837P",
+                        key: "17285644550:70ff98a797ed385f6ef25e6e974708ca"
+                    }
+                ]
+            })
+        }
     })
 }
 
@@ -280,21 +292,7 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
 
 async function main () {
     Initialize_TervisShopifyPOSPersonalizationFormStructure()
-    var $Cart 
-    if (typeof ShopifyPOS !== 'undefined') {
-        $Cart = await Get_ShopifyCart()
-    } else {
-        $Cart =  {
-            line_items: [
-                {
-                    title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
-                    sku: "1234P",
-                    key: "17285644550:70ff98a797ed385f6ef25e6e974708ca"
-                }
-            ]
-        }
-    }
-    
+    var $Cart = await Get_ShopifyCart()
     Receive_ShopifyPOSPersonalizationCart($Cart)
 }
 
