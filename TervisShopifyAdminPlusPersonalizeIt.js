@@ -104,15 +104,15 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     var $ContentArray = await Promise.all($ContentPromises)
     // $ContentArray = $ContentArray.concat()
 
-    Set_ContainerContent({
-        $TargetElementSelector: "#content",
-        $ContentArray
-    })
-
     // Set_ContainerContent({
     //     $TargetElementSelector: "#content",
-    //     $Content: html`Hello World ${JSON.stringify($PersonalizableLineItems)}`
+    //     $ContentArray
     // })
+
+    Set_ContainerContent({
+        $TargetElementSelector: "#content",
+        $Content: html`Hello World ${JSON.stringify($ContentArray)}`
+    })
 
     // if(!$Cart.line_items) {
     //     ShopifyPOS.flashError("You have no items in your cart.")
