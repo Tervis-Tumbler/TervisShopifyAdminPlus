@@ -131,8 +131,6 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
     })
 
     var $ContentArray = []
-    $ContentArray.push($SelectLineItemContent)
-
     var $ContentPromises = $PersonalizableLineItems.map(
         $LineItem => New_PersonalizationCartLineItemForm({$LineItem})
     )
