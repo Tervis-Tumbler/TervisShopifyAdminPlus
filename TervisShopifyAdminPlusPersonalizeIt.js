@@ -39,8 +39,8 @@ function ConvertFrom_TervisShopifyPOSProductTitle ({
 async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionNode) {
     var $FontName = $SelectedOptionNode.target.value
     var $Cart = await Get_ShopifyCart()
-    var $SelectedLineItemKey = document.querySelector("#LineItemSelectContainer > select").value
-    var $SelectedLineItem = $Cart.line_items.filter( $LinteItem => $LinteItem.key = $SelectedLineItemKey )[0]
+    var $SelectedLineItemIndex = document.querySelector("#LineItemSelectContainer > select").value
+    var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
     var {
         $ProductSize,
         $ProductFormType
@@ -96,29 +96,25 @@ function Set_ContainerContent ({
     )
 }
 
+// Set_ContainerContent({
+//     $TargetElementSelector: "#FontSelectContainer",
+//     $Content: html`Key ${$SelectedLineItemKey} Json: ${JSON.stringify($Cart.line_items)}`
+// })
+
 async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOptionNode) {
-    // var $Cart = await Get_ShopifyCart()
-    // var $SelectedLineItemKey = $SelectedOptionNode.target.value
+    var $Cart = await Get_ShopifyCart()
+    var $SelectedLineItemIndex = $SelectedOptionNode.target.value
+    
+    var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
+    var {
+        $ProductSize,
+        $ProductFormType
+    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
+
     Set_ContainerContent({
         $TargetElementSelector: "#FontSelectContainer",
-        $Content: html`Hello`
+        $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})
     })
-
-    // Set_ContainerContent({
-    //     $TargetElementSelector: "#FontSelectContainer",
-    //     $Content: html`Key ${$SelectedLineItemKey} Json: ${JSON.stringify($Cart.line_items)}`
-    // })
-    
-    // var $SelectedLineItem = $Cart.line_items.filter( $LinteItem => $LinteItem.key === $SelectedLineItemKey )[0]
-    // var {
-    //     $ProductSize,
-    //     $ProductFormType
-    // } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
-
-    // Set_ContainerContent({
-    //     $TargetElementSelector: "#FontSelectContainer",
-    //     $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})
-    // })
 }
 
 function Initialize_TervisPersonalizationFormStructure ({
@@ -157,13 +153,11 @@ async function Get_ShopifyCart () {
                 line_items: [
                     {
                         title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
-                        sku: "1001837P",
-                        key: "17285644550:70ff98a797ed385f6ef25e6e974708ca"
+                        sku: "1001837P"
                     },
                     {
                         title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
-                        sku: "1001842P",
-                        key: "82342224550:abdd98a797ed385f6ef25e6e974708ca"
+                        sku: "1001842P"
                     }
                 ]
             })
@@ -179,7 +173,7 @@ async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
 
     var $SelectLineItemContent = New_TervisSelect({
         $Title: "Select Line Item To Personalize",
-        $Options: $PersonalizableLineItems.map($LineItem => ({Value: $LineItem.key, Text: $LineItem.title}) ),
+        $Options: $PersonalizableLineItems.map($LineItem => ({Value: $PersonalizableLineItems.indexOf($LineItem), Text: $LineItem.title}) ),
         $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
     })
 
