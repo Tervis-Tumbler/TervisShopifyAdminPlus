@@ -139,8 +139,19 @@ async function New_TervisPersonalizationSideAndLineElement () {
     Set_ContainerContent({$TargetElementSelector: "#LineTextBoxContainer", $Content})
 }
 
+// Replace with optional chaining once that has browser support https://github.com/tc39/proposal-optional-chaining
+function Get_ElementPropertyValue ({
+    $QuerySelector,
+    $PropertyName
+}) {
+    var $Element = document.querySelector($QuerySelector)
+    return $Element ?
+    $Element[$PropertyName] :
+    undefined
+}
+
 function Get_TervisPersonalizationSelectedFont () {
-    var $FontName = document.querySelector("#FontSelectContainer > select").value
+    var $FontName = Get_ElementPropertyValue({$QuerySelector: "#FontSelectContainer > select", $PropertyName: "value"})
     return $FontMetaData[$FontName]
 }
 
