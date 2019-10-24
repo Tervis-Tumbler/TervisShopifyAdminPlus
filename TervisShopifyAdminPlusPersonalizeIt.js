@@ -11,52 +11,133 @@ import {
     Get_TervisProductMetaDataUsingIndex
 } from 'https://unpkg.com/@tervis/tervisproductmetadata?module'
 
+import {
+    New_Range
+} from 'https://unpkg.com/@tervis/tervisutilityjs?module'
+
 var $ItemSKUToAddToCartForOneSidedPersonaliztaion = "093597845116"
 var $ItemSKUToAddToCartForTwoSidedPersonaliztaion = "093597845123"
 
-function ConvertFrom_TervisShopifyPOSProductTitle ({
-    $ProductTitle
-}) {
-    var [,$ProductFormType,,,$ProductSize] = $ProductTitle.split(".")
-    return {$ProductSize, $ProductFormType}
+async function main () {
+    Initialize_TervisShopifyPOSPersonalizationFormStructure()
+    Receive_ShopifyPOSPersonalizationCart()
 }
 
-// async function New_PersonalizationCartLineItemForm ({
-//     $LineItem
-// }) {
-//     var {
-//         $ProductSize,
-//         $ProductFormType
-//     } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $LineItem.title })
+function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
+    Set_ContainerContent({
+        $TargetElementSelector: "#content",
+        $Content: html`
+            <div id="LineItemSelectContainer"></div>
+            <div id="PersonalizationFormContainer"></div>
+        `
+    })
 
-//     // var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+    Initialize_TervisPersonalizationFormStructure({$TargetElementSelector: "#PersonalizationFormContainer"})
+}
 
-//     return html`
-//         ${await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})}
-//     `
-// }
-
-//https://stackoverflow.com/a/44957114/101679
-function Get_Range ({ 
-    $Start,
-    $Stop,
-    $Step = 1
+function Initialize_TervisPersonalizationFormStructure ({
+    $TargetElementSelector
 }) {
-    $Start = Number($Start)
-    $Stop = Number($Stop)
-    $Step = Number($Step)
-    
-    return Array(
-        Math
-        .ceil(
-            (($Stop + 1) - $Start) / $Step
-        )
+    Set_ContainerContent({
+        $TargetElementSelector,
+        $Content: html`
+            <div id="FontSelectContainer"></div>
+            <div id="LineTextBoxContainer"></div>
+        `
+    })
+}
+
+async function Receive_ShopifyPOSPersonalizationCart () {
+    New_TervisShopifyPOSPersonalizableLineItemSelect()
+}
+
+function New_TervisShopifyPOSPersonalizableLineItemSelect () {
+    var $Cart = await Get_TervisShopifyCart()
+    var $PersonalizableLineItems = $Cart.line_items.filter(
+        $LineItem => $LineItem.sku.slice(-1) === "P"
     )
-    .fill($Start)
-    .map(
-        ($CurrentValue, $IndexOfCurrentValueInArray) => 
-        $CurrentValue + $IndexOfCurrentValueInArray * $Step
-    )  
+
+    var $SelectLineItemContent = New_TervisSelect({
+        $Title: "Select Line Item To Personalize",
+        $Options: $PersonalizableLineItems.map($LineItem => ({Value: $PersonalizableLineItems.indexOf($LineItem), Text: $LineItem.title}) ),
+        $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
+    })
+
+    Set_ContainerContent({
+        $TargetElementSelector: "#LineItemSelectContainer",
+        $Content: $SelectLineItemContent
+    })
+}
+
+async function Receive_TervisPersonalizationLineItemSelectOnChange () {
+    New_TervisShopifyPOSPersonalizationFontSelect()
+}
+
+async function New_TervisShopifyPOSPersonalizationFontSelect() {
+    var $Cart = await Get_TervisShopifyCart()
+    var $SelectedLineItemIndex = $SelectedOptionNode.target.value
+    
+    var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
+    var {
+        $ProductSize,
+        $ProductFormType
+    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
+
+    Set_ContainerContent({
+        $TargetElementSelector: "#FontSelectContainer",
+        $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})
+    })
+}
+
+async function New_TervisPersonalizationFontPicker ({
+    $ProductSize,
+    $ProductFormType
+}) {
+    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+    var $FontNames = $ProductMetadata.Personalization.SupportedFontName
+    return New_TervisSelect({
+        $Title: "Font Name",
+        $Options: $FontNames.map( $FontName => ({Text: $FontName}) ),
+        $OnChange: Receive_TervisPersonalizationFontPickerOnChange
+    })
+}
+
+async function Receive_TervisPersonalizationFontPickerOnChange () {
+    New_TervisPersonalizationSideAndLineElement()
+}
+
+async function New_TervisPersonalizationSideAndLineElement () {
+    var $Font = Get_TervisPersonalizationSelectedFont()
+    var $Cart = await Get_TervisShopifyCart()
+    var $SelectedLineItemIndex = document.querySelector("#LineItemSelectContainer > select").value
+    var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
+    var {
+        $ProductSize,
+        $ProductFormType
+    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
+    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+    
+    var $Content = []
+    for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
+        if (!$Font.MonogramStyle) {
+            for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
+                var $ID = `Side${$SideNumber}Line${$LineNumber}`
+                $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: $Font.MaximumCharactersPerLine}))
+            }
+        } else {
+            for (var $CharacterNumber of New_Range({$Start: 1, $Stop: $Font.MaximumCharacters})) {
+                var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
+                $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
+            }
+        }
+    }
+    
+    Set_ContainerContent({$TargetElementSelector: "#LineTextBoxContainer", $Content})
+}
+
+function Get_TervisPersonalizationSelectedFont () {
+    var $FontName = document.querySelector("#FontSelectContainer > select").value
+    return $FontMetaData[$FontName]
 }
 
 var $FontMetaData = {
@@ -81,6 +162,8 @@ var $FontMetaData = {
     }
 }
 
+var $MonogramValidCharactersPatternAttributeRegex = "[a-zA-Z]*"
+
 function New_InputText ({
     $ID,
     $PlaceHolder,
@@ -100,40 +183,6 @@ function New_InputText ({
         @change=${$OnChange}
     />
     `
-}
-
-async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionNode) {
-    var $FontName = $SelectedOptionNode.target.value
-    var $Font = $FontMetaData[$FontName]
-    var $Cart = await Get_ShopifyCart()
-    var $SelectedLineItemIndex = document.querySelector("#LineItemSelectContainer > select").value
-    var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
-    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-    
-    var $MonogramValidCharactersPatternAttributeRegex = "[a-zA-Z]*"
-
-    var $Content = []
-    for (var $SideNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
-        if (!$Font.MonogramStyle) {
-            for (var $LineNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
-                var $ID = `Side${$SideNumber}Line${$LineNumber}`
-                $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: $Font.MaximumCharactersPerLine}))
-            }
-        } else {
-            for (var $CharacterNumber of Get_Range({$Start: 1, $Stop: $Font.MaximumCharacters})) {
-                var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
-                $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
-            }
-        }
-    }
-    
-    Set_ContainerContent({$TargetElementSelector: "#LineTextBoxContainer", $Content})
-    
-    //trigger rerender of the lines controls as based on the font there will be different numbers of lines available/characters available for monogram
 }
 
 function New_TervisSelect ({
@@ -156,19 +205,6 @@ function New_TervisSelect ({
     `
 }
 
-async function New_TervisPersonalizationFontPicker ({
-    $ProductSize,
-    $ProductFormType
-}) {
-    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-    var $FontNames = $ProductMetadata.Personalization.SupportedFontName
-    return New_TervisSelect({
-        $Title: "Font Name",
-        $Options: $FontNames.map( $FontName => ({Text: $FontName}) ),
-        $OnChange: Receive_TervisPersonalizationFontPickerOnChange
-    })
-}
-
 function Set_ContainerContent ({
     $TargetElementSelector,
     $Content
@@ -180,52 +216,16 @@ function Set_ContainerContent ({
     )
 }
 
-// Set_ContainerContent({
-//     $TargetElementSelector: "#FontSelectContainer",
-//     $Content: html`Key ${$SelectedLineItemKey} Json: ${JSON.stringify($Cart.line_items)}`
-// })
 
-async function Receive_TervisPersonalizationLineItemSelectOnChange ($SelectedOptionNode) {
-    var $Cart = await Get_ShopifyCart()
-    var $SelectedLineItemIndex = $SelectedOptionNode.target.value
-    
-    var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
-
-    Set_ContainerContent({
-        $TargetElementSelector: "#FontSelectContainer",
-        $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})
-    })
-}
-
-function Initialize_TervisPersonalizationFormStructure ({
-    $TargetElementSelector
+// Refactor to TervisShopifyPOS module
+function ConvertFrom_TervisShopifyPOSProductTitle ({
+    $ProductTitle
 }) {
-    Set_ContainerContent({
-        $TargetElementSelector,
-        $Content: html`
-            <div id="FontSelectContainer"></div>
-            <div id="LineTextBoxContainer"></div>
-        `
-    })
+    var [,$ProductFormType,,,$ProductSize] = $ProductTitle.split(".")
+    return {$ProductSize, $ProductFormType}
 }
 
-function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
-    Set_ContainerContent({
-        $TargetElementSelector: "#content",
-        $Content: html`
-            <div id="LineItemSelectContainer"></div>
-            <div id="PersonalizationFormContainer"></div>
-        `
-    })
-
-    Initialize_TervisPersonalizationFormStructure({$TargetElementSelector: "#PersonalizationFormContainer"})
-}
-
-async function Get_ShopifyCart () {
+async function Get_TervisShopifyCart () {
     return new Promise((resolve, reject) => {
         if (typeof ShopifyPOS !== 'undefined') {
             ShopifyPOS.fetchCart({
@@ -250,170 +250,8 @@ async function Get_ShopifyCart () {
 }
 
 
-async function Receive_ShopifyPOSPersonalizationCart ( $Cart ) {
-    var $PersonalizableLineItems = $Cart.line_items.filter(
-        $LineItem => $LineItem.sku.slice(-1) === "P"
-    )
-
-    var $SelectLineItemContent = New_TervisSelect({
-        $Title: "Select Line Item To Personalize",
-        $Options: $PersonalizableLineItems.map($LineItem => ({Value: $PersonalizableLineItems.indexOf($LineItem), Text: $LineItem.title}) ),
-        $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
-    })
-
-    Set_ContainerContent({
-        $TargetElementSelector: "#LineItemSelectContainer",
-        $Content: $SelectLineItemContent
-    })
-
-
-    // Set_ContainerContent({
-    //     $TargetElementSelector: "#content",
-    //     $Content: html`Hello World ${JSON.stringify($ContentArray)}`
-    // })
-
-    // if(!$Cart.line_items) {
-    //     ShopifyPOS.flashError("You have no items in your cart.")
-    //     ShopifyPOS.Modal.close()
-    // }
-
-    // var personalizeItConfig = getPersonalizeItConfig();
-
-    // for (var i in $Cart.line_items) {
-    //     var hash = getItemHash($Cart.line_items[i]);
-    //     $('#property-editor tr').last().before("<tr><td colspan=3>" + $Cart.line_items[i].title + "</td></tr>");
-
-    //     //  Set up font
-    //     let fontNames = [];
-    //     personalizeItConfig.fonts.forEach(font => fontNames.push(font.name));
-    //     $(`<tr><td><select required class=item-${i} id="${i}-font"><option value=""></option></select>`)
-    //         .insertBefore($('#property-editor tr').last());
-    //     // console.log(s);
-    //     fontNames.forEach( fontName => {
-    //         $("<option />", {value: fontName, text: fontName})
-    //             .appendTo($(`#${i}-font`));
-    //     });
-
-    //     // Set up color
-    //     let colorNames = [];
-    //     personalizeItConfig.colors.forEach(color => colorNames.push(color.name));
-    //     $(`<tr><td><select required class=item-${i} id="${i}-color"><option value=""></option></select>`)
-    //         .insertBefore($('#property-editor tr').last());
-    //     // console.log(s);
-    //     colorNames.forEach( colorName => {
-    //         $("<option />", {value: colorName, text: colorName})
-    //             .appendTo($(`#${i}-color`));
-    //     });
-
-    //     // Based on font and cup, add text lines
-    //     // Get cup props
-    //     // Add text lines per cup props
-
-
-    //     var properties = ["Text"];
-    //     for (var j = 0; j < properties.length; ++j) {
-    //         $("<tr><td><input class='item-" + i + "' type='text' placeholder='" + properties[j] + "'/></td></tr>")
-    //             .insertBefore($('#property-editor tr').last())
-    //             .find("input")
-    //             .val(hash[properties[j]]);
-    //     }
-    // }
-
-    // $('#save-button').click(function() {
-    //     $('button, input').prop('disabled', true);
-    //     var additions = [];
-    //     var removals = [];
-
-    //     for (var i in $Cart.line_items) {
-    //         var newHash = {};
-    //         var oldHash = getItemHash($Cart.line_items[i]);
-    //         var toRemove = [];
-    //         $('.item-' + i).each(function() {
-    //             var key = $(this).attr('placeholder');
-    //             if ($(this).val() != '' && oldHash[key] != $(this).val())
-    //                 newHash[key] = $(this).val();
-    //             else if (oldHash[key] && $(this).val() == '') {
-    //                 toRemove.push(key);
-    //             }
-    //         });
-    //         if (toRemove.length > 0)
-    //             removals.push({ index: i, removals: toRemove });
-    //         if (Object.keys(newHash).length > 0)
-    //             additions.push({ index: i, additions: newHash });
-    //     }
-
-    //     var totalToDo = additions.length + removals.length;
-    //     var errorList = [];
-
-    //     var onFinish = function() {
-    //         if (errorList.length == 0) {
-    //                 ShopifyPOS.flashNotice("Successfully modified line item properties!");
-    //         } else {
-    //                 ShopifyPOS.flashNotice("Error updating properties: " + JSON.stringify(errorList));
-    //         }
-    //         ShopifyPOS.Modal.close();
-    //     };
-
-
-    //     if (totalToDo == 0) {
-    //         onFinish();
-    //     } else {
-    //         for (var i = 0; i < additions.length; ++i) {
-    //             $Cart.addLineItemProperties(parseInt(additions[i].index), additions[i].additions, {
-    //                 success: function($Cart) {
-    //                     if (--totalToDo == 0)
-    //                         onFinish()
-    //                 },
-    //                 error: function(errors) {
-    //                     errorList.push(errors);
-    //                     if (--totalToDo == 0)
-    //                         onFinish();
-    //                 }
-    //             });
-    //         }
-    //         for (var i = 0; i < removals.length; ++i) {
-    //             $Cart.removeLineItemProperties(parseInt(removals[i].index), removals[i].removals, {
-    //                 success: function($Cart) {
-    //                     if (--totalToDo == 0)
-    //                         onFinish();
-    //                 },
-    //                 error: function(errors) {
-    //                     errorList.push(errors);
-    //                     if (--totalToDo == 0)
-    //                         onFinish();
-    //                 }
-    //             });
-    //         }
-    //     }
-    // });
-}
-
-
-
-// ShopifyPOS.fetchCart({
-//     success: Receive_ShopifyPOSPersonalizationCart
-// });
-
-async function main () {
-    Initialize_TervisShopifyPOSPersonalizationFormStructure()
-    var $Cart = await Get_ShopifyCart()
-    Receive_ShopifyPOSPersonalizationCart($Cart)
-}
-
 main ()
 
-// function getItemHash(item) {
-//     var oldHash = {};
-//     if (item.properties) {
-//         for (var j = 0; j < item.properties.length; ++j) {
-//             oldHash[item.properties[j].name]= item.properties[j].value;
-//         }
-//     }
-//     return oldHash;
-// }
-
-
-// var $ProductMetaData = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
 
 // function getPersonalizeItConfig() {
 //     return {
