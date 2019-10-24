@@ -88,12 +88,14 @@ var $FontMetaData = {
 function New_InputText ({
     $ID,
     $PlaceHolder,
+    $MaxLength,
     $OnChange
 }) {
     return html`
     <input
         id="${$ID}"
         type="text"
+        maxlength="${$MaxLength}"
         placeholder="${$PlaceHolder}"
         @change=${$OnChange}
     />
@@ -117,7 +119,7 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionN
         if (!$Font.MonogramStyle) {
             for (var $LineNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
                 var $ID = `Side${$SideNumber}Line${$LineNumber}`
-                $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
+                $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: $Font.MaximumCharactersPerLine}))
             }
         } else {
             for (var $CharacterNumber of Get_Range({$Start: 1, $Stop: $Font.MaximumCharacters})) {
