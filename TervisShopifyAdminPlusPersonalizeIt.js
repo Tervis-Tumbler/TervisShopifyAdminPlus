@@ -74,10 +74,7 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
 }
 
 async function New_TervisShopifyPOSPersonalizationFontSelect() {
-    var $Cart = await Get_TervisShopifyCart()
-    var $SelectedLineItemIndex = $SelectedOptionNode.target.value
-    
-    var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
+    var $SelectedLineItem = Get_TervisShopifyPOSSPersonalizableLineItemSelected()
     var {
         $ProductSize,
         $ProductFormType
@@ -87,6 +84,12 @@ async function New_TervisShopifyPOSPersonalizationFontSelect() {
         $TargetElementSelector: "#FontSelectContainer",
         $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})
     })
+}
+
+function Get_TervisShopifyPOSSPersonalizableLineItemSelected () {
+    var $Cart = await Get_TervisShopifyCart()
+    var $SelectedLineItemIndex = document.querySelector("#LineItemSelectContainer > select").value
+    return $Cart.line_items[$SelectedLineItemIndex]
 }
 
 async function New_TervisPersonalizationFontPicker ({
