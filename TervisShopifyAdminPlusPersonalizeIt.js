@@ -112,31 +112,33 @@ async function Receive_TervisPersonalizationFontPickerOnChange () {
 
 async function New_TervisPersonalizationSideAndLineElement () {
     var $Font = Get_TervisPersonalizationSelectedFont()
-    var $Cart = await Get_TervisShopifyCart()
-    var $SelectedLineItemIndex = document.querySelector("#LineItemSelectContainer > select").value
-    var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
-    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-    
-    var $Content = []
-    for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
-        if (!$Font.MonogramStyle) {
-            for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
-                var $ID = `Side${$SideNumber}Line${$LineNumber}`
-                $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: $Font.MaximumCharactersPerLine}))
-            }
-        } else {
-            for (var $CharacterNumber of New_Range({$Start: 1, $Stop: $Font.MaximumCharacters})) {
-                var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
-                $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
+    if ($Font) {
+        var $Cart = await Get_TervisShopifyCart()
+        var $SelectedLineItemIndex = document.querySelector("#LineItemSelectContainer > select").value
+        var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
+        var {
+            $ProductSize,
+            $ProductFormType
+        } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
+        var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+        
+        var $Content = []
+        for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
+            if (!$Font.MonogramStyle) {
+                for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
+                    var $ID = `Side${$SideNumber}Line${$LineNumber}`
+                    $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: $Font.MaximumCharactersPerLine}))
+                }
+            } else {
+                for (var $CharacterNumber of New_Range({$Start: 1, $Stop: $Font.MaximumCharacters})) {
+                    var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
+                    $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
+                }
             }
         }
+        
+        Set_ContainerContent({$TargetElementSelector: "#LineTextBoxContainer", $Content})    
     }
-    
-    Set_ContainerContent({$TargetElementSelector: "#LineTextBoxContainer", $Content})
 }
 
 // Replace with optional chaining once that has browser support https://github.com/tc39/proposal-optional-chaining
