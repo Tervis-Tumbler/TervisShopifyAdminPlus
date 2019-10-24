@@ -51,7 +51,7 @@ async function Receive_ShopifyPOSPersonalizationCart () {
     New_TervisShopifyPOSPersonalizableLineItemSelect()
 }
 
-function New_TervisShopifyPOSPersonalizableLineItemSelect () {
+async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
     var $Cart = await Get_TervisShopifyCart()
     var $PersonalizableLineItems = $Cart.line_items.filter(
         $LineItem => $LineItem.sku.slice(-1) === "P"
