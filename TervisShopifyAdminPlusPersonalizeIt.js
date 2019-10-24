@@ -42,7 +42,7 @@ function Get_Range ({
     $Stop,
     $Step = 1
 }) {
-    $Star = Number($Start)
+    $Start = Number($Start)
     $Stop = Number($Stop)
     $Step = Number($Step)
     
