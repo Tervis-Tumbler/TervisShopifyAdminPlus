@@ -99,9 +99,9 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionN
     var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
     
     var $Content = []
-    for (var $SideNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.MaximumSideCount})) {
+    for (var $SideNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
         if (!$Font.MonogramStyle) {
-            for (var $LineNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.MaximumLineCount})) {
+            for (var $LineNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
                 var $ID = `Side${$SideNumber}Line${$LineNumber}`
                 $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
             }
