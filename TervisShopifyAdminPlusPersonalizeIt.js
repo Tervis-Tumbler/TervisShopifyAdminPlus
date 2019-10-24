@@ -122,8 +122,7 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionN
         } else {
             for (var $CharacterNumber of Get_Range({$Start: 1, $Stop: $Font.MaximumCharacters})) {
                 var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
-                var $Required = $Font.AllCharactersRequired
-                $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $Required}))
+                $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
             }
         }
     }
