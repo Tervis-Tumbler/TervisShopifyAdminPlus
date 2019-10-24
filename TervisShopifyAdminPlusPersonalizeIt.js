@@ -86,15 +86,17 @@ function New_InputText ({
     $PlaceHolder,
     $MaxLength,
     $Required,
+    $Pattern,
     $OnChange
 }) {
     return html`
     <input
-        id="${$ID}"
+        id="${ifDefined($ID)}"
         type="text"
-        maxlength="${$MaxLength}"
+        maxlength="${ifDefined($MaxLength)}"
         ?required=${$Required}
-        placeholder="${$PlaceHolder}"
+        pattern="${ifDefined($Pattern)}"
+        placeholder="${ifDefined($PlaceHolder)}"
         @change=${$OnChange}
     />
     `
@@ -112,6 +114,8 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionN
     } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
     var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
     
+    var $MonogramValidCharactersPatternAttributeRegex = "[a-zA-Z]*"
+
     var $Content = []
     for (var $SideNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
         if (!$Font.MonogramStyle) {
