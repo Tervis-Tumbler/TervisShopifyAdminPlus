@@ -74,7 +74,7 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
 }
 
 async function New_TervisShopifyPOSPersonalizationFontSelect() {
-    var $SelectedLineItem = Get_TervisShopifyPOSSPersonalizableLineItemSelected()
+    var $SelectedLineItem = await Get_TervisShopifyPOSSPersonalizableLineItemSelected()
     var {
         $ProductSize,
         $ProductFormType
@@ -86,7 +86,7 @@ async function New_TervisShopifyPOSPersonalizationFontSelect() {
     })
 }
 
-function Get_TervisShopifyPOSSPersonalizableLineItemSelected () {
+async function Get_TervisShopifyPOSSPersonalizableLineItemSelected () {
     var $Cart = await Get_TervisShopifyCart()
     var $SelectedLineItemIndex = document.querySelector("#LineItemSelectContainer > select").value
     return $Cart.line_items[$SelectedLineItemIndex]
