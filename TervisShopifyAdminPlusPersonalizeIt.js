@@ -36,8 +36,59 @@ function ConvertFrom_TervisShopifyPOSProductTitle ({
 //     `
 // }
 
+//https://stackoverflow.com/a/44957114/101679
+function Get_Range ({ 
+    $Start,
+    $Stop,
+    $Step = 1
+}) {
+    Array(Math.ceil(($Stop - $Start) / $Step)).fill($Start).map((x, y) => x + y * $Step)  
+}
+
+var $FontMetaData = {
+    "Script": {
+        "MinimumCharactersPerLine": "0",
+        "MaximumCharactersPerLine": "13"
+    },
+    "Block U/L": {
+        "MinimumCharactersPerLine": "0",
+        "MaximumCharactersPerLine": "13"
+    },
+    "Monogram": {
+        "MonogramStyle": true,
+        "MinimumCharacters": "3",
+        "MaximumCharacters": "3"
+    },
+    "Initials Block": {
+        "MonogramStyle": true,
+        "MinimumCharacters": "0",
+        "MaximumCharacters": "3"
+    },
+    "Initials Script": {
+        "MonogramStyle": true,
+        "MinimumCharacters": "0",
+        "MaximumCharacters": "3"
+    }
+}
+
+function New_InputText ({
+    $ID,
+    $PlaceHolder,
+    $OnChange
+}) {
+    return html`
+    <input
+        id="${$ID}"
+        type="text"
+        placeholder="${$PlaceHolder}"
+        @change=${$OnChange}
+    />
+    `
+}
+
 async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionNode) {
     var $FontName = $SelectedOptionNode.target.value
+    var $Font = $FontMetaData[$FontName]
     var $Cart = await Get_ShopifyCart()
     var $SelectedLineItemIndex = document.querySelector("#LineItemSelectContainer > select").value
     var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
@@ -46,10 +97,25 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionN
         $ProductFormType
     } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
     var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-
+    
+    $Content = []
+    for (var $SideNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.MaximumSideCount})) {
+        if (!$Font.MonogramStyle) {
+            for (var $LineNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.MaximumLineCount})) {
+                var $ID = `Side${$SideNumber}Line${$LineNumber}`
+                $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
+            }
+        } else {
+            for (var $CharacterNumber of Get_Range({$Start: 1, $Stop: $Font.MaximumCharacters})) {
+                var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
+                $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
+            }
+        }
+    }
+    
+    Set_ContainerContent({$TargetElementSelector: "#LineTextBoxContainer", $Content})
+    
     //trigger rerender of the lines controls as based on the font there will be different numbers of lines available/characters available for monogram
-
-
 }
 
 function New_TervisSelect ({
