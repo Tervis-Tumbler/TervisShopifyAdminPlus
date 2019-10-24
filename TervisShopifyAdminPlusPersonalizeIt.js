@@ -42,6 +42,10 @@ function Get_Range ({
     $Stop,
     $Step = 1
 }) {
+    $Star = Number($Start)
+    $Stop = Number($Stop)
+    $Step = Number($Step)
+    
     return Array(
         Math
         .ceil(
