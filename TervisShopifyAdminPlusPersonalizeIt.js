@@ -98,7 +98,7 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionN
     } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
     var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
     
-    $Content = []
+    var $Content = []
     for (var $SideNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.MaximumSideCount})) {
         if (!$Font.MonogramStyle) {
             for (var $LineNumber of Get_Range({$Start: 1, $Stop: $ProductMetadata.MaximumLineCount})) {
