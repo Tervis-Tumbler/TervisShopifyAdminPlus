@@ -42,7 +42,17 @@ function Get_Range ({
     $Stop,
     $Step = 1
 }) {
-    return Array(Math.ceil(($Stop - $Start) / $Step)).fill($Start).map((x, y) => x + y * $Step)  
+    return Array(
+        Math
+        .ceil(
+            (($Stop + 1) - $Start) / $Step
+        )
+    )
+    .fill($Start)
+    .map(
+        ($CurrentValue, $IndexOfCurrentValueInArray) => 
+        $CurrentValue + $IndexOfCurrentValueInArray * $Step
+    )  
 }
 
 var $FontMetaData = {
