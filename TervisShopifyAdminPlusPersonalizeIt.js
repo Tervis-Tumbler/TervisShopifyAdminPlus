@@ -71,6 +71,7 @@ async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
 
 async function Receive_TervisPersonalizationLineItemSelectOnChange () {
     New_TervisShopifyPOSPersonalizationFontSelect()
+    New_TervisPersonalizationSideAndLineElement()
 }
 
 async function New_TervisShopifyPOSPersonalizationFontSelect() {
