@@ -61,26 +61,22 @@ function Get_Range ({
 
 var $FontMetaData = {
     "Script": {
-        "MinimumCharactersPerLine": "0",
         "MaximumCharactersPerLine": "13"
     },
     "Block U/L": {
-        "MinimumCharactersPerLine": "0",
         "MaximumCharactersPerLine": "13"
     },
     "Monogram": {
         "MonogramStyle": true,
-        "MinimumCharacters": "3",
+        "AllCharactersRequired": true,
         "MaximumCharacters": "3"
     },
     "Initials Block": {
         "MonogramStyle": true,
-        "MinimumCharacters": "0",
         "MaximumCharacters": "3"
     },
     "Initials Script": {
         "MonogramStyle": true,
-        "MinimumCharacters": "0",
         "MaximumCharacters": "3"
     }
 }
@@ -89,6 +85,7 @@ function New_InputText ({
     $ID,
     $PlaceHolder,
     $MaxLength,
+    $Required,
     $OnChange
 }) {
     return html`
@@ -96,6 +93,7 @@ function New_InputText ({
         id="${$ID}"
         type="text"
         maxlength="${$MaxLength}"
+        ?required=${$Required}
         placeholder="${$PlaceHolder}"
         @change=${$OnChange}
     />
@@ -124,7 +122,8 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($SelectedOptionN
         } else {
             for (var $CharacterNumber of Get_Range({$Start: 1, $Stop: $Font.MaximumCharacters})) {
                 var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
-                $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
+                var $Required = $Font.AllCharactersRequired
+                $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $Required}))
             }
         }
     }
