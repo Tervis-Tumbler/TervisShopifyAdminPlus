@@ -212,7 +212,7 @@ function Get_TervisPersonalizationSelectedFontName () {
 
 function Get_TervisPersonalizationSelectedFontMetadata () {
     var $FontName = Get_TervisPersonalizationSelectedFontName()
-    $FontMetadata = $FontMetadataHashtable[$FontName]
+    var $FontMetadata = $FontMetadataHashtable[$FontName]
     $FontMetadata.Name = $FontName
     return $FontMetadata
 }
