@@ -74,8 +74,14 @@ async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
 }
 
 async function Receive_TervisPersonalizationLineItemSelectOnChange () {
-    await New_TervisShopifyPOSPersonalizationFontSelect()
-    await New_TervisPersonalizationSideAndLineElement()
+    var $Cart = await Get_TervisShopifyCart()
+    Set_ContainerContent({
+        $TargetElementSelector: "#FontSelectContainer",
+        $Content: html`${JSON.stringify($Cart)}`
+    })
+
+    // await New_TervisShopifyPOSPersonalizationFontSelect()
+    // await New_TervisPersonalizationSideAndLineElement()
 }
 
 async function New_TervisShopifyPOSPersonalizationFontSelect() {
