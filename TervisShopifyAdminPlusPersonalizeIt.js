@@ -157,7 +157,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
     
     $Cart.addLineItemProperties(
         $LineItemIndex,
-        ...$PersonalizationProperties
+        $PersonalizationProperties
     )
 }
 
@@ -304,33 +304,46 @@ function ConvertFrom_TervisShopifyPOSProductTitle ({
     return {$ProductSize, $ProductFormType}
 }
 
+if (typeof ShopifyPOS === 'undefined') {
+    var ShopifyPOS = {
+        fetchCart: function ({
+            success,
+            error
+        }) {
+            success(
+                {
+                    line_items: [
+                        {
+                            title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
+                            sku: "1001837P"
+                        },
+                        {
+                            title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
+                            sku: "1001842P"
+                        }
+                    ],
+                    addLineItemProperties: function (
+                        $LineItemIndex,
+                        $Properties
+                    ) {
+                        localStorage.setItem($LineItemIndex, $Properties)
+                    }
+                }
+            )
+        }
+    }
+}
+
 async function Get_TervisShopifyCart () {
     return new Promise((resolve, reject) => {
-        if (typeof ShopifyPOS !== 'undefined') {
-            ShopifyPOS.fetchCart({
-                success: resolve,
-                error: reject
-            })
-        } else {
-            resolve({
-                line_items: [
-                    {
-                        title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
-                        sku: "1001837P"
-                    },
-                    {
-                        title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
-                        sku: "1001842P"
-                    }
-                ]
-            })
-        }
+        ShopifyPOS.fetchCart({
+            success: resolve,
+            error: reject
+        })
     })
 }
 
-
 main ()
-
 
 // function getPersonalizeItConfig() {
 //     return {
