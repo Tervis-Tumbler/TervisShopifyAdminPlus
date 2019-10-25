@@ -139,10 +139,8 @@ async function New_TervisPersonalizationSideAndLineElement () {
                     $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: $FontMetadata.MaximumCharactersPerLine}))
                 }
             } else {
-                for (var $CharacterNumber of New_Range({$Start: 1, $Stop: $FontMetadata.MaximumCharacters})) {
-                    var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
-                    $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: 1}))
-                }
+                var $ID = `Side${$SideNumber}Line1`
+                $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: 3}))
             }
         }
         
@@ -183,12 +181,10 @@ async function Get_TervisPersonalizationFormProperties () {
                 }
             }
         } else {
-            for (var $CharacterNumber of New_Range({$Start: 1, $Stop: $FontMetadata.MaximumCharacters})) {
-                var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
-                var $Value = Get_ElementPropertyValue({$PropertyName: "value", $QuerySelector: `#${$ID}`})
-                if ($Value) {
-                    $Properties[$ID] = $Value
-                }
+            var $ID = `Side${$SideNumber}Line1`
+            var $Value = Get_ElementPropertyValue({$PropertyName: "value", $QuerySelector: `#${$ID}`})
+            if ($Value) {
+                $Properties[$ID] = $Value
             }
         }
     }
