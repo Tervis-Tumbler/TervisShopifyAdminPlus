@@ -153,7 +153,7 @@ async function New_TervisPersonalizationSideAndLineElement () {
 async function Invoke_TervisShopifyPOSPersonalizationSave () {
     var $Cart = await Get_TervisShopifyCart()
     var $LineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
-    var $PersonalizationProperties = Get_TervisPersonalizationFormProperties()  
+    var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()  
     
     $Cart.addLineItemProperties(
         $LineItemIndex,
@@ -161,7 +161,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
     )
 }
 
-function Get_TervisPersonalizationFormProperties () {
+async function Get_TervisPersonalizationFormProperties () {
     var $SelectedLineItem = Get_TervisShopifyPOSLineItemSelected()
     var {
         $ProductSize,
