@@ -150,7 +150,7 @@ async function New_TervisPersonalizationSideAndLineElement () {
     }
 }
 
-function Invoke_TervisShopifyPOSPersonalizationSave () {
+async function Invoke_TervisShopifyPOSPersonalizationSave () {
     var $Cart = await Get_TervisShopifyCart()
     var $LineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
     var $PersonalizationProperties = Get_TervisPersonalizationFormProperties()  
