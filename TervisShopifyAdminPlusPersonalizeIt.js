@@ -52,12 +52,7 @@ function Initialize_TervisPersonalizationFormStructure ({
 }
 
 async function Receive_ShopifyPOSPersonalizationCart () {
-    var $Cart = await Get_TervisShopifyCart()
-    Set_ContainerContent({
-        $TargetElementSelector: "#FontSelectContainer",
-        $Content: html`${JSON.stringify($Cart)}`
-    })
-    // New_TervisShopifyPOSPersonalizableLineItemSelect()
+    New_TervisShopifyPOSPersonalizableLineItemSelect()
 }
 
 async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
