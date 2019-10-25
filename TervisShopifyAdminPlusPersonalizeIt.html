@@ -4,9 +4,51 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" /> -->
 
 
-<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.77?module"></script>
-<div id="content">
+<div id="content"></div>
+<script type="module">
+    var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)
+    if (isChrome) {
+        var ShopifyPOS = {
+            fetchCart: function ({
+                success,
+                error
+            }) {
+                success(
+                    {
+                        line_items: [
+                            {
+                                title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
+                                sku: "1001837P"
+                            },
+                            {
+                                title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
+                                sku: "1001842P"
+                            }
+                        ],
+                        addLineItemProperties: function (
+                            $LineItemIndex,
+                            $Properties
+                        ) {
+                            localStorage.setItem($LineItemIndex, JSON.stringify($Properties, undefined, 2))
+                        }
+                    }
+                )
+            }
+        }
+    }
 
+    async function Get_TervisShopifyCart () {
+        return new Promise((resolve, reject) => {
+            ShopifyPOS.fetchCart({
+                success: resolve,
+                error: reject
+            })
+        })
+    }
+    window.Get_TervisShopifyCart = Get_TervisShopifyCart
+</script>
+
+<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.79?module"></script>
 
 <!-- <script>
 ShopifyPOS.fetchCart({
@@ -27,3 +69,12 @@ $ContentElement.innerHTML = JSON.stringify({thing: "true"})
 </script>
 
 <script>document.write(JSON.stringify(ShopifyPOS))</script>  -->
+
+<!-- <script type="module">
+ShopifyPOS.fetchCart({
+    success: function(cart) {
+        var $ContentElement = document.querySelector("#content")
+        $ContentElement.innerHTML = JSON.stringify(cart)
+    }
+})
+</script> -->

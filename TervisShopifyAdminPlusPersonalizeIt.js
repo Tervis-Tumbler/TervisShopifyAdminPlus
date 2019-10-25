@@ -305,46 +305,6 @@ function ConvertFrom_TervisShopifyPOSProductTitle ({
     return {$ProductSize, $ProductFormType}
 }
 
-var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)
-if (isChrome) {
-    var ShopifyPOS = {
-        fetchCart: function ({
-            success,
-            error
-        }) {
-            success(
-                {
-                    line_items: [
-                        {
-                            title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
-                            sku: "1001837P"
-                        },
-                        {
-                            title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
-                            sku: "1001842P"
-                        }
-                    ],
-                    addLineItemProperties: function (
-                        $LineItemIndex,
-                        $Properties
-                    ) {
-                        localStorage.setItem($LineItemIndex, JSON.stringify($Properties, undefined, 2))
-                    }
-                }
-            )
-        }
-    }
-}
-
-async function Get_TervisShopifyCart () {
-    return new Promise((resolve, reject) => {
-        ShopifyPOS.fetchCart({
-            success: resolve,
-            error: reject
-        })
-    })
-}
-
 main ()
 
 // function getPersonalizeItConfig() {
