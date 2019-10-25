@@ -326,7 +326,7 @@ if (typeof ShopifyPOS === 'undefined') {
                         $LineItemIndex,
                         $Properties
                     ) {
-                        localStorage.setItem($LineItemIndex, $Properties)
+                        localStorage.setItem($LineItemIndex, JSON.stringify($Properties, undefined, 2))
                     }
                 }
             )
