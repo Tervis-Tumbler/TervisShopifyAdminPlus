@@ -33,6 +33,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                 type="button"
                 @click=${Invoke_TervisShopifyPOSPersonalizationSave}
             >Save</button>
+            <div id="Debug"></div>
         `
     })
 
@@ -55,11 +56,11 @@ async function Receive_ShopifyPOSPersonalizationCart () {
 
     var $Cart = await Get_TervisShopifyCart()
     Set_ContainerContent({
-        $TargetElementSelector: "#FontSelectContainer",
+        $TargetElementSelector: "#Debug",
         $Content: html`${JSON.stringify($Cart)}`
     })
 
-    // New_TervisShopifyPOSPersonalizableLineItemSelect()
+    New_TervisShopifyPOSPersonalizableLineItemSelect()
 }
 
 async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
@@ -164,6 +165,11 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         $LineItemIndex,
         $PersonalizationProperties
     )
+
+    Set_ContainerContent({
+        $TargetElementSelector: "#Debug",
+        $Content: html`${JSON.stringify($Cart)}`
+    })
 }
 
 async function Get_TervisPersonalizationFormProperties () {
