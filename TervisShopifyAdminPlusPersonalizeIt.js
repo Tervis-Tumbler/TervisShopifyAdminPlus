@@ -129,6 +129,8 @@ async function Receive_TervisPersonalizationFontPickerOnChange () {
     New_TervisPersonalizationSideAndLineElement()
 }
 
+var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
+
 async function New_TervisPersonalizationSideAndLineElement () {
     var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
     if ($FontMetadata) {
@@ -148,7 +150,7 @@ async function New_TervisPersonalizationSideAndLineElement () {
                 }
             } else {
                 var $ID = `Side${$SideNumber}Line1`
-                $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: 3}))
+                $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: 3, $Pattern: $MonogramValidCharactersPatternAttributeRegex}))
             }
         }
         
@@ -249,8 +251,6 @@ var $FontMetadataHashtable = {
         "MaximumCharacters": "3"
     }
 }
-
-var $MonogramValidCharactersPatternAttributeRegex = "[a-zA-Z]*"
 
 function New_InputText ({
     $ID,
