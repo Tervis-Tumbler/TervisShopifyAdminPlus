@@ -141,7 +141,7 @@ async function New_TervisPersonalizationSideAndLineElement () {
             } else {
                 for (var $CharacterNumber of New_Range({$Start: 1, $Stop: $FontMetadata.MaximumCharacters})) {
                     var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
-                    $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
+                    $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: 1}))
                 }
             }
         }
