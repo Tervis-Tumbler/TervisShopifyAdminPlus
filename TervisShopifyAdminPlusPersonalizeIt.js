@@ -27,13 +27,15 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
     Set_ContainerContent({
         $TargetElementSelector: "#content",
         $Content: html`
-            <div id="LineItemSelectContainer"></div>
-            <div id="PersonalizationFormContainer"></div>
-            <button
-                type="button"
-                @click=${Invoke_TervisShopifyPOSPersonalizationSave}
-            >Save</button>
-            <div id="Debug"></div>
+            <form id="ShopifyPOSPersonalizationForm">
+                <div id="LineItemSelectContainer"></div>
+                <div id="PersonalizationFormContainer"></div>
+                <button
+                    type="button"
+                    @click=${Invoke_TervisShopifyPOSPersonalizationSave}
+                >Save</button>
+                <div id="Debug"></div>
+            </form>
         `
     })
 
@@ -159,19 +161,21 @@ async function New_TervisPersonalizationSideAndLineElement () {
 }
 
 async function Invoke_TervisShopifyPOSPersonalizationSave () {
-    var $Cart = await Get_TervisShopifyCart()
-    var $LineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
-    var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()  
+    if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
+        var $Cart = await Get_TervisShopifyCart()
+        var $LineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
+        var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()  
+        
+        $Cart.addLineItemProperties(
+            $LineItemIndex,
+            $PersonalizationProperties
+        )
     
-    $Cart.addLineItemProperties(
-        $LineItemIndex,
-        $PersonalizationProperties
-    )
-
-    Set_ContainerContent({
-        $TargetElementSelector: "#Debug",
-        $Content: html`${JSON.stringify($Cart)}`
-    })
+        Set_ContainerContent({
+            $TargetElementSelector: "#Debug",
+            $Content: html`${JSON.stringify($Cart)}`
+        })
+    }
 }
 
 async function Get_TervisPersonalizationFormProperties () {
