@@ -29,6 +29,10 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
         $Content: html`
             <div id="LineItemSelectContainer"></div>
             <div id="PersonalizationFormContainer"></div>
+            <button
+                type="button"
+                @click=${Invoke_TervisShopifyPOSPersonalizationSave}
+            >Save</button>
         `
     })
 
@@ -75,7 +79,7 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
 }
 
 async function New_TervisShopifyPOSPersonalizationFontSelect() {
-    var $SelectedLineItem = await Get_TervisShopifyPOSSPersonalizableLineItemSelected()
+    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
     var {
         $ProductSize,
         $ProductFormType
@@ -87,10 +91,17 @@ async function New_TervisShopifyPOSPersonalizationFontSelect() {
     })
 }
 
-async function Get_TervisShopifyPOSSPersonalizableLineItemSelected () {
+async function Get_TervisShopifyPOSLineItemSelected () {
     var $Cart = await Get_TervisShopifyCart()
-    var $SelectedLineItemIndex = document.querySelector("#LineItemSelectContainer > select").value
+    var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
     return $Cart.line_items[$SelectedLineItemIndex]
+}
+
+function Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex () {
+    return Get_ElementPropertyValue({
+        $QuerySelector: "#LineItemSelectContainer > select",
+        $PropertyName: "value" 
+    })
 }
 
 async function New_TervisPersonalizationFontPicker ({
@@ -111,11 +122,9 @@ async function Receive_TervisPersonalizationFontPickerOnChange () {
 }
 
 async function New_TervisPersonalizationSideAndLineElement () {
-    var $Font = Get_TervisPersonalizationSelectedFont()
-    if ($Font) {
-        var $Cart = await Get_TervisShopifyCart()
-        var $SelectedLineItemIndex = document.querySelector("#LineItemSelectContainer > select").value
-        var $SelectedLineItem = $Cart.line_items[$SelectedLineItemIndex]
+    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
+    if ($FontMetadata) {
+        var $SelectedLineItem = Get_TervisShopifyPOSLineItemSelected()
         var {
             $ProductSize,
             $ProductFormType
@@ -124,13 +133,13 @@ async function New_TervisPersonalizationSideAndLineElement () {
         
         var $Content = []
         for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
-            if (!$Font.MonogramStyle) {
+            if (!$FontMetadata.MonogramStyle) {
                 for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
                     var $ID = `Side${$SideNumber}Line${$LineNumber}`
-                    $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: $Font.MaximumCharactersPerLine}))
+                    $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: $FontMetadata.MaximumCharactersPerLine}))
                 }
             } else {
-                for (var $CharacterNumber of New_Range({$Start: 1, $Stop: $Font.MaximumCharacters})) {
+                for (var $CharacterNumber of New_Range({$Start: 1, $Stop: $FontMetadata.MaximumCharacters})) {
                     var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
                     $Content.push(New_InputText({$ID, $PlaceHolder: $ID}))
                 }
@@ -139,6 +148,51 @@ async function New_TervisPersonalizationSideAndLineElement () {
         
         Set_ContainerContent({$TargetElementSelector: "#LineTextBoxContainer", $Content})    
     }
+}
+
+function Invoke_TervisShopifyPOSPersonalizationSave () {
+    var $Cart = await Get_TervisShopifyCart()
+    var $LineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
+    var $PersonalizationProperties = Get_TervisPersonalizationFormProperties()  
+    
+    $Cart.addLineItemProperties(
+        $LineItemIndex,
+        ...$PersonalizationProperties
+    )
+}
+
+function Get_TervisPersonalizationFormProperties () {
+    var $SelectedLineItem = Get_TervisShopifyPOSLineItemSelected()
+    var {
+        $ProductSize,
+        $ProductFormType
+    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
+    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+    
+    var $Properties = {}
+    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
+    $Properties.FontName = $FontMetadata.Name
+
+    for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
+        if (!$FontMetadata.MonogramStyle) {
+            for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
+                var $ID = `Side${$SideNumber}Line${$LineNumber}`
+                var $Value = Get_ElementPropertyValue({$PropertyName: "value", $QuerySelector: `#${$ID}`})
+                if ($Value) {
+                    $Properties[$ID] = $Value
+                }
+            }
+        } else {
+            for (var $CharacterNumber of New_Range({$Start: 1, $Stop: $FontMetadata.MaximumCharacters})) {
+                var $ID = `Side${$SideNumber}Character${$CharacterNumber}`
+                var $Value = Get_ElementPropertyValue({$PropertyName: "value", $QuerySelector: `#${$ID}`})
+                if ($Value) {
+                    $Properties[$ID] = $Value
+                }
+            }
+        }
+    }
+    return $Properties
 }
 
 // Replace with optional chaining once that has browser support https://github.com/tc39/proposal-optional-chaining
@@ -152,12 +206,18 @@ function Get_ElementPropertyValue ({
     undefined
 }
 
-function Get_TervisPersonalizationSelectedFont () {
-    var $FontName = Get_ElementPropertyValue({$QuerySelector: "#FontSelectContainer > select", $PropertyName: "value"})
-    return $FontMetaData[$FontName]
+function Get_TervisPersonalizationSelectedFontName () {
+    return Get_ElementPropertyValue({$QuerySelector: "#FontSelectContainer > select", $PropertyName: "value"})
 }
 
-var $FontMetaData = {
+function Get_TervisPersonalizationSelectedFontMetadata () {
+    var $FontName = Get_TervisPersonalizationSelectedFontName()
+    $FontMetadata = $FontMetadataHashtable[$FontName]
+    $FontMetadata.Name = $FontName
+    return $FontMetadata
+}
+
+var $FontMetadataHashtable = {
     "Script": {
         "MaximumCharactersPerLine": "13"
     },
