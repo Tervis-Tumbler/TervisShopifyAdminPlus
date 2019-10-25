@@ -124,7 +124,7 @@ async function Receive_TervisPersonalizationFontPickerOnChange () {
 async function New_TervisPersonalizationSideAndLineElement () {
     var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
     if ($FontMetadata) {
-        var $SelectedLineItem = Get_TervisShopifyPOSLineItemSelected()
+        var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
         var {
             $ProductSize,
             $ProductFormType
@@ -162,7 +162,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
 }
 
 async function Get_TervisPersonalizationFormProperties () {
-    var $SelectedLineItem = Get_TervisShopifyPOSLineItemSelected()
+    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
     var {
         $ProductSize,
         $ProductFormType
