@@ -188,6 +188,9 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()  
         var $NumberOfPersonalizedSides = Get_TervisPersonalizationNumberSides({$PersonalizationProperties})
+        var $LineItemProperties = $PersonalizationProperties
+
+        $LineItemProperties.RelatedLineItemSKU = $SelectedLineItem.sku
         
         var $Price
         if ($NumberOfPersonalizedSides === 1) {
@@ -208,7 +211,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         await Add_TervisShopifyCartLineItemProperties({
             $Cart,
             $LineItemIndex,
-            $LineItemProperties: $PersonalizationProperties
+            $LineItemProperties
         })
     
         Set_ContainerContent({
