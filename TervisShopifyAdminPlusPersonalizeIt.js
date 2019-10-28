@@ -109,7 +109,9 @@ async function New_TervisShopifyPOSPersonalizationFontSelect() {
         $Content: await New_TervisPersonalizationFontPicker({
             $ProductSize,
             $ProductFormType,
-            $SelectedFontName: $PersonalizationPropertiesFromLineItem.FontName
+            $SelectedFontName: $PersonalizationPropertiesFromLineItem ?
+                $PersonalizationPropertiesFromLineItem.FontName :
+                undefined
         })
     })
 }
