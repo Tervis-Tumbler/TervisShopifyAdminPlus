@@ -188,7 +188,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
             $Title: `Personalization for line item ${$SelectedLineItemIndex + 1} ${$SelectedLineItem.title}`
         })
 
-        var $LineItemIndex = $Cart.line_items.length + 1
+        var $LineItemIndex = $Cart.line_items.length
         
         await Add_TervisShopifyCartLineItemProperties({
             $Cart,
