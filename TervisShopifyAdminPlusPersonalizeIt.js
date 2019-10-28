@@ -268,7 +268,7 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
     $LineItem
 }) {
     var $Cart = await Get_TervisShopifyCart()
-    $PersonalizationChargeLineItem = $Cart.line_items.filter(
+    var $PersonalizationChargeLineItem = $Cart.line_items.filter(
         $CartLineItem => {
             if ($CartLineItem.properties) {
                 return $CartLineItem.properties.RelatedLineItemSKU === $LineItem.sku
