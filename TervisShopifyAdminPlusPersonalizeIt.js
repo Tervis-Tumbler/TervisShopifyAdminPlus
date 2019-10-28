@@ -177,7 +177,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         var $Price
         if ($NumberOfPersonalizedSides === 1) {
             $Price = 5
-        } else if ($NumberOfPersonalizedSides === 1) {
+        } else if ($NumberOfPersonalizedSides === 2) {
             $Price = 7.5
         }
 
@@ -193,7 +193,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         await Add_TervisShopifyCartLineItemProperties({
             $Cart,
             $LineItemIndex,
-            $PersonalizationProperties
+            $LineItemProperties: $PersonalizationProperties
         })
     
         Set_ContainerContent({
