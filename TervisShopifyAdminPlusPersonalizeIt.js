@@ -172,9 +172,9 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
         var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()  
-        var $NumberOfPersonalizedSides = Get_TervisPersonalizationNumberSides()
-        var $Price
+        var $NumberOfPersonalizedSides = Get_TervisPersonalizationNumberSides({$PersonalizationProperties})
         
+        var $Price
         if ($NumberOfPersonalizedSides === 1) {
             $Price = 5
         } else if ($NumberOfPersonalizedSides === 1) {
