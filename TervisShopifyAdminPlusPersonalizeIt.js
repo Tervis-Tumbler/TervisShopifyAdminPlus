@@ -96,7 +96,7 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
 
 async function New_TervisShopifyPOSPersonalizationFontSelect() {
     var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
-    var $PersonalizationPropertiesFromLineItem = Get_TervisShopifyPOSLineItemPersonalizationProperites({
+    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperites({
         $LineItem: $SelectedLineItem
     })
     var {
@@ -264,10 +264,20 @@ async function Get_TervisPersonalizationFormProperties () {
     return $Properties
 }
 
-function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
+async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
     $LineItem
 }) {
-    return $LineItem.properties
+    var $Cart = await Get_TervisShopifyCart()
+    $PersonalizationChargeLineItem = $Cart.line_items.filter(
+        $CartLineItem => {
+            if ($CartLineItem.properties) {
+                return $CartLineItem.properties.RelatedLineItemSKU === $LineItem.sku
+            }
+        }
+    )
+    return $PersonalizationChargeLineItem ?
+        $PersonalizationChargeLineItem.properties :
+        undefined
 }
 
 // Replace with optional chaining once that has browser support https://github.com/tc39/proposal-optional-chaining
