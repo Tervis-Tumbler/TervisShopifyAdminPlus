@@ -89,11 +89,16 @@
                         ],
                         addLineItemProperties: function (
                             $LineItemIndex,
-                            $Properties
+                            $Properties,
+                            {success, error}
                         ) {
                             this.line_items[$LineItemIndex].properties = $Properties
+                            success(this)
                         },
-                        addLineItem: function ( $LineItem, {success, error} ) {
+                        addLineItem: function ( 
+                            $LineItem,
+                            {success, error}
+                        ) {
                             this.line_items.push( $LineItem )
                             success(this)
                         }
@@ -104,4 +109,4 @@
     }
 </script>
 
-<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.89?module"></script>
+<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.90?module"></script>
