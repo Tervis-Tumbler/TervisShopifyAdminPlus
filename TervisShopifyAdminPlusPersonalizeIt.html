@@ -3,6 +3,69 @@
 
 <div id="content"></div>
 <script type="module">
+    import {
+        Remove_ObjectKeyWithEmptyOrNullValue
+    } from 'https://unpkg.com/@tervis/tervisutilityjs?module'
+
+    // Refactor these functions into separate module once we are no longer embedded using admin+
+    async function Get_TervisShopifyCart () {
+        return new Promise((resolve, reject) => {
+            ShopifyPOS.fetchCart({
+                success: resolve,
+                error: reject
+            })
+        })
+    }
+    window.Get_TervisShopifyCart = Get_TervisShopifyCart
+
+    // https://help.shopify.com/en/api/embedded-apps/shopify-pos-app-sdk/methods#add-line-item
+    async function Add_TervisShopifyCartLineItem ({
+        $Cart,
+        $Price,
+        $Quantity,
+        $Title,
+        $VariantID
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.addLineItem(
+                    Remove_ObjectKeyWithEmptyOrNullValue({
+                        price: $Price,
+                        quantity: $Quantity,
+                        title: $Title,
+                        variant_id: $VariantID
+                    }),
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Add_TervisShopifyCartLineItem = Add_TervisShopifyCartLineItem
+
+    // https://help.shopify.com/en/api/embedded-apps/shopify-pos-app-sdk/methods#add-line-item-properties
+    async function Add_TervisShopifyCartLineItemProperties ({
+        $Cart,
+        $LineItemIndex,
+        $LineItemProperties
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.addLineItemProperties(
+                    $LineItemIndex,
+                    $LineItemProperties,
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Add_TervisShopifyCartLineItemProperties = Add_TervisShopifyCartLineItemProperties
+    
     var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)
     if (isChrome) {
         var ShopifyPOS = {
@@ -15,34 +78,30 @@
                         line_items: [
                             {
                                 title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
-                                sku: "1001837P"
+                                sku: "1001837P",
+                                quantity: 3
                             },
                             {
                                 title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
-                                sku: "1001842P"
+                                sku: "1001842P",
+                                quantity: 2
                             }
                         ],
                         addLineItemProperties: function (
                             $LineItemIndex,
                             $Properties
                         ) {
-                            localStorage.setItem($LineItemIndex, JSON.stringify($Properties, undefined, 2))
+                            this.line_items[$LineItemIndex].properties = $Properties
+                        },
+                        addLineItem: function ( $LineItem, {success, error} ) {
+                            this.line_items.push( $LineItem )
+                            success(this)
                         }
                     }
                 )
             }
         }
     }
-
-    async function Get_TervisShopifyCart () {
-        return new Promise((resolve, reject) => {
-            ShopifyPOS.fetchCart({
-                success: resolve,
-                error: reject
-            })
-        })
-    }
-    window.Get_TervisShopifyCart = Get_TervisShopifyCart
 </script>
 
-<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.84?module"></script>
+<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.85?module"></script>

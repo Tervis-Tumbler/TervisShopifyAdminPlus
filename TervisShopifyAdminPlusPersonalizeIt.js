@@ -15,8 +15,14 @@ import {
     New_Range
 } from 'https://unpkg.com/@tervis/tervisutilityjs?module'
 
-var $ItemSKUToAddToCartForOneSidedPersonaliztaion = "093597845116"
-var $ItemSKUToAddToCartForTwoSidedPersonaliztaion = "093597845123"
+var $ItemUPCToAddToCartForOneSidedPersonaliztaion = "093597845116"
+var $ItemUPCToAddToCartForTwoSidedPersonaliztaion = "093597845123"
+
+var $ItemSKUToAddToCartForOneSidedPersonaliztaion = "1154266"
+var $ItemSKUToAddToCartForTwoSidedPersonaliztaion = "1154269"
+
+var $ItemVariantIDToAddToCartForOneSidedPersonaliztaion = "30370826125393"
+var $ItemVariantIDToAddToCartForTwoSidedPersonaliztaion = "31038255431761"
 
 async function main () {
     Initialize_TervisShopifyPOSPersonalizationFormStructure()
@@ -163,19 +169,52 @@ async function New_TervisPersonalizationSideAndLineElement () {
 async function Invoke_TervisShopifyPOSPersonalizationSave () {
     if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
         var $Cart = await Get_TervisShopifyCart()
-        var $LineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
+        var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
+        var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()  
+        var $NumberOfPersonalizedSides = Get_TervisPersonalizationNumberSides()
+        var $Price
         
-        $Cart.addLineItemProperties(
+        if ($NumberOfPersonalizedSides === 1) {
+            $Price = 5
+        } else if ($NumberOfPersonalizedSides === 1) {
+            $Price = 7.5
+        }
+
+        await Add_TervisShopifyCartLineItem({
+            $Cart,
+            $Price,
+            $Quantity: $SelectedLineItem.quantity,
+            $Title: `Personalization for line item ${$SelectedLineItemIndex + 1} ${$SelectedLineItem.title}`
+        })
+
+        var $LineItemIndex = $Cart.line_items.length + 1
+        
+        await Add_TervisShopifyCartLineItemProperties({
+            $Cart,
             $LineItemIndex,
             $PersonalizationProperties
-        )
+        })
     
         Set_ContainerContent({
             $TargetElementSelector: "#Debug",
             $Content: html`${JSON.stringify($Cart)}`
         })
     }
+}
+
+function Get_TervisPersonalizationNumberSides ({
+   $PersonalizationProperties
+}) {
+    return Object
+    .entries($PersonalizationProperties)
+    .map(
+        ([$Name, ]) => $Name.slice(0,5)
+    )
+    .filter(
+        (value, index, self) => self.indexOf(value) === index
+    )
+    .length
 }
 
 async function Get_TervisPersonalizationFormProperties () {
