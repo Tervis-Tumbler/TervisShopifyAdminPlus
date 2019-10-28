@@ -96,14 +96,21 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
 
 async function New_TervisShopifyPOSPersonalizationFontSelect() {
     var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+    var $PersonalizationPropertiesFromLineItem = Get_TervisShopifyPOSLineItemPersonalizationProperites({
+        $LineItem: $SelectedLineItem
+    })
     var {
         $ProductSize,
         $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
+    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedLineItem.title })
 
     Set_ContainerContent({
         $TargetElementSelector: "#FontSelectContainer",
-        $Content: await New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})
+        $Content: await New_TervisPersonalizationFontPicker({
+            $ProductSize,
+            $ProductFormType,
+            $SelectedFontName: $PersonalizationPropertiesFromLineItem.FontName
+        })
     })
 }
 
@@ -122,13 +129,19 @@ function Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex () {
 
 async function New_TervisPersonalizationFontPicker ({
     $ProductSize,
-    $ProductFormType
+    $ProductFormType,
+    $SelectedFontName
 }) {
     var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
     var $FontNames = $ProductMetadata.Personalization.SupportedFontName
     return New_TervisSelect({
         $Title: "Font Name",
-        $Options: $FontNames.map( $FontName => ({Text: $FontName}) ),
+        $Options: $FontNames.map(
+            $FontName => ({
+                Text: $FontName,
+                Selected: $SelectedFontName === $FontName
+            })
+        ),
         $OnChange: Receive_TervisPersonalizationFontPickerOnChange
     })
 }
@@ -185,7 +198,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
             $Cart,
             $Price,
             $Quantity: $SelectedLineItem.quantity,
-            $Title: `Personalization for line item ${Number($SelectedLineItemIndex) + 1} ${$SelectedLineItem.title}`
+            $Title: `Personalization for line item ${$SelectedLineItemIndex + 1} ${$SelectedLineItem.title}`
         })
 
         var $LineItemIndex = $Cart.line_items.length - 1
@@ -247,6 +260,12 @@ async function Get_TervisPersonalizationFormProperties () {
         }
     }
     return $Properties
+}
+
+function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
+    $LineItem
+}) {
+    return $LineItem.properties
 }
 
 // Replace with optional chaining once that has browser support https://github.com/tc39/proposal-optional-chaining
@@ -329,7 +348,13 @@ function New_TervisSelect ({
         ${
             $Options
             .map(
-                $Option => html`<option .value=${ifDefined($Option.Value)}>${$Option.Text}</option>`
+                $Option => 
+                html`
+                    <option 
+                        .value=${ifDefined($Option.Value)}
+                        ?selected=${$Option.Selected}
+                    >${$Option.Text}</option>
+                `
             )
         }
         </select>
