@@ -163,14 +163,12 @@ async function Receive_TervisPersonalizationFontPickerOnChange () {
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
 
 async function New_TervisPersonalizationSideAndLineElement () {
-    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
-    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperites({
-        $LineItem: $SelectedLineItem
-    })
-
     var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
     if ($FontMetadata) {
         var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+        var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperites({
+            $LineItem: $SelectedLineItem
+        })
         var {
             $ProductSize,
             $ProductFormType
@@ -186,12 +184,20 @@ async function New_TervisPersonalizationSideAndLineElement () {
                         New_InputText({
                             $ID,
                             $PlaceHolder: $ID,
-                            $MaxLength: $FontMetadata.MaximumCharactersPerLine
+                            $MaxLength: $FontMetadata.MaximumCharactersPerLine,
+                            $Value: $PersonalizationPropertiesFromLineItem ? PersonalizationPropertiesFromLineItem[$ID] : undefined
                         }))
                 }
             } else {
                 var $ID = `Side${$SideNumber}Line1`
-                $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: 3, $Pattern: $MonogramValidCharactersPatternAttributeRegex}))
+                $Content.push(
+                    New_InputText({
+                        $ID,
+                        $PlaceHolder: $ID,
+                        $MaxLength: 3,
+                        $Pattern: $MonogramValidCharactersPatternAttributeRegex,
+                        $Value: $PersonalizationPropertiesFromLineItem ? PersonalizationPropertiesFromLineItem[$ID] : undefined
+                    }))
             }
         }
         
