@@ -282,7 +282,7 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
     var $PersonalizationChargeLineItem = $Cart.line_items
         .filter(
             $CartLineItem => {
-                if ($CartLineItem.properties) {
+                if ($CartLineItem.properties) { // remove once https://github.com/tc39/proposal-optional-chaining is live, next line should be $CartLineItem?.properties
                     return $CartLineItem.properties
                         .filter( 
                             $Property =>
@@ -292,6 +292,8 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
                 }
             }
         )[0]
+    
+    // remove terinary once https://github.com/tc39/proposal-optional-chaining is live, next line should be $PersonalizationChargeLineItem?.properties
     return $PersonalizationChargeLineItem ?
         $PersonalizationChargeLineItem.properties
         .reduce(
