@@ -279,18 +279,19 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
     $LineItem
 }) {
     var $Cart = await Get_TervisShopifyCart()
-    var $PersonalizationChargeLineItem = $Cart.line_items.filter(
-        $CartLineItem => {
-            if ($CartLineItem.properties) {
-                return $CartLineItem.properties
-                    .filter( 
-                        $Property =>
-                        $Property.name === "RelatedLineItemSKU" &&
-                        $Property.value === $LineItem.sku
-                    )[0]
+    var $PersonalizationChargeLineItem = $Cart.line_items
+        .filter(
+            $CartLineItem => {
+                if ($CartLineItem.properties) {
+                    return $CartLineItem.properties
+                        .filter( 
+                            $Property =>
+                            $Property.name === "RelatedLineItemSKU" &&
+                            $Property.value === $LineItem.sku
+                        )[0]
+                }
             }
-        }
-    )
+        )[0]
     return $PersonalizationChargeLineItem ?
         $PersonalizationChargeLineItem.properties :
         undefined
