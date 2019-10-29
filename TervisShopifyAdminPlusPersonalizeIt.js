@@ -186,7 +186,8 @@ async function New_TervisPersonalizationSideAndLineElement () {
                             $PlaceHolder: $ID,
                             $MaxLength: $FontMetadata.MaximumCharactersPerLine,
                             $Value: $PersonalizationPropertiesFromLineItem ? $PersonalizationPropertiesFromLineItem[$ID] ? $PersonalizationPropertiesFromLineItem[$ID] : "" : undefined
-                        }))
+                        })
+                    )
                 }
             } else {
                 var $ID = `Side${$SideNumber}Line1`
@@ -195,9 +196,11 @@ async function New_TervisPersonalizationSideAndLineElement () {
                         $ID,
                         $PlaceHolder: $ID,
                         $MaxLength: 3,
+                        $MinLength: $FontMetadata.AllCharactersRequired ? 3 : undefined,
                         $Pattern: $MonogramValidCharactersPatternAttributeRegex,
                         $Value: $PersonalizationPropertiesFromLineItem ? $PersonalizationPropertiesFromLineItem[$ID] ? $PersonalizationPropertiesFromLineItem[$ID] : "" : undefined
-                    }))
+                    })
+                )
             }
         }
         
@@ -230,6 +233,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
             $Title: `Personalization for sku ${$SelectedLineItem.sku} ${$SelectedLineItem.title}`
         })
 
+        $Cart = await Get_TervisShopifyCart()
         var $LineItemIndex = $Cart.line_items.length - 1
         
         await Add_TervisShopifyCartLineItemProperties({
@@ -367,11 +371,28 @@ var $FontMetadataHashtable = {
     }
 }
 
+var $PersonalizationColors =  [ 
+    "Black",
+    "Chocolate",
+    "Fuchsia",
+    "Green",
+    "Hunter",
+    "Navy",
+    "Orange",
+    "Purple",
+    "Red",
+    "Royal Blue",
+    "Turquoise",
+    "White",
+    "Yellow"
+]
+
 function New_InputText ({
     $ID,
     $Value,
     $PlaceHolder,
     $MaxLength,
+    $MinLength,
     $Required,
     $Pattern,
     $OnChange
@@ -382,6 +403,7 @@ function New_InputText ({
         .value=${ifDefined($Value)}
         type="text"
         maxlength=${ifDefined($MaxLength)}
+        minlength=${ifDefined($MinLength)}
         ?required=${$Required}
         pattern=${ifDefined($Pattern)}
         placeholder=${ifDefined($PlaceHolder)}
