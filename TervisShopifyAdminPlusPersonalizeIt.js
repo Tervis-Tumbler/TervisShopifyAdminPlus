@@ -226,17 +226,16 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
             $Price = 7.5
         }
 
-        await Add_TervisShopifyCartLineItem({
+        $Cart = await Add_TervisShopifyCartLineItem({
             $Cart,
             $Price,
             $Quantity: $SelectedLineItem.quantity,
             $Title: `Personalization for sku ${$SelectedLineItem.sku} ${$SelectedLineItem.title}`
         })
 
-        $Cart = await Get_TervisShopifyCart()
         var $LineItemIndex = $Cart.line_items.length - 1
         
-        await Add_TervisShopifyCartLineItemProperties({
+        $Cart = await Add_TervisShopifyCartLineItemProperties({
             $Cart,
             $LineItemIndex,
             $LineItemProperties
