@@ -293,7 +293,11 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
             }
         )[0]
     return $PersonalizationChargeLineItem ?
-        $PersonalizationChargeLineItem.properties :
+        $PersonalizationChargeLineItem.properties
+        .reduce(
+            $FinalReturnValue, $CurrentValue =>
+            $FinalReturnValue[$CurrentValue.name] = $CurrentValue.value
+        ) :
         undefined
 }
 
