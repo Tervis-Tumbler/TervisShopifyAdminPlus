@@ -163,6 +163,11 @@ async function Receive_TervisPersonalizationFontPickerOnChange () {
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
 
 async function New_TervisPersonalizationSideAndLineElement () {
+    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperites({
+        $LineItem: $SelectedLineItem
+    })
+
     var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
     if ($FontMetadata) {
         var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
@@ -177,7 +182,12 @@ async function New_TervisPersonalizationSideAndLineElement () {
             if (!$FontMetadata.MonogramStyle) {
                 for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
                     var $ID = `Side${$SideNumber}Line${$LineNumber}`
-                    $Content.push(New_InputText({$ID, $PlaceHolder: $ID, $MaxLength: $FontMetadata.MaximumCharactersPerLine}))
+                    $Content.push(
+                        New_InputText({
+                            $ID,
+                            $PlaceHolder: $ID,
+                            $MaxLength: $FontMetadata.MaximumCharactersPerLine
+                        }))
                 }
             } else {
                 var $ID = `Side${$SideNumber}Line1`
@@ -353,6 +363,7 @@ var $FontMetadataHashtable = {
 
 function New_InputText ({
     $ID,
+    $Value,
     $PlaceHolder,
     $MaxLength,
     $Required,
@@ -361,12 +372,13 @@ function New_InputText ({
 }) {
     return html`
     <input
-        id="${ifDefined($ID)}"
+        id=${ifDefined($ID)}
+        .value=${ifDefined($Value)}
         type="text"
-        maxlength="${ifDefined($MaxLength)}"
+        maxlength=${ifDefined($MaxLength)}
         ?required=${$Required}
-        pattern="${ifDefined($Pattern)}"
-        placeholder="${ifDefined($PlaceHolder)}"
+        pattern=${ifDefined($Pattern)}
+        placeholder=${ifDefined($PlaceHolder)}
         @change=${$OnChange}
     />
     `
