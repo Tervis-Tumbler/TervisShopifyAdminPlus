@@ -68,7 +68,7 @@ async function Receive_ShopifyPOSPersonalizationCart () {
     if ($Debug) {
         Set_ContainerContent({
             $TargetElementSelector: "#Debug",
-            $Content: html`<textarea>${JSON.stringify($Cart)}</textarea>`
+            $Content: html`<textarea>${JSON.stringify($Cart, null, 2)}</textarea>`
         })    
     }
     New_TervisShopifyPOSPersonalizableLineItemSelect()
