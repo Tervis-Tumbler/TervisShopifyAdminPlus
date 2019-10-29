@@ -185,7 +185,7 @@ async function New_TervisPersonalizationSideAndLineElement () {
                             $ID,
                             $PlaceHolder: $ID,
                             $MaxLength: $FontMetadata.MaximumCharactersPerLine,
-                            $Value: $PersonalizationPropertiesFromLineItem ? $PersonalizationPropertiesFromLineItem[$ID] : undefined
+                            $Value: $PersonalizationPropertiesFromLineItem ? $PersonalizationPropertiesFromLineItem[$ID] ? $PersonalizationPropertiesFromLineItem[$ID] : "" : undefined
                         }))
                 }
             } else {
@@ -196,7 +196,7 @@ async function New_TervisPersonalizationSideAndLineElement () {
                         $PlaceHolder: $ID,
                         $MaxLength: 3,
                         $Pattern: $MonogramValidCharactersPatternAttributeRegex,
-                        $Value: $PersonalizationPropertiesFromLineItem ? $PersonalizationPropertiesFromLineItem[$ID] : undefined
+                        $Value: $PersonalizationPropertiesFromLineItem ? $PersonalizationPropertiesFromLineItem[$ID] ? $PersonalizationPropertiesFromLineItem[$ID] : "" : undefined
                     }))
             }
         }
