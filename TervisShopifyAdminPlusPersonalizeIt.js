@@ -185,7 +185,7 @@ async function New_TervisPersonalizationSideAndLineElement () {
                             $ID,
                             $PlaceHolder: $ID,
                             $MaxLength: $FontMetadata.MaximumCharactersPerLine,
-                            $Value: $PersonalizationPropertiesFromLineItem ? PersonalizationPropertiesFromLineItem[$ID] : undefined
+                            $Value: $PersonalizationPropertiesFromLineItem ? $PersonalizationPropertiesFromLineItem[$ID] : undefined
                         }))
                 }
             } else {
