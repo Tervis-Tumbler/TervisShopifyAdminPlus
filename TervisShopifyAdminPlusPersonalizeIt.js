@@ -87,7 +87,12 @@ async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
 
     var $SelectLineItemContent = New_TervisSelect({
         $Title: "Select Line Item To Personalize",
-        $Options: $PersonalizableLineItems.map($LineItem => ({Value: $Cart.line_items.indexOf($LineItem), Text: $LineItem.title}) ),
+        $Options: $PersonalizableLineItems.map(
+            $LineItem => ({
+                Value: $Cart.line_items.indexOf($LineItem),
+                Text: $LineItem.title
+            })
+        ),
         $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
     })
 
