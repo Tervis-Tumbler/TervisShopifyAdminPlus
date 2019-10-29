@@ -24,6 +24,8 @@ var $ItemSKUToAddToCartForTwoSidedPersonaliztaion = "1154269"
 var $ItemVariantIDToAddToCartForOneSidedPersonaliztaion = "30370826125393"
 var $ItemVariantIDToAddToCartForTwoSidedPersonaliztaion = "31038255431761"
 
+var $Debug = true
+
 async function main () {
     Initialize_TervisShopifyPOSPersonalizationFormStructure()
     Receive_ShopifyPOSPersonalizationCart()
@@ -61,13 +63,14 @@ function Initialize_TervisPersonalizationFormStructure ({
 }
 
 async function Receive_ShopifyPOSPersonalizationCart () {
-
     var $Cart = await Get_TervisShopifyCart()
-    Set_ContainerContent({
-        $TargetElementSelector: "#Debug",
-        $Content: html`${JSON.stringify($Cart)}`
-    })
 
+    if ($Debug) {
+        Set_ContainerContent({
+            $TargetElementSelector: "#Debug",
+            $Content: html`<textarea>${JSON.stringify($Cart)}</textarea>`
+        })    
+    }
     New_TervisShopifyPOSPersonalizableLineItemSelect()
 }
 
