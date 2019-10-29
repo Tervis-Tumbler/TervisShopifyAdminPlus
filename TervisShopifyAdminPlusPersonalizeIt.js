@@ -74,7 +74,7 @@ async function Receive_ShopifyPOSPersonalizationCart () {
 async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
     var $Cart = await Get_TervisShopifyCart()
     var $PersonalizableLineItems = $Cart.line_items.filter(
-        $LineItem => $LineItem.sku.slice(-1) === "P"
+        $LineItem => $LineItem.sku ? $LineItem.sku.slice(-1) === "P" : undefined
     )
 
     var $SelectLineItemContent = New_TervisSelect({
@@ -277,7 +277,12 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
     var $PersonalizationChargeLineItem = $Cart.line_items.filter(
         $CartLineItem => {
             if ($CartLineItem.properties) {
-                return $CartLineItem.properties.RelatedLineItemSKU === $LineItem.sku
+                return $CartLineItem.properties
+                    .filter( 
+                        $Property =>
+                        $Property.name === "RelatedLineItemSKU" &&
+                        $Property.value === $LineItem.sku
+                    )[0]
             }
         }
     )
