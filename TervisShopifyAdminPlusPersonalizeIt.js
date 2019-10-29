@@ -296,9 +296,11 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
     // remove terinary once https://github.com/tc39/proposal-optional-chaining is live, next line should be $PersonalizationChargeLineItem?.properties
     return $PersonalizationChargeLineItem ?
         $PersonalizationChargeLineItem.properties
+        // https://stackoverflow.com/a/44325124/101679
         .reduce(
             ($FinalReturnValue, $CurrentValue) =>
-            $FinalReturnValue[$CurrentValue.name] = $CurrentValue.value
+            ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
+            {}
         ) :
         undefined
 }
