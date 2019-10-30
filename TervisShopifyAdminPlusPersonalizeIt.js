@@ -361,7 +361,7 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperties ({
             }
         )
     
-    return $PersonalizationChargeLineItems ?
+    return $PersonalizationChargeLineItems.length > 0 ?
         $PersonalizationChargeLineItems.map(
             $PersonalizationChargeLineItem => {
                 var $Properties = $PersonalizationChargeLineItem.properties
