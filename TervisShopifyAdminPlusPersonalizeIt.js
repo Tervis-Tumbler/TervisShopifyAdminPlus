@@ -106,13 +106,14 @@ async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
 
 async function Receive_TervisPersonalizationLineItemSelectOnChange () {
     var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
-    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperites({
+    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
         $LineItem: $SelectedLineItem
     })
     for (var $PersonalizationProperties of $PersonalizationPropertiesFromLineItem) {
-        await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect()
-        await New_TervisShopifyPOSPersonalizationFontSelect()
-        await New_TervisPersonalizationSideAndLineElement()
+        await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({$PersonalizationProperties})
+        await New_TervisShopifyPOSPersonalizationFontSelect({$PersonalizationProperties})
+        await New_TervisShopifyPOSPersonalizationColorSelect({$PersonalizationProperties})
+        await New_TervisPersonalizationSideAndLineElement({$PersonalizationProperties})
     }
 
     if (
@@ -123,34 +124,19 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
     ) {
         await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect()
         await New_TervisShopifyPOSPersonalizationFontSelect()
+        await New_TervisShopifyPOSPersonalizationColorSelect()
         await New_TervisPersonalizationSideAndLineElement()
     }
 }
-
-async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect () {
-    
-
-
-    Set_ContainerContent({
-        $TargetElementSelector: "#FontSelectContainer",
-        $Content: New_TervisSelect({
-            $Title: "Quantity of line to receive personalization",
-            $Options: $PersonalizationColors.map(
-                $Color =>
-                ({
-                    Text: $Color,
-                    Selected: 
-                })
-            )
-        })
-    })
+async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect ({
+    $PersonalizationProperties
+}) {
 }
 
-async function New_TervisShopifyPOSPersonalizationFontSelect() {
+async function New_TervisShopifyPOSPersonalizationFontSelect({
+    $PersonalizationProperties
+}) {
     var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
-    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperites({
-        $LineItem: $SelectedLineItem
-    })
     var {
         $ProductSize,
         $ProductFormType
@@ -161,9 +147,27 @@ async function New_TervisShopifyPOSPersonalizationFontSelect() {
         $Content: await New_TervisPersonalizationFontPicker({
             $ProductSize,
             $ProductFormType,
-            $SelectedFontName: $PersonalizationPropertiesFromLineItem ?
-                $PersonalizationPropertiesFromLineItem.FontName :
+            $SelectedFontName: $PersonalizationProperties ?
+                $PersonalizationProperties.FontName :
                 undefined
+        })
+    })
+}
+
+async function New_TervisShopifyPOSPersonalizationColorSelect ({
+    $PersonalizationProperties
+}) {
+    Set_ContainerContent({
+        $TargetElementSelector: "#FontColorSelectContainer",
+        $Content: New_TervisSelect({
+            $Title: "Color",
+            $Options: $PersonalizationColors.map(
+                $Color =>
+                ({
+                    Text: $Color,
+                    Selected: $Color === $PersonalizationProperties.Color
+                })
+            )
         })
     })
 }
@@ -206,13 +210,12 @@ async function Receive_TervisPersonalizationFontPickerOnChange () {
 
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
 
-async function New_TervisPersonalizationSideAndLineElement () {
+async function New_TervisPersonalizationSideAndLineElement ({
+    $PersonalizationProperties
+}) {
     var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
     if ($FontMetadata) {
         var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
-        var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperites({
-            $LineItem: $SelectedLineItem
-        })
         var {
             $ProductSize,
             $ProductFormType
@@ -229,7 +232,7 @@ async function New_TervisPersonalizationSideAndLineElement () {
                             $ID,
                             $PlaceHolder: $ID,
                             $MaxLength: $FontMetadata.MaximumCharactersPerLine,
-                            $Value: $PersonalizationPropertiesFromLineItem ? $PersonalizationPropertiesFromLineItem[$ID] ? $PersonalizationPropertiesFromLineItem[$ID] : "" : undefined
+                            $Value: $PersonalizationProperties ? $PersonalizationProperties[$ID] ? $PersonalizationProperties[$ID] : "" : undefined
                         })
                     )
                 }
@@ -242,7 +245,7 @@ async function New_TervisPersonalizationSideAndLineElement () {
                         $MaxLength: 3,
                         $MinLength: $FontMetadata.AllCharactersRequired ? 3 : undefined,
                         $Pattern: $MonogramValidCharactersPatternAttributeRegex,
-                        $Value: $PersonalizationPropertiesFromLineItem ? $PersonalizationPropertiesFromLineItem[$ID] ? $PersonalizationPropertiesFromLineItem[$ID] : "" : undefined
+                        $Value: $PersonalizationProperties ? $PersonalizationProperties[$ID] ? $PersonalizationProperties[$ID] : "" : undefined
                     })
                 )
             }
@@ -339,7 +342,7 @@ async function Get_TervisPersonalizationFormProperties () {
     return $Properties
 }
 
-async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
+async function Get_TervisShopifyPOSLineItemPersonalizationProperties ({
     $LineItem
 }) {
     var $Cart = await Get_TervisShopifyCart()
