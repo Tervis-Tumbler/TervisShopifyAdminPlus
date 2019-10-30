@@ -125,10 +125,10 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
             $Sum + $PersonalizationProperties.Quantity
         )
     ) {
-        await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect()
-        await New_TervisShopifyPOSPersonalizationFontSelect()
-        await New_TervisShopifyPOSPersonalizationColorSelect()
-        await New_TervisPersonalizationSideAndLineElement()
+        await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({})
+        await New_TervisShopifyPOSPersonalizationFontSelect({})
+        await New_TervisShopifyPOSPersonalizationColorSelect({})
+        await New_TervisPersonalizationSideAndLineElement({})
     }
 }
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect ({
