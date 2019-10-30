@@ -57,8 +57,8 @@ function Initialize_TervisPersonalizationFormStructure ({
         $TargetElementSelector,
         $Content: html`
             <div id="QuantityOfLineQuantityToApplyRecieveThisPersonalizationSelectContainer"></div>
-            <div id="FontSelectContainer"></div>
             <div id="FontColorSelectContainer"></div>
+            <div id="FontSelectContainer"></div>
             <div id="LineTextBoxContainer"></div>
         `
     })
