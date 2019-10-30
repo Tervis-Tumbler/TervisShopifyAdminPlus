@@ -109,15 +109,17 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
     var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
         $LineItem: $SelectedLineItem
     })
-    for (var $PersonalizationProperties of $PersonalizationPropertiesFromLineItem) {
-        await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({$PersonalizationProperties})
-        await New_TervisShopifyPOSPersonalizationFontSelect({$PersonalizationProperties})
-        await New_TervisShopifyPOSPersonalizationColorSelect({$PersonalizationProperties})
-        await New_TervisPersonalizationSideAndLineElement({$PersonalizationProperties})
+    if ($PersonalizationPropertiesFromLineItem) {
+        for (var $PersonalizationProperties of $PersonalizationPropertiesFromLineItem) {
+            await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({$PersonalizationProperties})
+            await New_TervisShopifyPOSPersonalizationFontSelect({$PersonalizationProperties})
+            await New_TervisShopifyPOSPersonalizationColorSelect({$PersonalizationProperties})
+            await New_TervisPersonalizationSideAndLineElement({$PersonalizationProperties})
+        }
     }
 
     if (
-        $PersonalizationPropertiesFromLineItem &&
+        !$PersonalizationPropertiesFromLineItem ||
         $SelectedLineItem.quantity < $PersonalizationPropertiesFromLineItem.reduce(
             ($Sum, $PersonalizationProperties) =>
             $Sum + $PersonalizationProperties.Quantity
