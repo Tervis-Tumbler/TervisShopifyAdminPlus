@@ -168,7 +168,7 @@ async function New_TervisShopifyPOSPersonalizationColorSelect ({
                 $Color =>
                 ({
                     Text: $Color,
-                    Selected: $Color === $PersonalizationProperties.Color
+                    Selected: $PersonalizationProperties ? $Color === $PersonalizationProperties.Color : undefined
                 })
             )
         })
