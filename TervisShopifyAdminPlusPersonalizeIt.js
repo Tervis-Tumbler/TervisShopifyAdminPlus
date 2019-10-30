@@ -117,6 +117,7 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
     }
 
     if (
+        $PersonalizationPropertiesFromLineItem &&
         $SelectedLineItem.quantity < $PersonalizationPropertiesFromLineItem.reduce(
             ($Sum, $PersonalizationProperties) =>
             $Sum + $PersonalizationProperties.Quantity
