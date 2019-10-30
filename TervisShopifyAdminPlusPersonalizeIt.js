@@ -208,7 +208,7 @@ async function New_TervisPersonalizationFontPicker ({
 }
 
 async function Receive_TervisPersonalizationFontPickerOnChange () {
-    New_TervisPersonalizationSideAndLineElement()
+    New_TervisPersonalizationSideAndLineElement({})
 }
 
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
