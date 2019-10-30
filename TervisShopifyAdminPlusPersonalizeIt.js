@@ -56,7 +56,9 @@ function Initialize_TervisPersonalizationFormStructure ({
     Set_ContainerContent({
         $TargetElementSelector,
         $Content: html`
+            <div id="QuantityOfLineQuantityToApplyRecieveThisPersonalizationSelectContainer"></div>
             <div id="FontSelectContainer"></div>
+            <div id="FontColorSelectContainer"></div>
             <div id="LineTextBoxContainer"></div>
         `
     })
@@ -103,8 +105,45 @@ async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
 }
 
 async function Receive_TervisPersonalizationLineItemSelectOnChange () {
-    await New_TervisShopifyPOSPersonalizationFontSelect()
-    await New_TervisPersonalizationSideAndLineElement()
+    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperites({
+        $LineItem: $SelectedLineItem
+    })
+    for (var $PersonalizationProperties of $PersonalizationPropertiesFromLineItem) {
+        await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect()
+        await New_TervisShopifyPOSPersonalizationFontSelect()
+        await New_TervisPersonalizationSideAndLineElement()
+    }
+
+    if (
+        $SelectedLineItem.quantity < $PersonalizationPropertiesFromLineItem.reduce(
+            $Sum, $PersonalizationProperties =>
+            $Sum + $PersonalizationProperties.Quantity
+        )
+    ) {
+        await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect()
+        await New_TervisShopifyPOSPersonalizationFontSelect()
+        await New_TervisPersonalizationSideAndLineElement()
+    }
+}
+
+async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect () {
+    
+
+
+    Set_ContainerContent({
+        $TargetElementSelector: "#FontSelectContainer",
+        $Content: New_TervisSelect({
+            $Title: "Quantity of line to receive personalization",
+            $Options: $PersonalizationColors.map(
+                $Color =>
+                ({
+                    Text: $Color,
+                    Selected: 
+                })
+            )
+        })
+    })
 }
 
 async function New_TervisShopifyPOSPersonalizationFontSelect() {
@@ -223,6 +262,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         var $LineItemProperties = $PersonalizationProperties
 
         $LineItemProperties.RelatedLineItemSKU = $SelectedLineItem.sku
+        $LineItemProperties.ID = uuidv4()
         
         var $Price
         if ($NumberOfPersonalizedSides === 1) {
@@ -303,7 +343,7 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
     $LineItem
 }) {
     var $Cart = await Get_TervisShopifyCart()
-    var $PersonalizationChargeLineItem = $Cart.line_items
+    var $PersonalizationChargeLineItems = $Cart.line_items
         .filter(
             $CartLineItem => {
                 if ($CartLineItem.properties) { // remove once https://github.com/tc39/proposal-optional-chaining is live, next line should be $CartLineItem?.properties
@@ -315,16 +355,21 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperites ({
                         )[0]
                 }
             }
-        )[0]
+        )
     
-    // remove terinary once https://github.com/tc39/proposal-optional-chaining is live, next line should be $PersonalizationChargeLineItem?.properties
-    return $PersonalizationChargeLineItem ?
-        $PersonalizationChargeLineItem.properties
-        // https://stackoverflow.com/a/44325124/101679
-        .reduce(
-            ($FinalReturnValue, $CurrentValue) =>
-            ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
-            {}
+    return $PersonalizationChargeLineItems ?
+        $PersonalizationChargeLineItems.map(
+            $PersonalizationChargeLineItem => {
+                var $Properties = $PersonalizationChargeLineItem.properties
+                // https://stackoverflow.com/a/44325124/101679
+                .reduce(
+                    ($FinalReturnValue, $CurrentValue) =>
+                    ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
+                    {}
+                )
+                $Properties.Quantity = $PersonalizationChargeLineItem.quantity
+                return $Properties
+            }
         ) :
         undefined
 }
@@ -453,8 +498,6 @@ function Set_ContainerContent ({
     )
 }
 
-
-// Refactor to TervisShopifyPOS module
 function ConvertFrom_TervisShopifyPOSProductTitle ({
     $ProductTitle
 }) {
@@ -462,123 +505,17 @@ function ConvertFrom_TervisShopifyPOSProductTitle ({
     return {$ProductSize, $ProductFormType}
 }
 
+// https://stackoverflow.com/a/2117523/101679
+function uuidv4() {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+}
+
 main ()
 
 // function getPersonalizeItConfig() {
 //     return {
-
-//         "colors": [
-//             {
-//                 "name": "Black",
-//                 "red": "0",
-//                 "green": "0",
-//                 "blue": "0"
-//             },
-//             {
-//                 "name": "Chocolate",
-//                 "red": "210",
-//                 "green": "105",
-//                 "blue": "30"
-//             },
-//             {
-//                 "name": "Fuchsia",
-//                 "red": "201",
-//                 "green": "0",
-//                 "blue": "98"
-//             },
-//             {
-//                 "name": "Green",
-//                 "red": "0",
-//                 "green": "128",
-//                 "blue": "0"
-//             },
-//             {
-//                 "name": "Hunter",
-//                 "red": "3",
-//                 "green": "86",
-//                 "blue": "66"
-//             },
-//             {
-//                 "name": "Navy",
-//                 "red": "0",
-//                 "green": "0",
-//                 "blue": "128"
-//             },
-//             {
-//                 "name": "Orange",
-//                 "red": "255",
-//                 "green": "165",
-//                 "blue": "0"
-//             },
-//             {
-//                 "name": "Purple",
-//                 "red": "128",
-//                 "green": "0",
-//                 "blue": "128"
-//             },
-//             {
-//                 "name": "Red",
-//                 "red": "183",
-//                 "green": "18",
-//                 "blue": "52"
-//             },
-//             {
-//                 "name": "Royal Blue",
-//                 "red": "18",
-//                 "green": "51",
-//                 "blue": "168"
-//             },
-//             {
-//                 "name": "Turquoise",
-//                 "red": "0",
-//                 "green": "128",
-//                 "blue": "128"
-//             },
-//             {
-//                 "name": "White",
-//                 "red": "255",
-//                 "green": "255",
-//                 "blue": "255"
-//             },
-//             {
-//                 "name": "Yellow",
-//                 "red": "255",
-//                 "green": "204",
-//                 "blue": "0"
-//             }
-//         ],
 //         "restrictionUrl": "c:\\Program Files\\nChannel\\Personalize\\PersonalizationGuidelines.html",
 //     };
 // }
-
-// function getCupPropertiesFromTitle(title) {
-//     let titleArray = title.split(".");
-//     return {
-//         name: `${titleArray[0]}`,
-//         size: `${titleArray[4]}`,
-//         category: `${titleArray[1]}`,
-//     };
-// }
-
-
-
-// var $Content = html`
-// ${New_TervisPersonalizationFontPicker({$ProductSize, $ProductFormType})}
-// <!-- <table id='property-editor' class='table table-striped'>
-//     <tr>
-//         <th>PersonalizeIt</th>
-//     </tr>
-//     <tr id="noitems"></tr>
-//     <tr>
-//         <td>
-//            <button id='save-button' class='btn btn-success' style='width:100%;'>Save</button>
-//         </td>
-//     </tr>
-// </table> -->
-// `
-
-// render(
-//     $Content,
-//     document.querySelector("#content")
-// )
-
