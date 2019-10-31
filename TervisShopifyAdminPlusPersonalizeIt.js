@@ -190,6 +190,7 @@ async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
                 id=${$PersonalizationProperties.ID}
                 @click=${Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick}
             >Edit</button>
+            <br>
         `)
     } else {
         $Content = html``
