@@ -113,13 +113,13 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
         $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
     })
 
-    var $Content
+    var $Content = []
     if ($PersonalizationPropertiesFromLineItem) {
         for (var $PersonalizationProperties of $PersonalizationPropertiesFromLineItem) {
-            $Content = await New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({$PersonalizationProperties})
+            $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({$PersonalizationProperties}))
         }
     } else {
-        $Content = New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({})
+        $Content.push(New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({}))
     }
 
     Set_ContainerContent({
