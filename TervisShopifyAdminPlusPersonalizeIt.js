@@ -95,7 +95,8 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
         $PersonalizationPropertiesFromLineItem
         .reduce(
             ($Sum, $PersonalizationProperties) =>
-            $Sum + $PersonalizationProperties.Quantity
+            ($Sum + Number($PersonalizationProperties.Quantity)),
+            0
         ) :
         0
 
