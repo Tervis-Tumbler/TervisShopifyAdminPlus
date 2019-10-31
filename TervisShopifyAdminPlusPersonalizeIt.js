@@ -354,7 +354,6 @@ async function New_TervisPersonalizationSideAndLineElement ({
 async function Invoke_TervisShopifyPOSPersonalizationSave () {
     if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
         var $Cart = await Get_TervisShopifyCart()
-        var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
         var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()  
         var $NumberOfPersonalizedSides = Get_TervisPersonalizationNumberSides({$PersonalizationProperties})
@@ -373,7 +372,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         $Cart = await Add_TervisShopifyCartLineItem({
             $Cart,
             $Price,
-            $Quantity: $SelectedLineItem.quantity,
+            $Quantity: $PersonalizationProperties.Quantity,
             $Title: `Personalization for sku ${$SelectedLineItem.sku} ${$SelectedLineItem.title}`
         })
 
