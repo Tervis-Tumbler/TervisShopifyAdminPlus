@@ -118,6 +118,8 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
         for (var $PersonalizationProperties of $PersonalizationPropertiesFromLineItem) {
             await New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({$PersonalizationProperties})
         }
+    } else {
+        New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({})
     }
 }
 
@@ -153,24 +155,30 @@ async function New_TervisPersonalizationFormStructure ({
 async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
     $PersonalizationProperties
 }) {
-    var $Content = Object.entries($PersonalizationProperties)
-    .filter(
-        ([$Name, ]) => !["RelatedLineItemSKU", "ID"].includes($Name)
-    )
-    .map(
-        ([$Name, $Value]) =>
-        html`
-            ${$Name}: ${$Value}<br />
-        `
-    )
+    var $Content
 
-    $Content.push(html`
-        <button
-            type="button"
-            id=${$PersonalizationProperties.ID}
-            @click=${Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick}
-        >Edit</button>
-    `)
+    if ($PersonalizationProperties) {
+        $Content = Object.entries($PersonalizationProperties)
+        .filter(
+            ([$Name, ]) => !["RelatedLineItemSKU", "ID"].includes($Name)
+        )
+        .map(
+            ([$Name, $Value]) =>
+            html`
+                ${$Name}: ${$Value}<br />
+            `
+        )
+    
+        $Content.push(html`
+            <button
+                type="button"
+                id=${$PersonalizationProperties.ID}
+                @click=${Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick}
+            >Edit</button>
+        `)
+    } else {
+        $Content = html``
+    }
 
     Set_ContainerContent({
         $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
