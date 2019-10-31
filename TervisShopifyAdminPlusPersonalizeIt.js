@@ -113,13 +113,19 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
         $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
     })
 
+    var $Content
     if ($PersonalizationPropertiesFromLineItem) {
         for (var $PersonalizationProperties of $PersonalizationPropertiesFromLineItem) {
-            await New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({$PersonalizationProperties})
+            $Content = await New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({$PersonalizationProperties})
         }
     } else {
-        New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({})
+        $Content = New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({})
     }
+
+    Set_ContainerContent({
+        $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
+        $Content
+    })
 }
 
 async function New_TervisPersonalizationFormStructure ({
@@ -189,10 +195,7 @@ async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
         $Content = html``
     }
 
-    Set_ContainerContent({
-        $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
-        $Content
-    })
+    return $Content
 }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick () {
