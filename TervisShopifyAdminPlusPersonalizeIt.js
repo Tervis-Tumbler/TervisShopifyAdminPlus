@@ -119,7 +119,7 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
             $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({$PersonalizationProperties}))
         }
     } else {
-        $Content.push(New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({}))
+        $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({}))
     }
 
     Set_ContainerContent({
