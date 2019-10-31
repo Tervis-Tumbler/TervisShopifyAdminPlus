@@ -178,18 +178,18 @@ async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
     })
 }
 
-function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick () {
-    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
-    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
-        $LineItem: $SelectedLineItem
-    })
+async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick () {
+    // var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+    // var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
+    //     $LineItem: $SelectedLineItem
+    // })
 
-    New_TervisPersonalizationFormStructure({
-        $PersonaliztaionProperties,
-        $ProductSize,
-        $ProductFormType,
-        $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
-    })
+    // New_TervisPersonalizationFormStructure({
+    //     $PersonaliztaionProperties,
+    //     $ProductSize,
+    //     $ProductFormType,
+    //     $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
+    // })
     // await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({$PersonalizationProperties})
     // await New_TervisShopifyPOSPersonalizationFontSelect({$PersonalizationProperties})
     // await New_TervisShopifyPOSPersonalizationColorSelect({$PersonalizationProperties})
