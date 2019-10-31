@@ -137,15 +137,33 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
 async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
     $PersonalizationProperties
 }) {
+    var $Content = Object.entries($PersonalizationProperties)
+    .filter(
+        ([$Name, ]) => !["RelatedLineItemSKU", "ID"].includes($Name)
+    )
+    .map(
+        ([$Name, $Value]) =>
+        html`
+            ${$Name}: ${$Value}<br />
+        `
+    )
+
+    $Content.push(html`
+        <button
+            type="button"
+            id=${$PersonalizationProperties.ID}
+            @click=${Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick}
+        >Edit</button>
+    `)
+
     Set_ContainerContent({
         $TargetElementSelector: "#QuantityOfLineQuantityToApplyRecieveThisPersonalizationSelectContainer",
-        $Content: Object.entries($PersonalizationProperties).map(
-            ([$Name, $Value]) =>
-            html`
-                ${$Name}: ${$Value}<br />
-            `
-        )
+        $Content
     })
+}
+
+function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick () {
+
 }
 
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect ({
