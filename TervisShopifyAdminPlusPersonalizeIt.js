@@ -474,7 +474,7 @@ function Get_ElementPropertyValue ({
 }
 
 function Get_TervisPersonalizationSelectedFontName () {
-    return Get_ElementPropertyValue({$QuerySelector: "#FontSelectContainer > select", $PropertyName: "value"})
+    return Get_ElementPropertyValue({$QuerySelector: "[title='Font Name']", $PropertyName: "value"})
 }
 
 function Get_TervisPersonalizationSelectedFontMetadata () {
@@ -551,11 +551,14 @@ function New_InputText ({
 
 function New_TervisSelect ({
     $Title,
+    $ID,
     $Options,
     $OnChange
 }) {
     return html`
         <select
+            id=${ifDefined($ID)}
+            title=${ifDefined($Title)}
             @change=${$OnChange}
         >
         <option selected disabled>${$Title}</option>
