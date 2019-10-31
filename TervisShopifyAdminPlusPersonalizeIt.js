@@ -173,7 +173,7 @@ async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
     `)
 
     Set_ContainerContent({
-        $TargetElementSelector: "#QuantityOfLineQuantityToApplyRecieveThisPersonalizationSelectContainer",
+        $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
         $Content
     })
 }
