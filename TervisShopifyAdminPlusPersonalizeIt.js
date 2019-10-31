@@ -60,6 +60,7 @@ function Initialize_TervisPersonalizationFormStructure ({
             <div id="FontColorSelectContainer"></div>
             <div id="FontSelectContainer"></div>
             <div id="LineTextBoxContainer"></div>
+            <div id="PersonalizationChargeLineItemsContainer"></div>
         `
     })
 }
@@ -92,7 +93,7 @@ async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
         $Options: $PersonalizableLineItems.map(
             $LineItem => ({
                 Value: $Cart.line_items.indexOf($LineItem),
-                Text: $LineItem.title
+                Text: `${$LineItem.title} ${$LineItem.quantity}`
             })
         ),
         $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
@@ -111,10 +112,11 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
     })
     if ($PersonalizationPropertiesFromLineItem) {
         for (var $PersonalizationProperties of $PersonalizationPropertiesFromLineItem) {
-            await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({$PersonalizationProperties})
-            await New_TervisShopifyPOSPersonalizationFontSelect({$PersonalizationProperties})
-            await New_TervisShopifyPOSPersonalizationColorSelect({$PersonalizationProperties})
-            await New_TervisPersonalizationSideAndLineElement({$PersonalizationProperties})
+            await New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({$PersonalizationProperties})
+            // await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({$PersonalizationProperties})
+            // await New_TervisShopifyPOSPersonalizationFontSelect({$PersonalizationProperties})
+            // await New_TervisShopifyPOSPersonalizationColorSelect({$PersonalizationProperties})
+            // await New_TervisPersonalizationSideAndLineElement({$PersonalizationProperties})
         }
     }
 
@@ -131,6 +133,21 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
         await New_TervisPersonalizationSideAndLineElement({})
     }
 }
+
+async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
+    $PersonalizationProperties
+}) {
+    Set_ContainerContent({
+        $TargetElementSelector: "#QuantityOfLineQuantityToApplyRecieveThisPersonalizationSelectContainer",
+        $Content: Object.entries($PersonalizationProperties).map(
+            ([$Name, $Value]) =>
+            html`
+                ${$Name}: ${$Value}<br />
+            `
+        )
+    })
+}
+
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect ({
     $PersonalizationProperties
 }) {
