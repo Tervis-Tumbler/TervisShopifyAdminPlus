@@ -134,6 +134,26 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect ({
     $PersonalizationProperties
 }) {
+    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+    
+    var $QuantityRangeUpperBound = $PersonalizationProperties ?
+        $PersonalizationProperties.Quantity :
+        $SelectedLineItem.quantity
+
+    Set_ContainerContent({
+        $TargetElementSelector: "#QuantityOfLineQuantityToApplyRecieveThisPersonalizationSelectContainer",
+        $Content: New_TervisSelect({
+            $Title: "Quantity of line item to apply personalization to",
+            $Options:  New_Range({$Start: 1, $Stop: $QuantityRangeUpperBound})
+            .map(
+                $Quantity =>
+                ({
+                    Text: $Quantity,
+                    Selected: $PersonalizationProperties ? $Quantity === $PersonalizationProperties.Quantity : undefined
+                })
+            )
+        })
+    })
 }
 
 async function New_TervisShopifyPOSPersonalizationFontSelect({
