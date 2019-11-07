@@ -137,6 +137,7 @@ async function New_TervisPersonalizationFormStructure ({
     var $Content
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
         $Content = html`
+            ${await New_TervisShopifyPersonalizationChargeLineItemIDInput({$PersonalizationProperties})}
             ${await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({
                 $PersonaliztaionProperties,
                 $ProductQuantityRemainingThatCanBePersonalized
@@ -164,6 +165,15 @@ async function New_TervisPersonalizationFormStructure ({
     Set_ContainerContent({
         $TargetElementSelector: "#PersonalizationFormContainer",
         $Content
+    })
+}
+
+async function New_TervisShopifyPersonalizationChargeLineItemIDInput({
+    $PersonalizationProperties
+}) {
+    return New_InputText({
+        $Value: $PersonalizationProperties ? $PersonalizationProperties.ID : undefined,
+        $Hidden: true
     })
 }
 
@@ -200,21 +210,21 @@ async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
 }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick () {
-    // var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
-    // var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
-    //     $LineItem: $SelectedLineItem
-    // })
+    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
+        $LineItem: $SelectedLineItem
+    })
+    var {
+        $ProductSize,
+        $ProductFormType
+    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedLineItem.title })
 
-    // New_TervisPersonalizationFormStructure({
-    //     $PersonaliztaionProperties,
-    //     $ProductSize,
-    //     $ProductFormType,
-    //     $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
-    // })
-    // await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({$PersonalizationProperties})
-    // await New_TervisShopifyPOSPersonalizationFontSelect({$PersonalizationProperties})
-    // await New_TervisShopifyPOSPersonalizationColorSelect({$PersonalizationProperties})
-    // await New_TervisPersonalizationSideAndLineElement({$PersonalizationProperties})
+    New_TervisPersonalizationFormStructure({
+        $PersonaliztaionProperties: $PersonalizationPropertiesFromLineItem,
+        $ProductSize,
+        $ProductFormType,
+        $ProductQuantityRemainingThatCanBePersonalized: $PersonalizationPropertiesFromLineItem.Quantity
+    })
 }
 
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect ({
@@ -551,6 +561,7 @@ function New_InputText ({
     $MinLength,
     $Required,
     $Pattern,
+    $Hidden,
     $OnChange
 }) {
     return html`
@@ -561,6 +572,7 @@ function New_InputText ({
         maxlength=${ifDefined($MaxLength)}
         minlength=${ifDefined($MinLength)}
         ?required=${$Required}
+        ?hidden=${$Hidden}
         pattern=${ifDefined($Pattern)}
         placeholder=${ifDefined($PlaceHolder)}
         @change=${$OnChange}
