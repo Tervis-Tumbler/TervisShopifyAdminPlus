@@ -262,7 +262,7 @@ async function New_TervisShopifyPOSPersonalizationColorSelect ({
     $PersonalizationProperties
 }) {
     return New_TervisSelect({
-        $Title: "Color",
+        $Title: "Color Name",
         $Options: $PersonalizationColors.map(
             $Color =>
             ({
@@ -435,6 +435,7 @@ async function Get_TervisPersonalizationFormProperties () {
     var $Properties = {}
     var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
     $Properties.FontName = $FontMetadata.Name
+    $Properties.ColorName = Get_TervisPersonalizationSelectedColorName()
 
     for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
         if (!$FontMetadata.MonogramStyle) {
@@ -504,6 +505,10 @@ function Get_ElementPropertyValue ({
 
 function Get_TervisPersonalizationSelectedFontName () {
     return Get_ElementPropertyValue({$QuerySelector: "[title='Font Name']", $PropertyName: "value"})
+}
+
+function Get_TervisPersonalizationSelectedColorName () {
+    return Get_ElementPropertyValue({$QuerySelector: "[title='Color Name']", $PropertyName: "value"})
 }
 
 function Get_TervisPersonalizationSelectedFontMetadata () {
