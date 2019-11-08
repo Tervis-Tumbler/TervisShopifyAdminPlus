@@ -200,6 +200,11 @@ async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
                 id=${$PersonalizationProperties.ID}
                 @click=${Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick}
             >Edit</button>
+            <button
+                type="button"
+                id=${$PersonalizationProperties.ID}
+                @click=${Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick}
+            >Remove</button>
             <br>
         `)
     } else {
@@ -225,6 +230,10 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick () {
         $ProductFormType,
         $ProductQuantityRemainingThatCanBePersonalized: $PersonalizationPropertiesFromLineItem.Quantity
     })
+}
+
+async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($Event) {
+    console.log($Event)
 }
 
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect ({
