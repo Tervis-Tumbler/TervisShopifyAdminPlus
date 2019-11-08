@@ -316,6 +316,7 @@ async function Update_TervisPersonalizationSideAndLineElement () {
         $ProductSize,
         $ProductFormType
     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedLineItem.title })
+
     var $Content = New_TervisPersonalizationSideAndLineElement({
         $ProductSize,
         $ProductFormType
@@ -403,6 +404,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
             $LineItemProperties
         })
 
+        Receive_TervisPersonalizationLineItemSelectOnChange()
         Out_TervisShopifyPOSDebug({$Object: $Cart})
     }
 }
