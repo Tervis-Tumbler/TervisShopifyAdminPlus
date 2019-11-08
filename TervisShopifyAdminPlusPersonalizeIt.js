@@ -433,9 +433,9 @@ async function Get_TervisPersonalizationFormProperties () {
     var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
     
     var $Properties = {}
+    $Properties.ColorName = Get_TervisPersonalizationSelectedColorName()
     var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
     $Properties.FontName = $FontMetadata.Name
-    $Properties.ColorName = Get_TervisPersonalizationSelectedColorName()
 
     for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
         if (!$FontMetadata.MonogramStyle) {
