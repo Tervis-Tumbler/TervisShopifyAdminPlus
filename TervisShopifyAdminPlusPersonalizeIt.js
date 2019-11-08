@@ -129,7 +129,7 @@ async function Receive_TervisPersonalizationLineItemSelectOnChange () {
 }
 
 async function New_TervisPersonalizationFormStructure ({
-    $PersonaliztaionProperties,
+    $PersonalizationProperties,
     $ProductSize,
     $ProductFormType,
     $ProductQuantityRemainingThatCanBePersonalized
@@ -139,17 +139,17 @@ async function New_TervisPersonalizationFormStructure ({
         $Content = html`
             ${await New_TervisShopifyPersonalizationChargeLineItemIDInput({$PersonalizationProperties})}
             ${await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({
-                $PersonaliztaionProperties,
+                $PersonalizationProperties,
                 $ProductQuantityRemainingThatCanBePersonalized
             })}
-            ${await New_TervisShopifyPOSPersonalizationColorSelect({$PersonaliztaionProperties})}
+            ${await New_TervisShopifyPOSPersonalizationColorSelect({$PersonalizationProperties})}
             ${await New_TervisShopifyPOSPersonalizationFontSelect({
-                $PersonaliztaionProperties,
+                $PersonalizationProperties,
                 $ProductSize,
                 $ProductFormType
             })}
             ${await New_TervisPersonalizationSideAndLineElement({
-                $PersonaliztaionProperties,
+                $PersonalizationProperties,
                 $ProductSize,
                 $ProductFormType
             })}
@@ -220,7 +220,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick () {
     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedLineItem.title })
 
     New_TervisPersonalizationFormStructure({
-        $PersonaliztaionProperties: $PersonalizationPropertiesFromLineItem,
+        $PersonalizationProperties: $PersonalizationPropertiesFromLineItem,
         $ProductSize,
         $ProductFormType,
         $ProductQuantityRemainingThatCanBePersonalized: $PersonalizationPropertiesFromLineItem.Quantity
