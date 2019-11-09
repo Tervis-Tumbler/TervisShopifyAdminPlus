@@ -233,7 +233,27 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick () {
 }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($Event) {
-    console.log($Event)
+    var $IDOfPersonalizationChargeLineToRemove = $Event.target.id
+    var $Cart = await Get_TervisShopifyCart()
+    var $LineItemToRemove = $Cart.line_items.filter( 
+        $LineItem =>
+        $LineItem.properties ?
+        $LineItem.properties.filter(
+            $Property =>
+            $Property.name === "ID" &&
+            $Property.value === $IDOfPersonalizationChargeLineToRemove
+        ) :
+        undefined
+    )
+
+    var $IndexOfItemToRemove = $Cart.line_items.indexOf($LineItemToRemove)
+    $Cart = await Remove_TervisShopifyCartLineItem({
+        $Cart,
+        $LineItemIndex: $IndexOfItemToRemove
+    })
+
+    Receive_TervisPersonalizationLineItemSelectOnChange()
+    Out_TervisShopifyPOSDebug({$Object: $Cart})
 }
 
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect ({
