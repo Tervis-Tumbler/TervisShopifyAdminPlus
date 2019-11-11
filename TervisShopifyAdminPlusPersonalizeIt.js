@@ -250,7 +250,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
             false
         ) :
         undefined
-    )
+    )[0]
 
     var $IndexOfItemToRemove = $Cart.line_items.indexOf($LineItemToRemove)
     $Cart = await Remove_TervisShopifyCartLineItem({
