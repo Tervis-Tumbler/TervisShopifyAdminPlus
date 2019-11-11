@@ -238,10 +238,16 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
     var $LineItemToRemove = $Cart.line_items.filter( 
         $LineItem =>
         $LineItem.properties ?
-        $LineItem.properties.filter(
-            $Property =>
-            $Property.name === "ID" &&
-            $Property.value === $IDOfPersonalizationChargeLineToRemove
+        $LineItem.properties.reduce(
+            ($HasMatchingIDProperty, $Property) =>
+            (
+                $HasMatchingIDProperty || 
+                (
+                    $Property.name === "ID" &&
+                    $Property.value === $IDOfPersonalizationChargeLineToRemove
+                )
+            ),
+            false
         ) :
         undefined
     )
