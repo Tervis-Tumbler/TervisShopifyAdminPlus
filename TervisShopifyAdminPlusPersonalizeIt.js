@@ -214,10 +214,28 @@ async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
     return $Content
 }
 
-async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick () {
-    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Event) {
+    var $IDOfPersonalizationChargeLineToRemove = $Event.target.id
+    var $Cart = await Get_TervisShopifyCart()
+    var $LineItemToEdit = $Cart.line_items.filter( 
+        $LineItem =>
+        $LineItem.properties ?
+        $LineItem.properties.reduce(
+            ($HasMatchingIDProperty, $Property) =>
+            (
+                $HasMatchingIDProperty || 
+                (
+                    $Property.name === "ID" &&
+                    $Property.value === $IDOfPersonalizationChargeLineToRemove
+                )
+            ),
+            false
+        ) :
+        undefined
+    )[0]
+
     var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
-        $LineItem: $SelectedLineItem
+        $LineItem: $LineItemToEdit
     })
     var {
         $ProductSize,
