@@ -242,11 +242,26 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         $ProductFormType
     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $LineItemToEdit.title })
 
+    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
+        $LineItem: $LineItemToEdit
+    })
+
+    var $SumOfQuantityOfPersonalizationChargeLines = $PersonalizationPropertiesFromLineItem ?
+        $PersonalizationPropertiesFromLineItem
+        .reduce(
+            ($Sum, $PersonalizationProperties) =>
+            ($Sum + Number($PersonalizationProperties.Quantity)),
+            0
+        ) :
+        0
+
+    var $QuantityRemiainingToBePersonalized = $LineItemToEdit.quantity + $SumOfQuantityOfPersonalizationChargeLines
+
     New_TervisPersonalizationFormStructure({
         $PersonalizationProperties: $PersonalizationPropertiesFromLineItem,
         $ProductSize,
         $ProductFormType,
-        $ProductQuantityRemainingThatCanBePersonalized: $PersonalizationPropertiesFromLineItem.Quantity
+        $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
     })
 }
 
