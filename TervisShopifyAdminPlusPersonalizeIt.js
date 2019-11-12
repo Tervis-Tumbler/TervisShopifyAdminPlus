@@ -242,8 +242,8 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         $ProductFormType
     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $LineItemToEdit.title })
 
-    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
-        $LineItem: $LineItemToEdit
+    var $PersonalizationPropertiesFromLineItem = Get_PersonalizationPropertiesFromPersonalizationChargeLineItem({
+        $PersonalizationChargeLineItem: $LineItemToEdit
     })
 
     var $SumOfQuantityOfPersonalizationChargeLines = $PersonalizationPropertiesFromLineItem ?
@@ -548,18 +548,24 @@ async function Get_TervisShopifyPOSLineItemPersonalizationProperties ({
     return $PersonalizationChargeLineItems.length > 0 ?
         $PersonalizationChargeLineItems.map(
             $PersonalizationChargeLineItem => {
-                var $Properties = $PersonalizationChargeLineItem.properties
-                // https://stackoverflow.com/a/44325124/101679
-                .reduce(
-                    ($FinalReturnValue, $CurrentValue) =>
-                    ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
-                    {}
-                )
-                $Properties.Quantity = $PersonalizationChargeLineItem.quantity
-                return $Properties
+                return Get_PersonalizationPropertiesFromPersonalizationChargeLineItem({$PersonalizationChargeLineItem})
             }
         ) :
         undefined
+}
+
+function Get_PersonalizationPropertiesFromPersonalizationChargeLineItem ({
+    $PersonalizationChargeLineItem
+}) {
+    var $Properties = $PersonalizationChargeLineItem.properties
+    // https://stackoverflow.com/a/44325124/101679
+    .reduce(
+        ($FinalReturnValue, $CurrentValue) =>
+        ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
+        {}
+    )
+    $Properties.Quantity = $PersonalizationChargeLineItem.quantity
+    return $Properties
 }
 
 // Replace with optional chaining once that has browser support https://github.com/tc39/proposal-optional-chaining
