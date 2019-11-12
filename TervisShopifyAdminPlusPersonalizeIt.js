@@ -240,7 +240,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
     var {
         $ProductSize,
         $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedLineItem.title })
+    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $PersonalizationPropertiesFromLineItem.title })
 
     New_TervisPersonalizationFormStructure({
         $PersonalizationProperties: $PersonalizationPropertiesFromLineItem,
