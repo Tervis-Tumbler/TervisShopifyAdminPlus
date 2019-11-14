@@ -75,7 +75,7 @@ function Get_TervisShopifyPOSPersonalizableLineItem ({
     )
 }
 
-async function New_TervisShopifyPOSPersonalizableLineItemSelect ({
+function New_TervisShopifyPOSPersonalizableLineItemSelect ({
     $Cart
 }) {
     var $PersonalizableLineItems = Get_TervisShopifyPOSPersonalizableLineItem({$Cart})
