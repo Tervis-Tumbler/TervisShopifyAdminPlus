@@ -594,12 +594,13 @@ function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChar
     Add_MemberScriptProperty({
         $InputObject: $PersonalizationChargeLineItems,
         $Name: "PropertiesObject",
-        $Value: () => this.properties
-        .reduce(
-            ($FinalReturnValue, $CurrentValue) =>
-            ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
-            {}
-        )
+        $Value: function () { 
+            return this.properties.reduce(
+                ($FinalReturnValue, $CurrentValue) =>
+                ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
+                {}
+            )
+        }
     })
 
     return $PersonalizationChargeLineItems
