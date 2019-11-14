@@ -603,10 +603,10 @@ function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChar
 }
 
 function Add_PersonalizationChargeLineCustomProperties ({
-    $PersonalizationChargeLine
+    $PersonalizationChargeLineItem
 }) {
     Add_MemberScriptProperty({
-        $InputObject: $PersonalizationChargeLine,
+        $InputObject: $PersonalizationChargeLineItem,
         $Name: "PropertiesObject",
         $Value: function () { 
             return this.properties.reduce(
