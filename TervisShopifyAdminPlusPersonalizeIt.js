@@ -228,7 +228,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         )
     }
 
-    $PersonalizationChargeLineItems = $PersonalizationChargeLineItems.splice(
+    $PersonalizationChargeLineItems.splice(
         $PersonalizationChargeLineItems.indexOf($PersonalizationChargeLineItemToEdit),
         1
     )
