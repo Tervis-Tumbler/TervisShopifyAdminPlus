@@ -593,7 +593,7 @@ async function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizati
 
     Add_MemberScriptProperty({
         $InputObject: $PersonalizationChargeLineItems,
-        $Name: PropertiesObject,
+        $Name: "PropertiesObject",
         $Value: () => this.properties
         .reduce(
             ($FinalReturnValue, $CurrentValue) =>
