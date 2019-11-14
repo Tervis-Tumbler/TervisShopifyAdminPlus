@@ -149,7 +149,7 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
     })
 }
 
-function Update_PersonalizationForm ({
+async function Update_PersonalizationForm ({
 }) {
     var $Cart = await Get_TervisShopifyCart()
     var $SelectedPersonalizableLineItem = Get_TervisShopifyPOSPersonalizableLineItemSelected()
@@ -382,7 +382,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
         $LineItemIndex: $IndexOfItemToRemove
     })
 
-    Update_PersonalizationForm()
+    await Update_PersonalizationForm()
     Out_TervisShopifyPOSDebug({$Object: $Cart})
 }
 
@@ -465,7 +465,7 @@ async function New_TervisPersonalizationFontPicker ({
 }
 
 async function Receive_TervisPersonalizationFontPickerOnChange () {
-    Update_PersonalizationForm()
+    await Update_PersonalizationForm()
     // Update_TervisPersonalizationSideAndLineElement()
 }
 
@@ -563,7 +563,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
             $LineItemProperties
         })
 
-        Update_PersonalizationForm()
+        await Update_PersonalizationForm()
         Out_TervisShopifyPOSDebug({$Object: $Cart})
     }
 }
