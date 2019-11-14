@@ -153,6 +153,10 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
     var $IndexOfPersonalizationChargeLineInCart = $Event.target.id
     var $Cart = await Get_TervisShopifyCart()
     var $PersonalizationChargeLineItemToEdit = $Cart.line_items[$IndexOfPersonalizationChargeLineInCart]
+    Add_PersonalizationChargeLineCustomProperties({
+        $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit
+    })
+    
     var $SelectedPersonalizableLineItem = Get_LineItemRelatedToPersonalizationChargeLineItem({ 
         $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit,
         $Cart
@@ -591,8 +595,18 @@ function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChar
         }
     )
 
+    Add_PersonalizationChargeLineCustomProperties({
+        $PersonalizationChargeLineItem: $PersonalizationChargeLineItems
+    })
+
+    return $PersonalizationChargeLineItems
+}
+
+function Add_PersonalizationChargeLineCustomProperties ({
+    $PersonalizationChargeLine
+}) {
     Add_MemberScriptProperty({
-        $InputObject: $PersonalizationChargeLineItems,
+        $InputObject: $PersonalizationChargeLine,
         $Name: "PropertiesObject",
         $Value: function () { 
             return this.properties.reduce(
@@ -602,8 +616,6 @@ function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChar
             )
         }
     })
-
-    return $PersonalizationChargeLineItems
 }
 
 // async function Get_TervisShopifyPOSLineItemPersonalizationProperties ({
