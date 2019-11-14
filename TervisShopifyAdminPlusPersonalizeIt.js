@@ -223,6 +223,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
             await New_TervisPersonalizationForm({
                 $ProductSize,
                 $ProductFormType,
+                $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit,
                 $ProductQuantityRemainingThatCanBePersonalized
             })
         )
