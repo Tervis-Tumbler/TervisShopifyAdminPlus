@@ -530,10 +530,10 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         var $Cart = await Get_TervisShopifyCart()
         var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()
-        var $PersonalizationChargeLineItemQuantity = Get_ElementPropertyValue({
+        var $PersonalizationChargeLineItemQuantity = Number(Get_ElementPropertyValue({
             $QuerySelector: "[title='Quantity of line item to apply personalization to']",
             $PropertyName: "value"
-        })
+        }))
         var $NumberOfPersonalizedSides = Get_TervisPersonalizationNumberSides({$PersonalizationProperties})
         var $LineItemProperties = $PersonalizationProperties
 
