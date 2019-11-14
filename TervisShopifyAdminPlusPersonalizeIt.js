@@ -151,7 +151,7 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
 
 async function Update_PersonalizationForm () {
     var $Cart = await Get_TervisShopifyCart()
-    var $SelectedPersonalizableLineItem = Get_TervisShopifyPOSPersonalizableLineItemSelected()
+    var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
     var $PersonalizationChargeLineItems =
     Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine({
         $Cart,
