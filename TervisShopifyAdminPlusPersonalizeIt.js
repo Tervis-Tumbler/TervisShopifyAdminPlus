@@ -118,7 +118,7 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
         $PersonalizableLineItem: $SelectedPersonalizableLineItem
     })
 
-    var $QuantityRemiainingToBePersonalized = Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
+    var $ProductQuantityRemainingThatCanBePersonalized = Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
         $PersonalizableLineItem: $SelectedPersonalizableLineItem,
         $PersonalizationChargeLineItems
     })
@@ -134,7 +134,7 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
             await New_TervisPersonalizationForm({
                 $ProductSize,
                 $ProductFormType,
-                $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
+                $ProductQuantityRemainingThatCanBePersonalized
             })
         )
     }
@@ -163,7 +163,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         $PersonalizableLineItem: $SelectedPersonalizableLineItem
     })
 
-    var $QuantityRemiainingToBePersonalized = Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
+    var $ProductQuantityRemainingThatCanBePersonalized = Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
         $PersonalizableLineItem: $SelectedPersonalizableLineItem,
         $PersonalizationChargeLineItems
     }) + $PersonalizationChargeLineItemToEdit.quantity
@@ -179,7 +179,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
             await New_TervisPersonalizationForm({
                 $ProductSize,
                 $ProductFormType,
-                $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
+                $ProductQuantityRemainingThatCanBePersonalized
             })
         )
     }
