@@ -100,7 +100,7 @@ function Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonaliz
         $PersonalizationChargeLineItems
         .reduce(
             ($Sum, $PersonalizationChargeLineItem) =>
-            ($Sum + Number($PersonalizationChargeLineItem.Quantity)),
+            ($Sum + Number($PersonalizationChargeLineItem.quantity)),
             0
         ) :
         0
