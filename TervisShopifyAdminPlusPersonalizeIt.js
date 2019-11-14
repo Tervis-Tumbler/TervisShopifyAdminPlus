@@ -131,7 +131,7 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
     var $Content = []
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
         $Content.push(
-            New_TervisPersonalizationForm({
+            await New_TervisPersonalizationForm({
                 $ProductSize,
                 $ProductFormType,
                 $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
@@ -176,7 +176,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
     var $Content = []
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
         $Content.push(
-            New_TervisPersonalizationForm({
+            await New_TervisPersonalizationForm({
                 $ProductSize,
                 $ProductFormType,
                 $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
