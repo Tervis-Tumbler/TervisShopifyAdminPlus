@@ -573,7 +573,7 @@ async function Get_TervisPersonalizationFormProperties () {
     return $Properties
 }
 
-async function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine ({
+function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine ({
     $Cart,
     $PersonalizableLineItem
 }) {
