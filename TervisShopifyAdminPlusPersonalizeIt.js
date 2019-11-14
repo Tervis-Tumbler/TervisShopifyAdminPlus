@@ -12,7 +12,8 @@ import {
 } from 'https://unpkg.com/@tervis/tervisproductmetadata?module'
 
 import {
-    New_Range
+    New_Range,
+    Add_MemberScriptProperty
 } from 'https://unpkg.com/@tervis/tervisutilityjs?module'
 
 var $ItemUPCToAddToCartForOneSidedPersonaliztaion = "093597845116"
@@ -37,7 +38,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
         $Content: html`
             <form id="ShopifyPOSPersonalizationForm">
                 <div id="LineItemSelectContainer"></div>
-                <div id="PersonalizationFormContainer"></div>
+                <div id="PersonalizationInformationContainer"></div>
                 <div id="PersonalizationChargeLineItemsContainer"></div>
                 <div id="Debug"></div>
             </form>
@@ -48,7 +49,11 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
 async function Receive_ShopifyPOSPersonalizationCart () {
     var $Cart = await Get_TervisShopifyCart()
     Out_TervisShopifyPOSDebug({$Object: $Cart})
-    New_TervisShopifyPOSPersonalizableLineItemSelect()
+    var $Content = New_TervisShopifyPOSPersonalizableLineItemSelect({$Cart})
+    Set_ContainerContent({
+        $TargetElementSelector: "#LineItemSelectContainer",
+        $Content
+    })
 }
 
 function Out_TervisShopifyPOSDebug ({
@@ -62,13 +67,20 @@ function Out_TervisShopifyPOSDebug ({
     }
 }
 
-async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
-    var $Cart = await Get_TervisShopifyCart()
-    var $PersonalizableLineItems = $Cart.line_items.filter(
+function Get_TervisShopifyPOSPersonalizableLineItem ({
+    $Cart
+}) {
+    return $Cart.line_items.filter(
         $LineItem => $LineItem.sku ? $LineItem.sku.slice(-1) === "P" : undefined
     )
+}
 
-    var $SelectLineItemContent = New_TervisSelect({
+async function New_TervisShopifyPOSPersonalizableLineItemSelect ({
+    $Cart
+}) {
+    var $PersonalizableLineItems = Get_TervisShopifyPOSPersonalizableLineItem({$Cart})
+
+    return New_TervisSelect({
         $Title: "Select Line Item To Personalize",
         $Options: $PersonalizableLineItems.map(
             $LineItem => ({
@@ -76,193 +88,227 @@ async function New_TervisShopifyPOSPersonalizableLineItemSelect () {
                 Text: `${$LineItem.title} ${$LineItem.quantity}`
             })
         ),
-        $OnChange: Receive_TervisPersonalizationLineItemSelectOnChange
-    })
-
-    Set_ContainerContent({
-        $TargetElementSelector: "#LineItemSelectContainer",
-        $Content: $SelectLineItemContent
+        $OnChange: Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange
     })
 }
 
-async function Receive_TervisPersonalizationLineItemSelectOnChange () {
-    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
-    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
-        $LineItem: $SelectedLineItem
-    })
-
-    var $SumOfQuantityOfPersonalizationChargeLines = $PersonalizationPropertiesFromLineItem ?
-        $PersonalizationPropertiesFromLineItem
+function Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
+    $PersonalizableLineItem,
+    $PersonalizationChargeLineItems
+}) {
+    var $SumOfQuantityOfPersonalizationChargeLines = $PersonalizationChargeLineItems ?
+        $PersonalizationChargeLineItems
         .reduce(
-            ($Sum, $PersonalizationProperties) =>
-            ($Sum + Number($PersonalizationProperties.Quantity)),
+            ($Sum, $PersonalizationChargeLineItem) =>
+            ($Sum + Number($PersonalizationChargeLineItem.Quantity)),
             0
         ) :
         0
 
-    var $QuantityRemiainingToBePersonalized = $SelectedLineItem.quantity - $SumOfQuantityOfPersonalizationChargeLines
+    return $PersonalizableLineItem.quantity - $SumOfQuantityOfPersonalizationChargeLines
+}
+
+async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Event) {
+    var $IndexInCartOfSelectedPersonalizableLineItem = $Event.target.value
+    var $Cart = await Get_TervisShopifyCart()
+    var $SelectedPersonalizableLineItem = $Cart.line_items[$IndexInCartOfSelectedPersonalizableLineItem]
+    var $PersonalizationChargeLineItems =
+    Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine({
+        $Cart,
+        $PersonalizableLineItem: $SelectedPersonalizableLineItem
+    })
+
+    var $QuantityRemiainingToBePersonalized = Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
+        $PersonalizableLineItem: $SelectedPersonalizableLineItem,
+        $PersonalizationChargeLineItems
+    })
 
     var {
         $ProductSize,
         $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedLineItem.title })
-
-    New_TervisPersonalizationFormStructure({
-        $ProductSize,
-        $ProductFormType,
-        $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
-    })
+    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
 
     var $Content = []
-    if ($PersonalizationPropertiesFromLineItem) {
-        for (var $PersonalizationProperties of $PersonalizationPropertiesFromLineItem) {
-            $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({$PersonalizationProperties}))
-        }
-    } else {
-        $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineDisplay({}))
+    if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
+        $Content.push(
+            New_TervisPersonalizationForm({
+                $ProductSize,
+                $ProductFormType,
+                $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
+            })
+        )
+    }
+
+    for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
+        $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
     }
 
     Set_ContainerContent({
-        $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
+        $TargetElementSelector: "#PersonalizationInformationContainer",
         $Content
     })
 }
 
-async function New_TervisPersonalizationFormStructure ({
-    $PersonalizationProperties,
+async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Event) {
+    var $IndexOfPersonalizationChargeLineInCart = $Event.target.id
+    var $Cart = await Get_TervisShopifyCart()
+    var $PersonalizationChargeLineItemToEdit = $Cart.line_items[$IndexOfPersonalizationChargeLineInCart]
+    var $SelectedPersonalizableLineItem = Get_LineItemRelatedToPersonalizationChargeLineItem({ 
+        $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit,
+        $Cart
+    })
+    var $PersonalizationChargeLineItems =
+    Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine({
+        $Cart,
+        $PersonalizableLineItem: $SelectedPersonalizableLineItem
+    })
+
+    var $QuantityRemiainingToBePersonalized = Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
+        $PersonalizableLineItem: $SelectedPersonalizableLineItem,
+        $PersonalizationChargeLineItems
+    }) + $PersonalizationChargeLineItemToEdit.quantity
+
+    var {
+        $ProductSize,
+        $ProductFormType
+    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
+
+    var $Content = []
+    if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
+        $Content.push(
+            New_TervisPersonalizationForm({
+                $ProductSize,
+                $ProductFormType,
+                $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
+            })
+        )
+    }
+
+    $PersonalizationChargeLineItems = $PersonalizationChargeLineItems.splice(
+        $PersonalizationChargeLineItems.indexOf($PersonalizationChargeLineItemToEdit),
+        1
+    )
+
+    for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
+        $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
+    }
+
+    Set_ContainerContent({
+        $TargetElementSelector: "#PersonalizationInformationContainer",
+        $Content
+    })
+
+    // var {
+    //     $ProductSize,
+    //     $ProductFormType
+    // } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $LineItemToEdit.title })
+
+    // var $PersonalizationPropertiesFromLineItem = Get_PersonalizationPropertiesFromPersonalizationChargeLineItem({
+    //     $PersonalizationChargeLineItem: $LineItemToEdit
+    // })
+
+    // var $SumOfQuantityOfPersonalizationChargeLines = $PersonalizationPropertiesFromLineItem ?
+    //     $PersonalizationPropertiesFromLineItem
+    //     .reduce(
+    //         ($Sum, $PersonalizationProperties) =>
+    //         ($Sum + Number($PersonalizationProperties.Quantity)),
+    //         0
+    //     ) :
+    //     0
+
+    // var $QuantityRemiainingToBePersonalized = $LineItemToEdit.quantity + $SumOfQuantityOfPersonalizationChargeLines
+
+    // New_TervisPersonalizationForm({
+    //     $PersonalizationChargeLineItem,
+    //     $ProductSize,
+    //     $ProductFormType,
+    //     $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
+    // })
+}
+
+async function New_TervisPersonalizationForm ({
+    $PersonalizationChargeLineItem,
     $ProductSize,
     $ProductFormType,
     $ProductQuantityRemainingThatCanBePersonalized
 }) {
-    var $Content
-    if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
-        $Content = html`
-            ${await New_TervisShopifyPersonalizationChargeLineItemIDInput({$PersonalizationProperties})}
-            ${await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({
-                $PersonalizationProperties,
-                $ProductQuantityRemainingThatCanBePersonalized
-            })}
-            ${await New_TervisShopifyPOSPersonalizationColorSelect({$PersonalizationProperties})}
-            ${await New_TervisShopifyPOSPersonalizationFontSelect({
-                $PersonalizationProperties,
-                $ProductSize,
-                $ProductFormType
-            })}
-            ${await New_TervisPersonalizationSideAndLineElement({
-                $PersonalizationProperties,
-                $ProductSize,
-                $ProductFormType
-            })}
-            <button
-                type="button"
-                @click=${Invoke_TervisShopifyPOSPersonalizationSave}
-            >Save</button>
-        `
-    } else {
-        $Content = html``
-    }
-
-    Set_ContainerContent({
-        $TargetElementSelector: "#PersonalizationFormContainer",
-        $Content
-    })
+    return html`
+        ${await New_TervisShopifyPersonalizationChargeLineItemIDInput({$PersonalizationChargeLineItem})}
+        ${await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({
+            $PersonalizationChargeLineItem,
+            $ProductQuantityRemainingThatCanBePersonalized
+        })}
+        ${await New_TervisShopifyPOSPersonalizationColorSelect({$PersonalizationChargeLineItem})}
+        ${await New_TervisShopifyPOSPersonalizationFontSelect({
+            $PersonalizationChargeLineItem,
+            $ProductSize,
+            $ProductFormType
+        })}
+        ${await New_TervisPersonalizationSideAndLineElement({
+            $PersonalizationChargeLineItem,
+            $ProductSize,
+            $ProductFormType
+        })}
+        <button
+            type="button"
+            @click=${Invoke_TervisShopifyPOSPersonalizationSave}
+        >Save</button>
+    `
 }
 
 async function New_TervisShopifyPersonalizationChargeLineItemIDInput({
-    $PersonalizationProperties
+    $PersonalizationChargeLineItem
 }) {
     return New_InputText({
-        $Value: $PersonalizationProperties ? $PersonalizationProperties.ID : undefined,
+        $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject.ID : undefined,
         $Hidden: true
     })
 }
 
-async function New_TervisShopifyPOSPersonaliztaionChargeLineDisplay ({
-    $PersonalizationProperties
+async function New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay ({
+    $PersonalizationChargeLineItem,
+    $Cart
 }) {
+    var $IndexOfPersonalizationChargeLineItem = $Cart.line_items.indexOf($PersonalizationChargeLineItem)
     var $Content
+    $Content = Object.entries($PersonalizationChargeLineItem.PropertiesObject)
+    .filter(
+        ([$Name, ]) => !["RelatedLineItemSKU", "ID"].includes($Name)
+    )
+    .map(
+        ([$Name, $Value]) =>
+        html`
+            ${$Name}: ${$Value}<br />
+        `
+    )
 
-    if ($PersonalizationProperties) {
-        $Content = Object.entries($PersonalizationProperties)
-        .filter(
-            ([$Name, ]) => !["RelatedLineItemSKU", "ID"].includes($Name)
-        )
-        .map(
-            ([$Name, $Value]) =>
-            html`
-                ${$Name}: ${$Value}<br />
-            `
-        )
-    
-        $Content.push(html`
-            <button
-                type="button"
-                id=${$PersonalizationProperties.ID}
-                @click=${Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick}
-            >Edit</button>
-            <button
-                type="button"
-                id=${$PersonalizationProperties.ID}
-                @click=${Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick}
-            >Remove</button>
-            <br>
-        `)
-    } else {
-        $Content = html``
-    }
+    $Content.push(html`Quantity: ${$PersonalizationChargeLineItem.quantity}<br />`)
+    $Content.push(html`
+        <button
+            type="button"
+            id=${$IndexOfPersonalizationChargeLineItem}
+            @click=${Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick}
+        >Edit</button>
+        <button
+            type="button"
+            id=${$IndexOfPersonalizationChargeLineItem}
+            @click=${Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick}
+        >Remove</button>
+        <br>
+    `)
 
     return $Content
 }
 
-async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Event) {
-    var $IDOfPersonalizationChargeLineToRemove = $Event.target.id
-    var $Cart = await Get_TervisShopifyCart()
-    var $LineItemToEdit = $Cart.line_items.filter( 
+function Get_LineItemRelatedToPersonalizationChargeLineItem ({
+    $PersonalizationChargeLineItem,
+    $Cart
+}) {
+
+    return $Cart.line_items.filter( 
         $LineItem =>
-        $LineItem.properties ?
-        $LineItem.properties.reduce(
-            ($HasMatchingIDProperty, $Property) =>
-            (
-                $HasMatchingIDProperty || 
-                (
-                    $Property.name === "ID" &&
-                    $Property.value === $IDOfPersonalizationChargeLineToRemove
-                )
-            ),
-            false
-        ) :
-        undefined
+        $LineItem.sku === $PersonalizationChargeLineItem.PropertiesObject.RelatedLineItemSKU
     )[0]
-
-    var $PersonalizationPropertiesFromLineItem = await Get_TervisShopifyPOSLineItemPersonalizationProperties({
-        $LineItem: $LineItemToEdit
-    })
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $LineItemToEdit.title })
-
-    var $PersonalizationPropertiesFromLineItem = Get_PersonalizationPropertiesFromPersonalizationChargeLineItem({
-        $PersonalizationChargeLineItem: $LineItemToEdit
-    })
-
-    var $SumOfQuantityOfPersonalizationChargeLines = $PersonalizationPropertiesFromLineItem ?
-        $PersonalizationPropertiesFromLineItem
-        .reduce(
-            ($Sum, $PersonalizationProperties) =>
-            ($Sum + Number($PersonalizationProperties.Quantity)),
-            0
-        ) :
-        0
-
-    var $QuantityRemiainingToBePersonalized = $LineItemToEdit.quantity + $SumOfQuantityOfPersonalizationChargeLines
-
-    New_TervisPersonalizationFormStructure({
-        $PersonalizationProperties: $PersonalizationPropertiesFromLineItem,
-        $ProductSize,
-        $ProductFormType,
-        $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
-    })
 }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($Event) {
@@ -291,12 +337,12 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
         $LineItemIndex: $IndexOfItemToRemove
     })
 
-    Receive_TervisPersonalizationLineItemSelectOnChange()
+    Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange()
     Out_TervisShopifyPOSDebug({$Object: $Cart})
 }
 
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect ({
-    $PersonalizationProperties,
+    $PersonalizationChargeLineItem,
     $ProductQuantityRemainingThatCanBePersonalized
 }) {
     return New_TervisSelect({
@@ -306,28 +352,28 @@ async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReciev
             $Quantity =>
             ({
                 Text: $Quantity,
-                Selected: $PersonalizationProperties ? $Quantity === $PersonalizationProperties.Quantity : undefined
+                Selected: $PersonalizationChargeLineItem ? $Quantity === $PersonalizationChargeLineItem.quantity : undefined
             })
         )
     })
 }
 
 async function New_TervisShopifyPOSPersonalizationFontSelect({
-    $PersonalizationProperties,
+    $PersonalizationChargeLineItem,
     $ProductSize,
     $ProductFormType
 }) {
     return await New_TervisPersonalizationFontPicker({
         $ProductSize,
         $ProductFormType,
-        $SelectedFontName: $PersonalizationProperties ?
-            $PersonalizationProperties.FontName :
+        $SelectedFontName: $PersonalizationChargeLineItem ?
+            $PersonalizationChargeLineItem.PropertiesObject.FontName :
             undefined
     })
 }
 
 async function New_TervisShopifyPOSPersonalizationColorSelect ({
-    $PersonalizationProperties
+    $PersonalizationChargeLineItem
 }) {
     return New_TervisSelect({
         $Title: "Color Name",
@@ -335,13 +381,13 @@ async function New_TervisShopifyPOSPersonalizationColorSelect ({
             $Color =>
             ({
                 Text: $Color,
-                Selected: $PersonalizationProperties ? $Color === $PersonalizationProperties.Color : undefined
+                Selected: $PersonalizationChargeLineItem ? $Color === $PersonalizationChargeLineItem.PropertiesObject.Color : undefined
             })
         )
     })
 }
 
-async function Get_TervisShopifyPOSLineItemSelected () {
+async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
     var $Cart = await Get_TervisShopifyCart()
     var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
     return $Cart.line_items[$SelectedLineItemIndex]
@@ -374,12 +420,12 @@ async function New_TervisPersonalizationFontPicker ({
 }
 
 async function Receive_TervisPersonalizationFontPickerOnChange () {
-    Receive_TervisPersonalizationLineItemSelectOnChange()
+    Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange()
     // Update_TervisPersonalizationSideAndLineElement()
 }
 
 async function Update_TervisPersonalizationSideAndLineElement () {
-    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+    var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
     var {
         $ProductSize,
         $ProductFormType
@@ -394,7 +440,7 @@ async function Update_TervisPersonalizationSideAndLineElement () {
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
 
 async function New_TervisPersonalizationSideAndLineElement ({
-    $PersonalizationProperties,
+    $PersonalizationChargeLineItem,
     $ProductSize,
     $ProductFormType
 }) {
@@ -412,7 +458,7 @@ async function New_TervisPersonalizationSideAndLineElement ({
                             $ID,
                             $PlaceHolder: $ID,
                             $MaxLength: $FontMetadata.MaximumCharactersPerLine,
-                            $Value: $PersonalizationProperties ? $PersonalizationProperties[$ID] ? $PersonalizationProperties[$ID] : "" : undefined
+                            $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
                         })
                     )
                 }
@@ -425,7 +471,7 @@ async function New_TervisPersonalizationSideAndLineElement ({
                         $MaxLength: 3,
                         $MinLength: $FontMetadata.AllCharactersRequired ? 3 : undefined,
                         $Pattern: $MonogramValidCharactersPatternAttributeRegex,
-                        $Value: $PersonalizationProperties ? $PersonalizationProperties[$ID] ? $PersonalizationProperties[$ID] : "" : undefined
+                        $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
                     })
                 )
             }
@@ -438,7 +484,7 @@ async function New_TervisPersonalizationSideAndLineElement ({
 async function Invoke_TervisShopifyPOSPersonalizationSave () {
     if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
         var $Cart = await Get_TervisShopifyCart()
-        var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+        var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()
         var $PersonalizationChargeLineItemQuantity = Get_ElementPropertyValue({
             $QuerySelector: "[title='Quantity of line item to apply personalization to']",
@@ -472,7 +518,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
             $LineItemProperties
         })
 
-        Receive_TervisPersonalizationLineItemSelectOnChange()
+        Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange()
         Out_TervisShopifyPOSDebug({$Object: $Cart})
     }
 }
@@ -495,7 +541,7 @@ function Get_TervisPersonalizationNumberSides ({
 }
 
 async function Get_TervisPersonalizationFormProperties () {
-    var $SelectedLineItem = await Get_TervisShopifyPOSLineItemSelected()
+    var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
     var {
         $ProductSize,
         $ProductFormType
@@ -527,46 +573,69 @@ async function Get_TervisPersonalizationFormProperties () {
     return $Properties
 }
 
-async function Get_TervisShopifyPOSLineItemPersonalizationProperties ({
-    $LineItem
+async function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine ({
+    $Cart,
+    $PersonalizableLineItem
 }) {
-    var $Cart = await Get_TervisShopifyCart()
     var $PersonalizationChargeLineItems = $Cart.line_items
-        .filter(
-            $CartLineItem => {
-                if ($CartLineItem.properties) { // remove once https://github.com/tc39/proposal-optional-chaining is live, next line should be $CartLineItem?.properties
-                    return $CartLineItem.properties
-                        .filter( 
-                            $Property =>
-                            $Property.name === "RelatedLineItemSKU" &&
-                            $Property.value === $LineItem.sku
-                        )[0]
-                }
+    .filter(
+        $CartLineItem => {
+            if ($CartLineItem.properties) { // remove once https://github.com/tc39/proposal-optional-chaining is live, next line should be $CartLineItem?.properties
+                return $CartLineItem.properties
+                    .filter( 
+                        $Property =>
+                        $Property.name === "RelatedLineItemSKU" &&
+                        $Property.value === $PersonalizableLineItem.sku
+                    )[0]
             }
+        }
+    )
+
+    Add_MemberScriptProperty({
+        $InputObject: $PersonalizationChargeLineItems,
+        $Name: PropertiesObject,
+        $Value: () => this.properties
+        .reduce(
+            ($FinalReturnValue, $CurrentValue) =>
+            ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
+            {}
         )
-    
-    return $PersonalizationChargeLineItems.length > 0 ?
-        $PersonalizationChargeLineItems.map(
-            $PersonalizationChargeLineItem => {
-                return Get_PersonalizationPropertiesFromPersonalizationChargeLineItem({$PersonalizationChargeLineItem})
-            }
-        ) :
-        undefined
+    })
+
+    return $PersonalizationChargeLineItems
 }
 
-function Get_PersonalizationPropertiesFromPersonalizationChargeLineItem ({
-    $PersonalizationChargeLineItem
-}) {
-    var $Properties = $PersonalizationChargeLineItem.properties
-    // https://stackoverflow.com/a/44325124/101679
-    .reduce(
-        ($FinalReturnValue, $CurrentValue) =>
-        ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
-        {}
-    )
-    $Properties.Quantity = $PersonalizationChargeLineItem.quantity
-    return $Properties
-}
+// async function Get_TervisShopifyPOSLineItemPersonalizationProperties ({
+//     $PersonalizableLineItem
+// }) {
+//     var $Cart = await Get_TervisShopifyCart()
+//     var $PersonalizationChargeLineItems = Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine({
+//         $Cart,
+//         $PersonalizableLineItem
+//     })
+    
+//     return $PersonalizationChargeLineItems.length > 0 ?
+//         $PersonalizationChargeLineItems.map(
+//             $PersonalizationChargeLineItem => {
+//                 return Get_PersonalizationPropertiesFromPersonalizationChargeLineItem({$PersonalizationChargeLineItem})
+//             }
+//         ) :
+//         undefined
+// }
+
+// function Get_PersonalizationPropertiesFromPersonalizationChargeLineItem ({
+//     $PersonalizationChargeLineItem
+// }) {
+//     var $Properties = $PersonalizationChargeLineItem.properties
+//     // https://stackoverflow.com/a/44325124/101679
+//     .reduce(
+//         ($FinalReturnValue, $CurrentValue) =>
+//         ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
+//         {}
+//     )
+//     $Properties.Quantity = $PersonalizationChargeLineItem.quantity
+//     return $Properties
+// }
 
 // Replace with optional chaining once that has browser support https://github.com/tc39/proposal-optional-chaining
 function Get_ElementPropertyValue ({
