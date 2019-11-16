@@ -580,7 +580,7 @@ async function Get_TervisPersonalizationFormProperties () {
     
     var $Properties = {}
     $Properties.ColorName = Get_TervisPersonalizationSelectedColorName()
-    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
+    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({})
     $Properties.FontName = $FontMetadata.Name
 
     for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
