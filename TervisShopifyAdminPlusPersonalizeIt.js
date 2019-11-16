@@ -409,7 +409,9 @@ async function New_TervisShopifyPOSPersonalizationColorSelect ({
             $Color =>
             ({
                 Text: $Color,
-                Selected: $PersonalizationChargeLineItem ? $Color === $PersonalizationChargeLineItem.PropertiesObject.Color : undefined
+                Selected: $PersonalizationChargeLineItem ?
+                    $Color === $PersonalizationChargeLineItem.PropertiesObject.ColorName :
+                    undefined
             })
         )
     })
@@ -472,7 +474,7 @@ async function New_TervisPersonalizationSideAndLineElement ({
     $ProductSize,
     $ProductFormType
 }) {
-    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata()
+    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$PersonalizationChargeLineItem})
     if ($FontMetadata) {
         var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
         
@@ -693,8 +695,13 @@ function Get_TervisPersonalizationSelectedColorName () {
     return Get_ElementPropertyValue({$QuerySelector: "[title='Color Name']", $PropertyName: "value"})
 }
 
-function Get_TervisPersonalizationSelectedFontMetadata () {
-    var $FontName = Get_TervisPersonalizationSelectedFontName()
+function Get_TervisPersonalizationSelectedFontMetadata ({
+    $PersonalizationChargeLineItem
+}) {
+    var $FontName = $PersonalizationChargeLineItem ?
+    $PersonalizationChargeLineItem.PropertiesObject.FontName :
+    Get_TervisPersonalizationSelectedFontName()
+    
     var $FontMetadata = $FontMetadataHashtable[$FontName]
     if ($FontMetadata) {
         $FontMetadata.Name = $FontName
