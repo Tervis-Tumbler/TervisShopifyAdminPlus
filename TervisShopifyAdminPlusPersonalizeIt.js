@@ -310,7 +310,7 @@ async function New_TervisShopifyPersonalizationChargeLineItemIDInput({
     return html`
         <input 
             type="hidden"
-            .value=${$IndexOfPersonalizationChargeLineInCart}
+            .value=${$ifDefined(IndexOfPersonalizationChargeLineInCart)}
         >
     `
 }
@@ -529,7 +529,6 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         var $LineItemProperties = $PersonalizationProperties
 
         $LineItemProperties.RelatedLineItemSKU = $SelectedLineItem.sku
-        $LineItemProperties.ID = uuidv4()
         
         var $Price
         if ($NumberOfPersonalizedSides === 1) {
@@ -836,13 +835,6 @@ function ConvertFrom_TervisShopifyPOSProductTitle ({
 }) {
     var [,$ProductFormType,,,$ProductSize] = $ProductTitle.split(".")
     return {$ProductSize, $ProductFormType}
-}
-
-// https://stackoverflow.com/a/2117523/101679
-function uuidv4() {
-    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-    );
 }
 
 main ()
