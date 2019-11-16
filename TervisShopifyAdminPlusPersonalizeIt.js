@@ -554,7 +554,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
             $Cart,
             $Price,
             $Quantity: $PersonalizationChargeLineItemQuantity,
-            $Title: `Personalization for sku ${$SelectedLineItem.sku} ${$SelectedLineItem.title}`
+            $Title: `Personalization for ${$SelectedLineItem.title} ${crypto.getRandomValues(new Uint16Array(1))[0]}`
         })
 
         var $LineItemIndex = $Cart.line_items.length - 1
