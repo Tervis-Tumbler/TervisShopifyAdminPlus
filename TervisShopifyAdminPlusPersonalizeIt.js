@@ -1,6 +1,7 @@
 import {
     html,
-    render
+    render,
+    directive
 } from 'https://unpkg.com/lit-html?module'
 
 import {
@@ -310,7 +311,7 @@ async function New_TervisShopifyPersonalizationChargeLineItemIDInput({
     return html`
         <input 
             type="hidden"
-            .value=${ifDefined($IndexOfPersonalizationChargeLineInCart)}
+            .value=${forceWrite($IndexOfPersonalizationChargeLineInCart ? $IndexOfPersonalizationChargeLineInCart : "")}
         >
     `
 }
@@ -836,6 +837,10 @@ function ConvertFrom_TervisShopifyPOSProductTitle ({
     var [,$ProductFormType,,,$ProductSize] = $ProductTitle.split(".")
     return {$ProductSize, $ProductFormType}
 }
+
+const forceWrite = directive((value) => (part) => {
+    part.setValue(value);
+  });
 
 main ()
 
