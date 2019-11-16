@@ -224,6 +224,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
                 $ProductSize,
                 $ProductFormType,
                 $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit,
+                $IndexOfPersonalizationChargeLineInCart,
                 $ProductQuantityRemainingThatCanBePersonalized
             })
         )
@@ -273,12 +274,13 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
 
 async function New_TervisPersonalizationForm ({
     $PersonalizationChargeLineItem,
+    $IndexOfPersonalizationChargeLineInCart,
     $ProductSize,
     $ProductFormType,
     $ProductQuantityRemainingThatCanBePersonalized
 }) {
     return html`
-        ${await New_TervisShopifyPersonalizationChargeLineItemIDInput({$PersonalizationChargeLineItem})}
+        ${await New_TervisShopifyPersonalizationChargeLineItemIDInput({$IndexOfPersonalizationChargeLineInCart})}
         ${await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({
             $PersonalizationChargeLineItem,
             $ProductQuantityRemainingThatCanBePersonalized
@@ -303,10 +305,10 @@ async function New_TervisPersonalizationForm ({
 }
 
 async function New_TervisShopifyPersonalizationChargeLineItemIDInput({
-    $PersonalizationChargeLineItem
+    $IndexOfPersonalizationChargeLineInCart
 }) {
     return New_InputText({
-        $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject.ID : undefined,
+        $Value: $IndexOfPersonalizationChargeLineInCart,
         $Hidden: true
     })
 }
