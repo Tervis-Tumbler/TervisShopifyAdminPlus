@@ -1,0 +1,88 @@
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
+
+<div id="content"></div>
+<script type="module">
+    import {
+        Remove_ObjectKeyWithEmptyOrNullValue
+    } from 'https://unpkg.com/@tervis/tervisutilityjs?module'
+
+    // Refactor these functions into separate module once we are no longer embedded using admin+
+    async function Get_TervisShopifyCart () {
+        return new Promise((resolve, reject) => {
+            ShopifyPOS.fetchCart({
+                success: resolve,
+                error: reject
+            })
+        })
+    }
+    window.Get_TervisShopifyCart = Get_TervisShopifyCart
+
+    // https://help.shopify.com/en/api/embedded-apps/shopify-pos-app-sdk/methods#add-line-item
+    async function Add_TervisShopifyCartLineItem ({
+        $Cart,
+        $Price,
+        $Quantity,
+        $Title,
+        $VariantID
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.addLineItem(
+                    Remove_ObjectKeyWithEmptyOrNullValue({
+                        price: $Price,
+                        quantity: $Quantity,
+                        title: $Title,
+                        variant_id: $VariantID
+                    }),
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Add_TervisShopifyCartLineItem = Add_TervisShopifyCartLineItem
+
+    // https://help.shopify.com/en/api/embedded-apps/shopify-pos-app-sdk/methods#add-line-item-properties
+    async function Add_TervisShopifyCartLineItemProperties ({
+        $Cart,
+        $LineItemIndex,
+        $LineItemProperties
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.addLineItemProperties(
+                    $LineItemIndex,
+                    $LineItemProperties,
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Add_TervisShopifyCartLineItemProperties = Add_TervisShopifyCartLineItemProperties
+
+    async function Remove_TervisShopifyCartLineItem ({
+        $Cart,
+        $LineItemIndex
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.removeLineItem(
+                    $LineItemIndex,
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Remove_TervisShopifyCartLineItem = Remove_TervisShopifyCartLineItem
+</script>
+
+<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.189?module"></script>
