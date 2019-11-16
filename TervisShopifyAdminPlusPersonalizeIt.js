@@ -381,6 +381,7 @@ async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReciev
 }) {
     return New_TervisSelect({
         $Title: "Quantity of line item to apply personalization to",
+        $Required: true,
         $Options:  New_Range({$Start: 1, $Stop: $ProductQuantityRemainingThatCanBePersonalized})
         .map(
             $Quantity =>
@@ -411,6 +412,7 @@ async function New_TervisShopifyPOSPersonalizationColorSelect ({
 }) {
     return New_TervisSelect({
         $Title: "Color Name",
+        $Required: true,
         $Options: $PersonalizationColors.map(
             $Color =>
             ({
@@ -445,6 +447,7 @@ async function New_TervisPersonalizationFontPicker ({
     var $FontNames = $ProductMetadata.Personalization.SupportedFontName
     return New_TervisSelect({
         $Title: "Font Name",
+        $Required: true,
         $Options: $FontNames.map(
             $FontName => ({
                 Text: $FontName,
@@ -795,12 +798,14 @@ function New_TervisSelect ({
     $Title,
     $ID,
     $Options,
+    $Required,
     $OnChange
 }) {
     return html`
         <select
             id=${ifDefined($ID)}
             title=${ifDefined($Title)}
+            ?required=${$Required}
             @change=${$OnChange}
         >
         <option selected disabled>${$Title}</option>
