@@ -310,7 +310,7 @@ async function New_TervisShopifyPersonalizationChargeLineItemIDInput({
     return html`
         <input 
             type="hidden"
-            .value=${$ifDefined(IndexOfPersonalizationChargeLineInCart)}
+            .value=${ifDefined($IndexOfPersonalizationChargeLineInCart)}
         >
     `
 }
