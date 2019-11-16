@@ -808,7 +808,7 @@ function New_TervisSelect ({
             ?required=${$Required}
             @change=${$OnChange}
         >
-        <option selected disabled>${$Title}</option>
+        <option selected disabled value="">${$Title}</option>
         ${
             $Options
             .map(
