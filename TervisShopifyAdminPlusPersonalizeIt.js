@@ -520,11 +520,6 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
     if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
         var $Cart = await Get_TervisShopifyCart()
         var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
-        var $IndexOfPersonalizationChargeLineBeingEdited = Get_ElementPropertyValue({
-            $QuerySelector: "input[type='hidden']",
-            $PropertyName: "value"
-        })
-        
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()
         var $PersonalizationChargeLineItemQuantity = Number(Get_ElementPropertyValue({
             $QuerySelector: "[title='Quantity of line item to apply personalization to']",
@@ -541,6 +536,18 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
             $Price = 5
         } else if ($NumberOfPersonalizedSides === 2) {
             $Price = 7.5
+        }
+
+        var $IndexOfPersonalizationChargeLineBeingEdited = Get_ElementPropertyValue({
+            $QuerySelector: "input[type='hidden']",
+            $PropertyName: "value"
+        })
+
+        if($IndexOfPersonalizationChargeLineBeingEdited) {
+            $Cart = await Remove_TervisShopifyCartLineItem({
+                $Cart,
+                $LineItemIndex: $IndexOfPersonalizationChargeLineBeingEdited
+            })
         }
 
         $Cart = await Add_TervisShopifyCartLineItem({
