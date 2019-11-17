@@ -425,43 +425,47 @@ async function New_TervisPersonalizationSideAndLineElement ({
     $ProductSize,
     $ProductFormType
 }) {
-    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$PersonalizationChargeLineItem})
-    if ($FontMetadata) {
-        var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+    
+    var $Content = []
+    for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
+        $Content.push(
+            New_TervisSelect({
+                $Title: `Side${$SideNumber}ColorName`,
+                $Required: true,
+                $Options: $PersonalizationColors.map(
+                    $Color =>
+                    ({
+                        Text: $Color,
+                        Selected: $PersonalizationChargeLineItem ?
+                            $Color === $PersonalizationChargeLineItem.PropertiesObject.ColorName :
+                            undefined
+                    })
+                )
+            })
+        )
         
-        var $Content = []
-        for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
-            $Content.push(
-                New_TervisSelect({
-                    $Title: `Side${$SideNumber}ColorName`,
-                    $Required: true,
-                    $Options: $PersonalizationColors.map(
-                        $Color =>
-                        ({
-                            Text: $Color,
-                            Selected: $PersonalizationChargeLineItem ?
-                                $Color === $PersonalizationChargeLineItem.PropertiesObject.ColorName :
-                                undefined
-                        })
-                    )
-                })
-            )
-            
-            var $FontNames = $ProductMetadata.Personalization.SupportedFontName
-            $Content.push(
-                New_TervisSelect({
-                    $Title: `Side${$SideNumber}FontName`,
-                    $Required: true,
-                    $Options: $FontNames.map(
-                        $FontName => ({
-                            Text: $FontName,
-                            Selected: $SelectedFontName === $FontName
-                        })
-                    ),
-                    $OnChange: Receive_TervisPersonalizationFontPickerOnChange
-                })
-            )
+        var $FontNames = $ProductMetadata.Personalization.SupportedFontName
+        $Content.push(
+            New_TervisSelect({
+                $Title: `Side${$SideNumber}FontName`,
+                $Required: true,
+                $Options: $FontNames.map(
+                    $FontName => ({
+                        Text: $FontName,
+                        Selected: $SelectedFontName === $FontName
+                    })
+                ),
+                $OnChange: Receive_TervisPersonalizationFontPickerOnChange
+            })
+        )
 
+        var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({
+            $PersonalizationChargeLineItem,
+            $SideNumber
+        })
+
+        if ($FontMetadata) {
             if (!$FontMetadata.MonogramStyle) {
                 for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
                     var $ID = `Side${$SideNumber}Line${$LineNumber}`
@@ -572,11 +576,12 @@ async function Get_TervisPersonalizationFormProperties () {
     var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
     
     var $Properties = {}
-    $Properties.ColorName = Get_TervisPersonalizationSelectedColorName()
-    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({})
-    $Properties.FontName = $FontMetadata.Name
 
     for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
+        $Properties[`Side${$SideNumber}ColorName`] = Get_TervisPersonalizationSelectedColorName({$SideNumber})
+        var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
+        $Properties[`Side${$SideNumber}FontName`] = $FontMetadata.Name
+
         if (!$FontMetadata.MonogramStyle) {
             for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
                 var $ID = `Side${$SideNumber}Line${$LineNumber}`
@@ -680,20 +685,25 @@ function Get_ElementPropertyValue ({
     undefined
 }
 
-function Get_TervisPersonalizationSelectedFontName () {
-    return Get_ElementPropertyValue({$QuerySelector: "[title='Font Name']", $PropertyName: "value"})
+function Get_TervisPersonalizationSelectedFontName ({
+    $SideNumber
+}) {
+    return Get_ElementPropertyValue({$QuerySelector: `[title='Side${$SideNumber}FontName']`, $PropertyName: "value"})
 }
 
-function Get_TervisPersonalizationSelectedColorName () {
-    return Get_ElementPropertyValue({$QuerySelector: "[title='Color Name']", $PropertyName: "value"})
+function Get_TervisPersonalizationSelectedColorName ({
+    $SideNumber
+}) {
+    return Get_ElementPropertyValue({$QuerySelector: `[title='Side${$SideNumber}ColorName']`, $PropertyName: "value"})
 }
 
 function Get_TervisPersonalizationSelectedFontMetadata ({
-    $PersonalizationChargeLineItem
+    $PersonalizationChargeLineItem,
+    $SideNumber
 }) {
     var $FontName = $PersonalizationChargeLineItem ?
     $PersonalizationChargeLineItem.PropertiesObject.FontName :
-    Get_TervisPersonalizationSelectedFontName()
+    Get_TervisPersonalizationSelectedFontName({$SideNumber})
     
     var $FontMetadata = $FontMetadataHashtable[$FontName]
     if ($FontMetadata) {
