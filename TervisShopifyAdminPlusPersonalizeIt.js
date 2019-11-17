@@ -422,7 +422,7 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
     })
 
     Set_ContainerContent({
-        $TargetElementSelector: `[title='${$Event.target.title}'] PersonalizationPropertiesSideAndLineFormContainer`,
+        $TargetElementSelector: `[title='${$Event.target.title}'] ~ [name='PersonalizationPropertiesSideAndLineFormContainer']`,
         $Content
     })
 
