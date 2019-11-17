@@ -438,7 +438,7 @@ async function New_TervisPersonalizationSideAndLineElement ({
                     ({
                         Text: $Color,
                         Selected: $PersonalizationChargeLineItem ?
-                            $Color === $PersonalizationChargeLineItem.PropertiesObject.ColorName :
+                            $Color === $PersonalizationChargeLineItem.PropertiesObject.[`Side${SideNumber}ColorName`] :
                             undefined
                     })
                 )
@@ -453,7 +453,9 @@ async function New_TervisPersonalizationSideAndLineElement ({
                 $Options: $FontNames.map(
                     $FontName => ({
                         Text: $FontName,
-                        Selected: $SelectedFontName === $FontName
+                        Selected: $PersonalizationChargeLineItem ?
+                        $FontName === $PersonalizationChargeLineItem.PropertiesObject[`Side${SideNumber}FontName`] :
+                        undefined
                     })
                 ),
                 $OnChange: Receive_TervisPersonalizationFontPickerOnChange
