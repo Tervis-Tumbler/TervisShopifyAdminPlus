@@ -444,6 +444,7 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
     })
 
     if ($FontMetadata) {
+        var $Content = []
         if (!$FontMetadata.MonogramStyle) {
             for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
                 var $ID = `Side${$SideNumber}Line${$LineNumber}`
@@ -469,9 +470,8 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
                 })
             )
         }
+        return $Content
     }
-
-    return $Content
 }
 
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
