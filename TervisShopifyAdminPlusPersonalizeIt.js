@@ -286,7 +286,7 @@ async function New_TervisPersonalizationForm ({
             $PersonalizationChargeLineItem,
             $ProductQuantityRemainingThatCanBePersonalized
         })}
-        ${await New_TervisPersonalizationSideAndLineElement({
+        ${await New_TervisPersonalizationPropertiesForm({
             $PersonalizationChargeLineItem,
             $ProductSize,
             $ProductFormType
@@ -400,27 +400,82 @@ function Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex () {
     })
 }
 
-async function Receive_TervisPersonalizationFontPickerOnChange () {
-    await Update_PersonalizationForm()
+async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
+    var $PersonalizationChargeLineItem = "" //Get index from hidden field present when editing and pull from cart
+    var $SideNumber = "" //Parse from event .target?
+    var $Content = New_TervisPersonalizationPropertiesSideAndLineForm({
+        $PersonalizationChargeLineItem,
+        $SideNumber
+    })
+
+    // Set_ContainerContent({
+    //     $TargetElementSelector: "some selector relative to something about the [title="${event.target.title}"] PersonalizationPropertiesSideAndLineFormContainer",
+    //     $Content
+    // })
+
+
+    
+    // await Update_PersonalizationForm()
+
     // Update_TervisPersonalizationSideAndLineElement()
 }
 
-async function Update_TervisPersonalizationSideAndLineElement () {
-    var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedLineItem.title })
+// async function Update_TervisPersonalizationSideAndLineElement () {
+//     var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
+//     var {
+//         $ProductSize,
+//         $ProductFormType
+//     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedLineItem.title })
 
-    var $Content = New_TervisPersonalizationSideAndLineElement({
-        $ProductSize,
-        $ProductFormType
+//     var $Content = New_TervisPersonalizationPropertiesForm({
+//         $ProductSize,
+//         $ProductFormType
+//     })
+// }
+
+async function New_TervisPersonalizationPropertiesSideAndLineForm ({
+    $PersonalizationChargeLineItem,
+    $SideNumber
+}) {
+    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({
+        $PersonalizationChargeLineItem,
+        $SideNumber
     })
+
+    if ($FontMetadata) {
+        if (!$FontMetadata.MonogramStyle) {
+            for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
+                var $ID = `Side${$SideNumber}Line${$LineNumber}`
+                $Content.push(
+                    New_InputText({
+                        $ID,
+                        $PlaceHolder: $ID,
+                        $MaxLength: $FontMetadata.MaximumCharactersPerLine,
+                        $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+                    })
+                )
+            }
+        } else {
+            var $ID = `Side${$SideNumber}Line1`
+            $Content.push(
+                New_InputText({
+                    $ID,
+                    $PlaceHolder: $ID,
+                    $MaxLength: 3,
+                    $MinLength: $FontMetadata.AllCharactersRequired ? 3 : undefined,
+                    $Pattern: $MonogramValidCharactersPatternAttributeRegex,
+                    $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+                })
+            )
+        }
+    }
+
+    return $Content
 }
 
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
 
-async function New_TervisPersonalizationSideAndLineElement ({
+async function New_TervisPersonalizationPropertiesForm ({
     $PersonalizationChargeLineItem,
     $ProductSize,
     $ProductFormType
@@ -462,38 +517,51 @@ async function New_TervisPersonalizationSideAndLineElement ({
             })
         )
 
-        var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({
-            $PersonalizationChargeLineItem,
-            $SideNumber
-        })
-
-        if ($FontMetadata) {
-            if (!$FontMetadata.MonogramStyle) {
-                for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
-                    var $ID = `Side${$SideNumber}Line${$LineNumber}`
-                    $Content.push(
-                        New_InputText({
-                            $ID,
-                            $PlaceHolder: $ID,
-                            $MaxLength: $FontMetadata.MaximumCharactersPerLine,
-                            $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+        $Content.push(
+            html`
+                <div name="PersonalizationPropertiesSideAndLineFormContainer">
+                    ${
+                        New_TervisPersonalizationPropertiesSideAndLineForm({
+                            $PersonalizationChargeLineItem,
+                            $SideNumber
                         })
-                    )
-                }
-            } else {
-                var $ID = `Side${$SideNumber}Line1`
-                $Content.push(
-                    New_InputText({
-                        $ID,
-                        $PlaceHolder: $ID,
-                        $MaxLength: 3,
-                        $MinLength: $FontMetadata.AllCharactersRequired ? 3 : undefined,
-                        $Pattern: $MonogramValidCharactersPatternAttributeRegex,
-                        $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
-                    })
-                )
-            }
-        }
+                    }
+                </div>
+            `
+        )
+
+        // var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({
+        //     $PersonalizationChargeLineItem,
+        //     $SideNumber
+        // })
+
+        // if ($FontMetadata) {
+        //     if (!$FontMetadata.MonogramStyle) {
+        //         for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
+        //             var $ID = `Side${$SideNumber}Line${$LineNumber}`
+        //             $Content.push(
+        //                 New_InputText({
+        //                     $ID,
+        //                     $PlaceHolder: $ID,
+        //                     $MaxLength: $FontMetadata.MaximumCharactersPerLine,
+        //                     $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+        //                 })
+        //             )
+        //         }
+        //     } else {
+        //         var $ID = `Side${$SideNumber}Line1`
+        //         $Content.push(
+        //             New_InputText({
+        //                 $ID,
+        //                 $PlaceHolder: $ID,
+        //                 $MaxLength: 3,
+        //                 $MinLength: $FontMetadata.AllCharactersRequired ? 3 : undefined,
+        //                 $Pattern: $MonogramValidCharactersPatternAttributeRegex,
+        //                 $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+        //             })
+        //         )
+        //     }
+        // }
     }
     return $Content
 }
