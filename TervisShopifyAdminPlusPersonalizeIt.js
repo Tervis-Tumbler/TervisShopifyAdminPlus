@@ -406,8 +406,21 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
     var $Cart = await Get_TervisShopifyCart()
     var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineBeingEdited]
     var $SideNumber = $Event.target.title[4]
+    
+    var $SelectedPersonalizableLineItem = Get_LineItemRelatedToPersonalizationChargeLineItem({ 
+        $PersonalizationChargeLineItem: $PersonalizationChargeLineItem,
+        $Cart
+    })
+
+    var {
+        $ProductSize,
+        $ProductFormType
+    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
+
+    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
     var $Content = New_TervisPersonalizationPropertiesSideAndLineForm({
         $PersonalizationChargeLineItem,
+        $ProductMetadata,
         $SideNumber
     })
 
@@ -436,6 +449,7 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
 
 function New_TervisPersonalizationPropertiesSideAndLineForm ({
     $PersonalizationChargeLineItem,
+    $ProductMetadata,
     $SideNumber
 }) {
     var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({
@@ -524,6 +538,7 @@ async function New_TervisPersonalizationPropertiesForm ({
                     ${
                         New_TervisPersonalizationPropertiesSideAndLineForm({
                             $PersonalizationChargeLineItem,
+                            $ProductMetadata,
                             $SideNumber
                         })
                     }
