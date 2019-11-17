@@ -438,7 +438,7 @@ async function New_TervisPersonalizationSideAndLineElement ({
                     ({
                         Text: $Color,
                         Selected: $PersonalizationChargeLineItem ?
-                            $Color === $PersonalizationChargeLineItem.PropertiesObject.[`Side${SideNumber}ColorName`] :
+                            $Color === $PersonalizationChargeLineItem.PropertiesObject[`Side${SideNumber}ColorName`] :
                             undefined
                     })
                 )
