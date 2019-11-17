@@ -401,20 +401,21 @@ function Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex () {
 }
 
 async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
-    var $PersonalizationChargeLineItem = "" //Get index from hidden field present when editing and pull from cart
-    var $SideNumber = "" //Parse from event .target?
+    var $Element = document.querySelector(`[title='${$Event.target.title}']`)
+    var $IndexOfPersonalizationChargeLineBeingEdited = $Element.closest("[type='hidden']").value
+    var $Cart = await Get_TervisShopifyCart()
+    var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineBeingEdited]
+    var $SideNumber = $Event.target.title[4]
     var $Content = New_TervisPersonalizationPropertiesSideAndLineForm({
         $PersonalizationChargeLineItem,
         $SideNumber
     })
 
-    // Set_ContainerContent({
-    //     $TargetElementSelector: "some selector relative to something about the [title="${event.target.title}"] PersonalizationPropertiesSideAndLineFormContainer",
-    //     $Content
-    // })
+    Set_ContainerContent({
+        $TargetElementSelector: `[title='${$Event.target.title}'] PersonalizationPropertiesSideAndLineFormContainer`,
+        $Content
+    })
 
-
-    
     // await Update_PersonalizationForm()
 
     // Update_TervisPersonalizationSideAndLineElement()
@@ -433,7 +434,7 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
 //     })
 // }
 
-async function New_TervisPersonalizationPropertiesSideAndLineForm ({
+function New_TervisPersonalizationPropertiesSideAndLineForm ({
     $PersonalizationChargeLineItem,
     $SideNumber
 }) {
