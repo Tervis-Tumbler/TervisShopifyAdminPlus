@@ -703,7 +703,7 @@ function Get_TervisPersonalizationSelectedFontMetadata ({
     $SideNumber
 }) {
     var $FontName = $PersonalizationChargeLineItem ?
-    $PersonalizationChargeLineItem.PropertiesObject.FontName :
+    $PersonalizationChargeLineItem.PropertiesObject[`Side${$SideNumber}FontName`] :
     Get_TervisPersonalizationSelectedFontName({$SideNumber})
     
     var $FontMetadata = $FontMetadataHashtable[$FontName]
