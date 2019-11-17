@@ -494,9 +494,8 @@ async function New_TervisPersonalizationSideAndLineElement ({
                 )
             }
         }
-        
-        return $Content
     }
+    return $Content
 }
 
 async function Invoke_TervisShopifyPOSPersonalizationSave () {
