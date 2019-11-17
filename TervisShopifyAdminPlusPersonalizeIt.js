@@ -407,10 +407,7 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
     var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineBeingEdited]
     var $SideNumber = $Event.target.title[4]
     
-    var $SelectedPersonalizableLineItem = Get_LineItemRelatedToPersonalizationChargeLineItem({ 
-        $PersonalizationChargeLineItem: $PersonalizationChargeLineItem,
-        $Cart
-    })
+    var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
 
     var {
         $ProductSize,
