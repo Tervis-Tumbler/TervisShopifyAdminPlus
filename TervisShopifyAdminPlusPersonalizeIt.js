@@ -402,7 +402,7 @@ function Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex () {
 
 async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
     var $Element = document.querySelector(`[title='${$Event.target.title}']`)
-    var $IndexOfPersonalizationChargeLineBeingEdited = $Element.closest("[type='hidden']").value
+    var $IndexOfPersonalizationChargeLineBeingEdited = $Element.closest("div").querySelector("[type='hidden']").value
     var $Cart = await Get_TervisShopifyCart()
     var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineBeingEdited]
     var $SideNumber = $Event.target.title[4]
