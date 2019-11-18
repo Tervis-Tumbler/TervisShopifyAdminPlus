@@ -408,7 +408,7 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
     Add_PersonalizationChargeLineCustomProperties({
         $PersonalizationChargeLineItem
     })
-    
+
     var $SideNumber = $Event.target.title[4]
     
     var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
@@ -533,21 +533,20 @@ async function New_TervisPersonalizationPropertiesForm ({
             })
         )
 
+        var $Thing = New_TervisPersonalizationPropertiesSideAndLineForm({
+            $PersonalizationChargeLineItem,
+            $ProductMetadata,
+            $SideNumber
+        })
+
         $Content.push(
             html`
                 <div name="PersonalizationPropertiesSideAndLineFormContainer">
-                   
+                   ${$Thing}
                 </div>
             `
         )
 
-        // ${
-        //     New_TervisPersonalizationPropertiesSideAndLineForm({
-        //         $PersonalizationChargeLineItem,
-        //         $ProductMetadata,
-        //         $SideNumber
-        //     })
-        // }
 
         // var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({
         //     $PersonalizationChargeLineItem,
