@@ -716,17 +716,19 @@ function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChar
 function Add_PersonalizationChargeLineCustomProperties ({
     $PersonalizationChargeLineItem
 }) {
-    Add_MemberScriptProperty({
-        $InputObject: $PersonalizationChargeLineItem,
-        $Name: "PropertiesObject",
-        $Value: function () { 
-            return this.properties.reduce(
-                ($FinalReturnValue, $CurrentValue) =>
-                ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
-                {}
-            )
-        }
-    })
+    if ($PersonalizationChargeLineItem) {
+        Add_MemberScriptProperty({
+            $InputObject: $PersonalizationChargeLineItem,
+            $Name: "PropertiesObject",
+            $Value: function () { 
+                return this.properties.reduce(
+                    ($FinalReturnValue, $CurrentValue) =>
+                    ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
+                    {}
+                )
+            }
+        })    
+    }
 }
 
 // async function Get_TervisShopifyPOSLineItemPersonalizationProperties ({
