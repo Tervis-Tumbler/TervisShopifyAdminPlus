@@ -529,19 +529,19 @@ async function New_TervisPersonalizationPropertiesForm ({
             })
         )
 
-        // $Content.push(
-        //     html`
-        //         <div name="PersonalizationPropertiesSideAndLineFormContainer">
-        //             ${
-        //                 New_TervisPersonalizationPropertiesSideAndLineForm({
-        //                     $PersonalizationChargeLineItem,
-        //                     $ProductMetadata,
-        //                     $SideNumber
-        //                 })
-        //             }
-        //         </div>
-        //     `
-        // )
+        $Content.push(
+            html`
+                <div name="PersonalizationPropertiesSideAndLineFormContainer">
+                    ${
+                        // New_TervisPersonalizationPropertiesSideAndLineForm({
+                        //     $PersonalizationChargeLineItem,
+                        //     $ProductMetadata,
+                        //     $SideNumber
+                        // })
+                    }
+                </div>
+            `
+        )
 
         // var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({
         //     $PersonalizationChargeLineItem,
