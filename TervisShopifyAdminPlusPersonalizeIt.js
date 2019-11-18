@@ -532,16 +532,18 @@ async function New_TervisPersonalizationPropertiesForm ({
         $Content.push(
             html`
                 <div name="PersonalizationPropertiesSideAndLineFormContainer">
-                    ${
-                        // New_TervisPersonalizationPropertiesSideAndLineForm({
-                        //     $PersonalizationChargeLineItem,
-                        //     $ProductMetadata,
-                        //     $SideNumber
-                        // })
-                    }
+                   
                 </div>
             `
         )
+
+        // ${
+        //     New_TervisPersonalizationPropertiesSideAndLineForm({
+        //         $PersonalizationChargeLineItem,
+        //         $ProductMetadata,
+        //         $SideNumber
+        //     })
+        // }
 
         // var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({
         //     $PersonalizationChargeLineItem,
