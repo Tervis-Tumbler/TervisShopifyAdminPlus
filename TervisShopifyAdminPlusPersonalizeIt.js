@@ -459,6 +459,7 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
                 $ID,
                 $PlaceHolder: $ID,
                 $MaxLength: 13,
+                $Hidden: true,
                 $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
             })
         )
@@ -472,6 +473,7 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
             $MaxLength: 3,
             $MinLength: 3,
             $Pattern: $MonogramValidCharactersPatternAttributeRegex,
+            $Hidden: true,
             $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
         })
     )
@@ -483,6 +485,7 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
             $PlaceHolder: $ID,
             $MaxLength: 3,
             $Pattern: $MonogramValidCharactersPatternAttributeRegex,
+            $Hidden: true,
             $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
         })
     )
