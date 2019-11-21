@@ -424,15 +424,19 @@ async function Receive_TervisPersonalizationFontNameSelectOnChange ($Event) {
     var $NodesToShow
     if ($FontMetadata.MonogramStyle) {
         if ($FontMetadata.AllCharactersRequired) {
-            $NodesToHide = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id='Side${$SideNumber}MonogramAllCharactersRequired']:not([hidden])`)
-            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id='Side${$SideNumber}MonogramAllCharactersRequired'][hidden]`)
+            $NodesToHide = document.querySelectorAll(
+                `#PersonalizationInformationContainer [type='text'][id='Side${$SideNumber}MonogramAllCharactersNotRequired']:not([hidden]), #PersonalizationInformationContainer [type='text'][id^='Side${$SideNumber}']:not([id^='Side${$SideNumber}MonogramAllCharactersRequired'])`
+            )
+            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id^='Side${$SideNumber}MonogramAllCharactersRequired'][hidden]`)
         } else {
-            $NodesToHide = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id='Side${$SideNumber}MonogramAllCharactersNotRequired']:not([hidden])`)
-            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id='Side${$SideNumber}MonogramAllCharactersNotRequired'][hidden]`)
+            $NodesToHide = document.querySelectorAll(
+                `#PersonalizationInformationContainer [type='text'][id='Side${$SideNumber}MonogramAllCharactersRequired']:not([hidden]), #PersonalizationInformationContainer [type='text'][id^='Side${$SideNumber}']:not([id^='Side${$SideNumber}MonogramAllCharactersNotRequired'])`
+            )
+            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id^='Side${$SideNumber}MonogramAllCharactersNotRequired'][hidden]`)
         }
     } else {
-        $NodesToHide = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id='Side${$SideNumber}Monogram']:not([hidden])`)
-        $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][hidden]:not([id='Side${$SideNumber}Monogram']`)
+        $NodesToHide = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id^='Side${$SideNumber}Monogram']:not([hidden])`)
+        $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][hidden][id^='Side${$SideNumber}'][hidden]:not([id^='Side${$SideNumber}Monogram']`)
     }
 
     $NodesToHide.forEach(
