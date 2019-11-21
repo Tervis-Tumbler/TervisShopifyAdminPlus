@@ -398,7 +398,7 @@ function Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex () {
     })
 }
 
-async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
+async function Receive_TervisPersonalizationFontNameSelectOnChange ($Event) {
     var $Element = document.querySelector(`[title='${$Event.target.title}']`)
     var $IndexOfPersonalizationChargeLineBeingEdited = $Element.closest("div").querySelector("[type='hidden']").value
     var $Cart = await Get_TervisShopifyCart()
@@ -417,20 +417,33 @@ async function Receive_TervisPersonalizationFontPickerOnChange ($Event) {
     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
 
     var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-    var $Content = New_TervisPersonalizationPropertiesSideAndLineForm({
-        $PersonalizationChargeLineItem,
-        $ProductMetadata,
-        $SideNumber
-    })
 
-    Set_ContainerContent({
-        $TargetElementSelector: `[title='${$Event.target.title}'] ~ [name='PersonalizationPropertiesSideAndLineFormContainer']`,
-        $Content
-    })
+    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
 
-    // await Update_PersonalizationForm()
+    var $NodesToHide
+    var $NodesToShow
+    if (!$FontMetadata.MonogramStyle) {
+        if ($FontMetadata.AllCharactersRequired) {
+            $NodesToHide = document.querySelectorAll("#PersonalizationInformationContainer [type='text'][id*='AllCharactersRequired']:not([hidden])")
+            $NodesToShow = document.querySelectorAll("#PersonalizationInformationContainer [type='text'][id*='AllCharactersRequired'][hidden]")
+        } else {
+            $NodesToHide = document.querySelectorAll("#PersonalizationInformationContainer [type='text'][id*='AllCharactersNotRequired']:not([hidden])")
+            $NodesToShow = document.querySelectorAll("#PersonalizationInformationContainer [type='text'][id*='AllCharactersNotRequired'][hidden]")
+        }
+    } else {
+        $NodesToHide = document.querySelectorAll("#PersonalizationInformationContainer [type='text'][id*='Monogram']:not([hidden])")
+        $NodesToShow = document.querySelectorAll("#PersonalizationInformationContainer [type='text'][hidden]:not([id*='Monogram']")
+    }
 
-    // Update_TervisPersonalizationSideAndLineElement()
+    $NodesToHide.forEach(
+        $Node =>
+        $Node.hidden = true
+    )
+
+    $NodesToShow.forEach(
+        $Node =>
+        $Node.hidden = false
+    )
 }
 
 // async function Update_TervisPersonalizationSideAndLineElement () {
@@ -478,7 +491,7 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
         })
     )
 
-    var $ID = `Side${$SideNumber}MonogramLine1`
+    var $ID = `Side${$SideNumber}MonogramAllCharactersNotRequiredLine1`
     $Content.push(
         New_InputText({
             $ID,
@@ -532,7 +545,7 @@ async function New_TervisPersonalizationPropertiesForm ({
                         undefined
                     })
                 ),
-                $OnChange: Receive_TervisPersonalizationFontPickerOnChange
+                $OnChange: Receive_TervisPersonalizationFontNameSelectOnChange
             })
         )
 
