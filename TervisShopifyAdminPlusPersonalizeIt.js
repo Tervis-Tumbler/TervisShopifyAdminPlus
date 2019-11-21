@@ -17,14 +17,12 @@ import {
     Add_MemberScriptProperty
 } from 'https://unpkg.com/@tervis/tervisutilityjs?module'
 
-var $ItemUPCToAddToCartForOneSidedPersonaliztaion = "093597845116"
-var $ItemUPCToAddToCartForTwoSidedPersonaliztaion = "093597845123"
-
-var $ItemSKUToAddToCartForOneSidedPersonaliztaion = "1154266"
-var $ItemSKUToAddToCartForTwoSidedPersonaliztaion = "1154269"
-
-var $ItemVariantIDToAddToCartForOneSidedPersonaliztaion = "30370826125393"
-var $ItemVariantIDToAddToCartForTwoSidedPersonaliztaion = "31038255431761"
+// var $ItemUPCToAddToCartForOneSidedPersonaliztaion = "093597845116"
+// var $ItemUPCToAddToCartForTwoSidedPersonaliztaion = "093597845123"
+// var $ItemSKUToAddToCartForOneSidedPersonaliztaion = "1154266"
+// var $ItemSKUToAddToCartForTwoSidedPersonaliztaion = "1154269"
+// var $ItemVariantIDToAddToCartForOneSidedPersonaliztaion = "30370826125393"
+// var $ItemVariantIDToAddToCartForTwoSidedPersonaliztaion = "31038255431761"
 
 var $Debug = true
 
@@ -453,40 +451,42 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
     $ProductMetadata,
     $SideNumber
 }) {
-    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({
-        $PersonalizationChargeLineItem,
-        $SideNumber
-    })
-
-    if ($FontMetadata) {
-        var $Content = []
-        if (!$FontMetadata.MonogramStyle) {
-            for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
-                var $ID = `Side${$SideNumber}Line${$LineNumber}`
-                $Content.push(
-                    New_InputText({
-                        $ID,
-                        $PlaceHolder: $ID,
-                        $MaxLength: $FontMetadata.MaximumCharactersPerLine,
-                        $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
-                    })
-                )
-            }
-        } else {
-            var $ID = `Side${$SideNumber}Line1`
-            $Content.push(
-                New_InputText({
-                    $ID,
-                    $PlaceHolder: $ID,
-                    $MaxLength: 3,
-                    $MinLength: $FontMetadata.AllCharactersRequired ? 3 : undefined,
-                    $Pattern: $MonogramValidCharactersPatternAttributeRegex,
-                    $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
-                })
-            )
-        }
-        return $Content
+    var $Content = []
+    for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
+        var $ID = `Side${$SideNumber}Line${$LineNumber}`
+        $Content.push(
+            New_InputText({
+                $ID,
+                $PlaceHolder: $ID,
+                $MaxLength: 13,
+                $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+            })
+        )
     }
+
+    var $ID = `Side${$SideNumber}MonogramAllCharactersRequiredLine1`
+    $Content.push(
+        New_InputText({
+            $ID,
+            $PlaceHolder: $ID,
+            $MaxLength: 3,
+            $MinLength: 3,
+            $Pattern: $MonogramValidCharactersPatternAttributeRegex,
+            $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+        })
+    )
+
+    var $ID = `Side${$SideNumber}MonogramLine1`
+    $Content.push(
+        New_InputText({
+            $ID,
+            $PlaceHolder: $ID,
+            $MaxLength: 3,
+            $Pattern: $MonogramValidCharactersPatternAttributeRegex,
+            $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+        })
+    )
+    return $Content
 }
 
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
@@ -541,9 +541,7 @@ async function New_TervisPersonalizationPropertiesForm ({
 
         $Content.push(
             html`
-                <div name="PersonalizationPropertiesSideAndLineFormContainer">
-                   ${$Thing}
-                </div>
+                ${$Thing}
             `
         )
 
