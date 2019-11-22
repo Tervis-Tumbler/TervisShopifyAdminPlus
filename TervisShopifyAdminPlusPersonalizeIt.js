@@ -14,7 +14,8 @@ import {
 
 import {
     New_Range,
-    Add_MemberScriptProperty
+    Add_MemberScriptProperty,
+    Remove_ObjectKeyWithEmptyOrNullValue
 } from 'https://unpkg.com/@tervis/tervisutilityjs?module'
 
 // var $ItemUPCToAddToCartForOneSidedPersonaliztaion = "093597845116"
@@ -684,7 +685,7 @@ async function Get_TervisPersonalizationFormProperties () {
         $Node => $Properties[$Node.id.replace(/MonogramAllCharactersRequired/, "").replace(/MonogramAllCharactersNotRequired/, "")] = $Node.value
     )
 
-    return $Properties
+    return Remove_ObjectKeyWithEmptyOrNullValue($Properties)
 }
 
 function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine ({
