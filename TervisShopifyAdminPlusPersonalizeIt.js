@@ -675,7 +675,15 @@ function Get_TervisPersonalizationNumberSides ({
 
 async function Get_TervisPersonalizationFormProperties () {
     var $Properties = {}
-    Array.from(document.querySelectorAll("#PersonalizationInformationContainer input:not([id*='Monogram']):not([hidden])"))
+    Array.from(
+        document
+        .querySelectorAll(
+            "#PersonalizationInformationContainer"
+        )
+        .querySelectorAll(
+            "input:not([id*='Monogram']):not([hidden]), select:not([hidden])"
+        )
+    )
     .filter( $Node => $Node.value)
     .forEach(
         $Node => $Properties[$Node.id] = $Node.value
