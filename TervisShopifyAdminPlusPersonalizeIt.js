@@ -673,36 +673,17 @@ function Get_TervisPersonalizationNumberSides ({
 }
 
 async function Get_TervisPersonalizationFormProperties () {
-    var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle ({ $ProductTitle: $SelectedLineItem.title })
-    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-    
     var $Properties = {}
+    document.querySelectorAll("#PersonalizationInformationContainer input:not([id*='Monogram']):not([hidden])")
+    .forEach(
+        $Node => $Properties[$Node.id] = $Node.value
+    )
 
-    for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
-        $Properties[`Side${$SideNumber}ColorName`] = Get_TervisPersonalizationSelectedColorName({$SideNumber})
-        var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
-        $Properties[`Side${$SideNumber}FontName`] = $FontMetadata.Name
+    document.querySelectorAll("#PersonalizationInformationContainer input[id*='Monogram']:not([hidden])")
+    .forEach(
+        $Node => $Properties[$Node.id.replace(/MonogramAllCharactersRequired/, "").replace(/MonogramAllCharactersNotRequired/, "")] = $Node.value
+    )
 
-        if (!$FontMetadata.MonogramStyle) {
-            for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
-                var $ID = `Side${$SideNumber}Line${$LineNumber}`
-                var $Value = Get_ElementPropertyValue({$PropertyName: "value", $QuerySelector: `#${$ID}`})
-                if ($Value) {
-                    $Properties[$ID] = $Value
-                }
-            }
-        } else {
-            var $ID = `Side${$SideNumber}Line1`
-            var $Value = Get_ElementPropertyValue({$PropertyName: "value", $QuerySelector: `#${$ID}`})
-            if ($Value) {
-                $Properties[$ID] = $Value
-            }
-        }
-    }
     return $Properties
 }
 
