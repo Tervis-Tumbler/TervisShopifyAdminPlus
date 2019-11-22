@@ -677,7 +677,7 @@ async function Get_TervisPersonalizationFormProperties () {
     var $Properties = {}
     Array.from(
         document
-        .querySelectorAll(
+        .querySelector(
             "#PersonalizationInformationContainer"
         )
         .querySelectorAll(
