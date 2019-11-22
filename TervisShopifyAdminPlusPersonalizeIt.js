@@ -14,16 +14,8 @@ import {
 
 import {
     New_Range,
-    Add_MemberScriptProperty,
-    Remove_ObjectKeyWithEmptyOrNullValue
+    Add_MemberScriptProperty
 } from 'https://unpkg.com/@tervis/tervisutilityjs?module'
-
-// var $ItemUPCToAddToCartForOneSidedPersonaliztaion = "093597845116"
-// var $ItemUPCToAddToCartForTwoSidedPersonaliztaion = "093597845123"
-// var $ItemSKUToAddToCartForOneSidedPersonaliztaion = "1154266"
-// var $ItemSKUToAddToCartForTwoSidedPersonaliztaion = "1154269"
-// var $ItemVariantIDToAddToCartForOneSidedPersonaliztaion = "30370826125393"
-// var $ItemVariantIDToAddToCartForTwoSidedPersonaliztaion = "31038255431761"
 
 var $Debug = true
 
@@ -243,33 +235,6 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         $TargetElementSelector: "#PersonalizationInformationContainer",
         $Content
     })
-
-    // var {
-    //     $ProductSize,
-    //     $ProductFormType
-    // } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $LineItemToEdit.title })
-
-    // var $PersonalizationPropertiesFromLineItem = Get_PersonalizationPropertiesFromPersonalizationChargeLineItem({
-    //     $PersonalizationChargeLineItem: $LineItemToEdit
-    // })
-
-    // var $SumOfQuantityOfPersonalizationChargeLines = $PersonalizationPropertiesFromLineItem ?
-    //     $PersonalizationPropertiesFromLineItem
-    //     .reduce(
-    //         ($Sum, $PersonalizationProperties) =>
-    //         ($Sum + Number($PersonalizationProperties.Quantity)),
-    //         0
-    //     ) :
-    //     0
-
-    // var $QuantityRemiainingToBePersonalized = $LineItemToEdit.quantity + $SumOfQuantityOfPersonalizationChargeLines
-
-    // New_TervisPersonalizationForm({
-    //     $PersonalizationChargeLineItem,
-    //     $ProductSize,
-    //     $ProductFormType,
-    //     $ProductQuantityRemainingThatCanBePersonalized: $QuantityRemiainingToBePersonalized
-    // })
 }
 
 async function New_TervisPersonalizationForm ({
@@ -426,18 +391,18 @@ async function Receive_TervisPersonalizationFontNameSelectOnChange ($Event) {
     if ($FontMetadata.MonogramStyle) {
         if ($FontMetadata.AllCharactersRequired) {
             $NodesToHide = document.querySelectorAll(
-                `#PersonalizationInformationContainer [type='text'][id='Side${$SideNumber}MonogramAllCharactersNotRequired']:not([hidden]), #PersonalizationInformationContainer [type='text'][id^='Side${$SideNumber}']:not([id^='Side${$SideNumber}MonogramAllCharactersRequired'])`
+                `#PersonalizationInformationContainer [type='text'][title='Side${$SideNumber}MonogramAllCharactersNotRequired']:not([hidden]), #PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}']:not([title^='Side${$SideNumber}MonogramAllCharactersRequired'])`
             )
-            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id^='Side${$SideNumber}MonogramAllCharactersRequired'][hidden]`)
+            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}MonogramAllCharactersRequired'][hidden]`)
         } else {
             $NodesToHide = document.querySelectorAll(
-                `#PersonalizationInformationContainer [type='text'][id='Side${$SideNumber}MonogramAllCharactersRequired']:not([hidden]), #PersonalizationInformationContainer [type='text'][id^='Side${$SideNumber}']:not([id^='Side${$SideNumber}MonogramAllCharactersNotRequired'])`
+                `#PersonalizationInformationContainer [type='text'][title='Side${$SideNumber}MonogramAllCharactersRequired']:not([hidden]), #PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}']:not([title^='Side${$SideNumber}MonogramAllCharactersNotRequired'])`
             )
-            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id^='Side${$SideNumber}MonogramAllCharactersNotRequired'][hidden]`)
+            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}MonogramAllCharactersNotRequired'][hidden]`)
         }
     } else {
-        $NodesToHide = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][id^='Side${$SideNumber}Monogram']:not([hidden])`)
-        $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][hidden][id^='Side${$SideNumber}'][hidden]:not([id^='Side${$SideNumber}Monogram']`)
+        $NodesToHide = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}Monogram']:not([hidden])`)
+        $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][hidden][title^='Side${$SideNumber}'][hidden]:not([title^='Side${$SideNumber}Monogram']`)
     }
 
     $NodesToHide.forEach(
@@ -451,19 +416,6 @@ async function Receive_TervisPersonalizationFontNameSelectOnChange ($Event) {
     )
 }
 
-// async function Update_TervisPersonalizationSideAndLineElement () {
-//     var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
-//     var {
-//         $ProductSize,
-//         $ProductFormType
-//     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedLineItem.title })
-
-//     var $Content = New_TervisPersonalizationPropertiesForm({
-//         $ProductSize,
-//         $ProductFormType
-//     })
-// }
-
 function New_TervisPersonalizationPropertiesSideAndLineForm ({
     $PersonalizationChargeLineItem,
     $ProductMetadata,
@@ -471,40 +423,40 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
 }) {
     var $Content = []
     for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
-        var $ID = `Side${$SideNumber}Line${$LineNumber}`
+        var $Title = `Side${$SideNumber}Line${$LineNumber}`
         $Content.push(
             New_InputText({
-                $ID,
-                $PlaceHolder: $ID,
+                $Title,
+                $PlaceHolder: $Title,
                 $MaxLength: 13,
                 $Hidden: true,
-                $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+                $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$Title] ? $PersonalizationChargeLineItem.PropertiesObject[$Title] : "" : undefined
             })
         )
     }
 
-    var $ID = `Side${$SideNumber}MonogramAllCharactersRequiredLine1`
+    var $Title = `Side${$SideNumber}MonogramAllCharactersRequiredLine1`
     $Content.push(
         New_InputText({
-            $ID,
-            $PlaceHolder: $ID,
+            $Title,
+            $PlaceHolder: $Title,
             $MaxLength: 3,
             $MinLength: 3,
             $Pattern: $MonogramValidCharactersPatternAttributeRegex,
             $Hidden: true,
-            $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+            $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$Title] ? $PersonalizationChargeLineItem.PropertiesObject[$Title] : "" : undefined
         })
     )
 
-    var $ID = `Side${$SideNumber}MonogramAllCharactersNotRequiredLine1`
+    var $Title = `Side${$SideNumber}MonogramAllCharactersNotRequiredLine1`
     $Content.push(
         New_InputText({
-            $ID,
-            $PlaceHolder: $ID,
+            $Title,
+            $PlaceHolder: $Title,
             $MaxLength: 3,
             $Pattern: $MonogramValidCharactersPatternAttributeRegex,
             $Hidden: true,
-            $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
+            $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$Title] ? $PersonalizationChargeLineItem.PropertiesObject[$Title] : "" : undefined
         })
     )
     return $Content
@@ -565,40 +517,6 @@ async function New_TervisPersonalizationPropertiesForm ({
                 ${$Thing}
             `
         )
-
-
-        // var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({
-        //     $PersonalizationChargeLineItem,
-        //     $SideNumber
-        // })
-
-        // if ($FontMetadata) {
-        //     if (!$FontMetadata.MonogramStyle) {
-        //         for (var $LineNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumLineCount})) {
-        //             var $ID = `Side${$SideNumber}Line${$LineNumber}`
-        //             $Content.push(
-        //                 New_InputText({
-        //                     $ID,
-        //                     $PlaceHolder: $ID,
-        //                     $MaxLength: $FontMetadata.MaximumCharactersPerLine,
-        //                     $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
-        //                 })
-        //             )
-        //         }
-        //     } else {
-        //         var $ID = `Side${$SideNumber}Line1`
-        //         $Content.push(
-        //             New_InputText({
-        //                 $ID,
-        //                 $PlaceHolder: $ID,
-        //                 $MaxLength: 3,
-        //                 $MinLength: $FontMetadata.AllCharactersRequired ? 3 : undefined,
-        //                 $Pattern: $MonogramValidCharactersPatternAttributeRegex,
-        //                 $Value: $PersonalizationChargeLineItem ? $PersonalizationChargeLineItem.PropertiesObject[$ID] ? $PersonalizationChargeLineItem.PropertiesObject[$ID] : "" : undefined
-        //             })
-        //         )
-        //     }
-        // }
     }
     return $Content
 }
@@ -681,18 +599,18 @@ async function Get_TervisPersonalizationFormProperties () {
             "#PersonalizationInformationContainer"
         )
         .querySelectorAll(
-            "input:not([id*='Monogram']):not([hidden]), select:not([hidden])"
+            "input:not([title*='Monogram']):not([hidden]), select:not([hidden])"
         )
     )
     .filter( $Node => $Node.value)
     .forEach(
-        $Node => $Properties[$Node.id] = $Node.value
+        $Node => $Properties[$Node.title] = $Node.value
     )
 
-    Array.from(document.querySelectorAll("#PersonalizationInformationContainer input[id*='Monogram']:not([hidden])"))
+    Array.from(document.querySelectorAll("#PersonalizationInformationContainer input[title*='Monogram']:not([hidden])"))
     .filter( $Node => $Node.value)
     .forEach(
-        $Node => $Properties[$Node.id.replace(/MonogramAllCharactersRequired/, "").replace(/MonogramAllCharactersNotRequired/, "")] = $Node.value
+        $Node => $Properties[$Node.title.replace(/MonogramAllCharactersRequired/, "").replace(/MonogramAllCharactersNotRequired/, "")] = $Node.value
     )
 
     return $Properties
@@ -740,38 +658,6 @@ function Add_PersonalizationChargeLineCustomProperties ({
         })    
     }
 }
-
-// async function Get_TervisShopifyPOSLineItemPersonalizationProperties ({
-//     $PersonalizableLineItem
-// }) {
-//     var $Cart = await Get_TervisShopifyCart()
-//     var $PersonalizationChargeLineItems = Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine({
-//         $Cart,
-//         $PersonalizableLineItem
-//     })
-    
-//     return $PersonalizationChargeLineItems.length > 0 ?
-//         $PersonalizationChargeLineItems.map(
-//             $PersonalizationChargeLineItem => {
-//                 return Get_PersonalizationPropertiesFromPersonalizationChargeLineItem({$PersonalizationChargeLineItem})
-//             }
-//         ) :
-//         undefined
-// }
-
-// function Get_PersonalizationPropertiesFromPersonalizationChargeLineItem ({
-//     $PersonalizationChargeLineItem
-// }) {
-//     var $Properties = $PersonalizationChargeLineItem.properties
-//     // https://stackoverflow.com/a/44325124/101679
-//     .reduce(
-//         ($FinalReturnValue, $CurrentValue) =>
-//         ($FinalReturnValue[$CurrentValue.name] = $CurrentValue.value, $FinalReturnValue),
-//         {}
-//     )
-//     $Properties.Quantity = $PersonalizationChargeLineItem.quantity
-//     return $Properties
-// }
 
 // Replace with optional chaining once that has browser support https://github.com/tc39/proposal-optional-chaining
 function Get_ElementPropertyValue ({
@@ -851,6 +737,7 @@ var $PersonalizationColors =  [
 
 function New_InputText ({
     $ID,
+    $Title,
     $Value,
     $PlaceHolder,
     $MaxLength,
@@ -863,6 +750,7 @@ function New_InputText ({
     return html`
     <input
         id=${ifDefined($ID)}
+        title=${ifDefined($Title)}
         .value=${ifDefined($Value)}
         type="text"
         maxlength=${ifDefined($MaxLength)}
@@ -936,3 +824,10 @@ main ()
 //         "restrictionUrl": "c:\\Program Files\\nChannel\\Personalize\\PersonalizationGuidelines.html",
 //     };
 // }
+
+// var $ItemUPCToAddToCartForOneSidedPersonaliztaion = "093597845116"
+// var $ItemUPCToAddToCartForTwoSidedPersonaliztaion = "093597845123"
+// var $ItemSKUToAddToCartForOneSidedPersonaliztaion = "1154266"
+// var $ItemSKUToAddToCartForTwoSidedPersonaliztaion = "1154269"
+// var $ItemVariantIDToAddToCartForOneSidedPersonaliztaion = "30370826125393"
+// var $ItemVariantIDToAddToCartForTwoSidedPersonaliztaion = "31038255431761"
