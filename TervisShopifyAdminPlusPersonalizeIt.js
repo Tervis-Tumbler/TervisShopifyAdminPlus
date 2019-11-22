@@ -675,13 +675,13 @@ function Get_TervisPersonalizationNumberSides ({
 
 async function Get_TervisPersonalizationFormProperties () {
     var $Properties = {}
-    document.querySelectorAll("#PersonalizationInformationContainer input:not([id*='Monogram']):not([hidden])")
+    Array.from(document.querySelectorAll("#PersonalizationInformationContainer input:not([id*='Monogram']):not([hidden])"))
     .filter( $Node => $Node.value)
     .forEach(
         $Node => $Properties[$Node.id] = $Node.value
     )
 
-    document.querySelectorAll("#PersonalizationInformationContainer input[id*='Monogram']:not([hidden])")
+    Array.from(document.querySelectorAll("#PersonalizationInformationContainer input[id*='Monogram']:not([hidden])"))
     .filter( $Node => $Node.value)
     .forEach(
         $Node => $Properties[$Node.id.replace(/MonogramAllCharactersRequired/, "").replace(/MonogramAllCharactersNotRequired/, "")] = $Node.value
