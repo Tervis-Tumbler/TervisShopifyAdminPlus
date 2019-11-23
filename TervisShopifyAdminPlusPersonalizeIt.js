@@ -24,7 +24,7 @@ async function main () {
     Receive_ShopifyPOSPersonalizationCart()
 }
 
-function Receive_SideCheckboxOnChnage ($Event) {
+async function Receive_SideCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}IsCustomerSuppliedDecorationLabel"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
