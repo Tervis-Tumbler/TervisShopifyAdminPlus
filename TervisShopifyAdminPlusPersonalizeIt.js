@@ -198,8 +198,8 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
         })
     }
 
+    var $Content = []
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
-        var $Content = []
         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
     }
 
