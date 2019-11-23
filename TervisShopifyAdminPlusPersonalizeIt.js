@@ -30,7 +30,75 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
         $Content: html`
             <form id="ShopifyPOSPersonalizationForm">
                 <div id="LineItemSelectContainer"></div>
-                <div id="PersonalizationInformationContainer"></div>
+                <div id="PersonalizationInformationContainer">
+                    <input type="hidden" value="">
+                    <input type="checkbox" title="Side1">
+                    <input type="checkbox" title="Side1CustomerSupplied" hidden>
+                    <input type="text" title="Side1CustomerSuppliedNote" hidden>
+                    <select title="Side1ColorName" required="" hidden>
+                        <option selected="" disabled="" value="">Side1ColorName</option>
+                        <option>Black</option>
+                        <option>Chocolate</option>
+                        <option>Fuchsia</option>
+                        <option>Green</option>
+                        <option>Hunter</option>
+                        <option>Navy</option>
+                        <option>Orange</option>
+                        <option>Purple</option>
+                        <option>Red</option>
+                        <option>Royal Blue</option>
+                        <option>Turquoise</option>
+                        <option>White</option>
+                        <option>Yellow</option>
+                    </select>
+                    <select title="Side1FontName" required="" hidden>
+                        <option selected="" disabled="" value="">Side1FontName</option>
+                        <option>Script</option>
+                        <option>Block U/L</option>
+                        <option>Monogram</option>
+                        <option>Initials Block</option>
+                        <option>Initials Script</option>
+                    </select>
+                    <input type="text" title="Side1Line1" maxlength="13" placeholder="Side1Line1" hidden>
+                    <input type="text" title="Side1Line2" maxlength="13" placeholder="Side1Line2" hidden>
+                    <input type="text" title="Side1Line3" maxlength="13" placeholder="Side1Line3" hidden>
+                    <input type="text" title="Side1MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden="" pattern="[A-Z]*" placeholder="Side1MonogramAllCharactersRequiredLine1">
+                    <input type="text" title="Side1MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden="" pattern="[A-Z]*" placeholder="Side1MonogramAllCharactersNotRequiredLine1">
+                    <input type="checkbox" title="Side2">
+                    <input type="checkbox" title="Side2CustomerSupplied" hidden>
+                    <input type="text" title="Side2CustomerSuppliedNote" hidden>
+                    <select title="Side2ColorName" required="" hidden>
+                        <option selected="" disabled="" value="">Side2ColorName</option>
+                        <option>Black</option>
+                        <option>Chocolate</option>
+                        <option>Fuchsia</option>
+                        <option>Green</option>
+                        <option>Hunter</option>
+                        <option>Navy</option>
+                        <option>Orange</option>
+                        <option>Purple</option>
+                        <option>Red</option>
+                        <option>Royal Blue</option>
+                        <option>Turquoise</option>
+                        <option>White</option>
+                        <option>Yellow</option>
+                    </select>
+                    <select title="Side2FontName" required="" hidden>
+                        <option selected="" disabled="" value="">Side2FontName</option>
+                        <option>Script</option>
+                        <option>Block U/L</option>
+                        <option>Monogram</option>
+                        <option>Initials Block</option>
+                        <option>Initials Script</option>
+                    </select>
+                    <input type="text" title="Side2Line1" maxlength="13" placeholder="Side2Line1" hidden>
+                    <input type="text" title="Side2Line2" maxlength="13" placeholder="Side2Line2" hidden>
+                    <input type="text" title="Side2Line3" maxlength="13" placeholder="Side2Line3" hidden>
+                    <input type="text" title="Side2MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden="" pattern="[A-Z]*" placeholder="Side2MonogramAllCharactersRequiredLine1">
+                    <input type="text" title="Side2MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden="" pattern="[A-Z]*" placeholder="Side2MonogramAllCharactersNotRequiredLine1">
+                    <button type="button">Save</button>
+                    <br>
+                </div>
                 <div id="PersonalizationChargeLineItemsContainer"></div>
                 <div id="Debug"></div>
             </form>
@@ -135,10 +203,10 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
     }
 
-    Set_ContainerContent({
-        $TargetElementSelector: "#PersonalizationInformationContainer",
-        $Content
-    })
+    // Set_ContainerContent({
+    //     $TargetElementSelector: "#PersonalizationInformationContainer",
+    //     $Content
+    // })
 }
 
 async function Update_PersonalizationForm () {
