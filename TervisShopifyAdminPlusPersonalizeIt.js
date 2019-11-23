@@ -34,7 +34,7 @@ async function Receive_SideCheckboxOnChnage ($Event) {
     var $SupportedFontNames = $ProductMetadata.Personalization.SupportedFontName
     
     this.closest('div')
-    .querySelectorAll(`[title="${$SideName}ColorName"] option`)
+    .querySelectorAll(`[title="${$SideName}FontName"] option`)
     .forEach($Element => {
         if(!$Element.disabled) {
             $Element.hidden = !$SupportedFontNames.includes($Element.value)
