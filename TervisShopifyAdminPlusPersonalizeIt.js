@@ -45,8 +45,7 @@ function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
     .forEach($Element => $Element.hidden = !this.checked)
 }
 
-function Receive_FontNameOnChnage ($Event) {
-    //Need to account for products that limit the number of lines that can be personalized for non monogram fonts
+async function Receive_FontNameOnChnage ($Event) {
     var $SideName = $Event.target.title.substring(0,5)
     var $FormContainer = this.closest('div')
     var $NodesToHide = []
@@ -70,7 +69,22 @@ function Receive_FontNameOnChnage ($Event) {
             }
         } else {
             $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
-            $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][hidden][title^='${$SideName}'][hidden]:not([title^='${$SideName}Monogram']`)
+
+            var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
+            var {
+                $ProductSize,
+                $ProductFormType
+            } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
+            var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+            var $MaximumSideCount = $ProductMetadata.Personalization.MaximumSideCount
+            
+            var $Selector = New_Range({$Start: 1, $Stop: $MaximumSideCount})
+            .map(
+                $LineNumber =>
+                `[type='text'][title='${$SideName}Line${$LineNumber}'][hidden]:not([title^='${$SideName}Monogram']`
+            )
+            .join(", ")
+            $NodesToShow = $FormContainer.querySelectorAll($Selector)
         }
     } else {
         $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title*='${$SideName}']:not([hidden])`)
