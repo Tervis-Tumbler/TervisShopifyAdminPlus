@@ -44,7 +44,7 @@ function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
 
 function Receive_FontNameOnChnage ($Event) {
     var $SideName = $Event.target.title.substring(0,5)
-    $FormContainer = this.closest('div')
+    var $FormContainer = this.closest('div')
     $FormContainer
 
     var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
