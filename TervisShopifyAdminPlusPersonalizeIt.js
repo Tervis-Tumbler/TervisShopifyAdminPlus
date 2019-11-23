@@ -83,7 +83,7 @@ async function Receive_FontNameOnChnage ($Event) {
                 $LineNumber =>
                 `[type='text'][title='${$SideName}Line${$LineNumber}'][hidden]:not([title^='${$SideName}Monogram']`
             )
-            .join(", ")
+            .join(",")
             $NodesToShow = $FormContainer.querySelectorAll($Selector)
         }
     } else {
