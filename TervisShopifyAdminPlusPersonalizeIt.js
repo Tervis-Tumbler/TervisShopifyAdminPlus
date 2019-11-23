@@ -27,7 +27,18 @@ async function main () {
 function Recieve_SideCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title
     this.closest('div')
-    .querySelectorAll(`[title="${$SideName}CustomerSuppliedLabel"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
+    .querySelectorAll(`[title="${$SideName}IsCustomerSuppliedDecorationLabel"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
+    .forEach($Node => $Node.hidden = !this.checked)
+}
+
+function Recieve_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
+    var $SideName = $Event.target.title.substring(0,4)
+    this.closest('div')
+    .querySelectorAll(`[title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
+    .forEach($Node => $Node.hidden = this.checked)
+
+    this.closest('div')
+    .querySelectorAll(`[title="${$SideName}CustomerSuppliedDecorationNote"]`)
     .forEach($Node => $Node.hidden = !this.checked)
 }
 
@@ -44,11 +55,11 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                         Enable Side 1 Personalization
                         <input type="checkbox" title="Side1" @change=${Recieve_SideCheckboxOnChnage}>
                     </label>
-                    <label title="Side1CustomerSuppliedLabel" hidden>
-                        Customer Supplied Decoration
-                        <input type="checkbox" title="Side1CustomerSupplied">
+                    <label title="Side1IsCustomerSuppliedDecorationLabel" hidden>
+                        Is Customer Supplied Decoration
+                        <input type="checkbox" title="Side1IsCustomerSuppliedDecoration" @change=${Recieve_CustomerSuppliedDecorationCheckboxOnChnage}>
                     </label>
-                    <input type="text" title="Side1CustomerSuppliedNote" hidden>
+                    <input type="text" title="Side1CustomerSuppliedDecorationNote" hidden>
                     <select title="Side1ColorName" required="" hidden>
                         <option selected="" disabled="" value="">Side1ColorName</option>
                         <option>Black</option>
@@ -82,11 +93,11 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                         Enable Side 2 Personalization
                         <input type="checkbox" title="Side2" @change=${Recieve_SideCheckboxOnChnage}>
                     </label>
-                    <label title="Side2CustomerSuppliedLabel" hidden>
-                        Customer Supplied Decoration
-                        <input type="checkbox" title="Side2CustomerSupplied">
+                    <label title="Side2IsCustomerSuppliedDecorationLabel" hidden>
+                        Is Customer Supplied Decoration
+                        <input type="checkbox" title="Side2IsCustomerSuppliedDecoration" @change=${Recieve_CustomerSuppliedDecorationCheckboxOnChnage}>
                     </label>
-                    <input type="text" title="Side2CustomerSuppliedNote" hidden>
+                    <input type="text" title="Side2CustomerSuppliedDecorationNote" hidden>
                     <select title="Side2ColorName" required="" hidden>
                         <option selected="" disabled="" value="">Side2ColorName</option>
                         <option>Black</option>
