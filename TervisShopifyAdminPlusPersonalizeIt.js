@@ -30,6 +30,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
         $Content: html`
             <form id="ShopifyPOSPersonalizationForm">
                 <div id="LineItemSelectContainer"></div>
+                <div id="QuantityRemainingToPersonalizeContainer"></div>
                 <div id="PersonalizationInformationContainer">
                     <input type="hidden" value="">
                     <input type="checkbox" title="Side1">
@@ -188,25 +189,21 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
         $ProductFormType
     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
 
-    var $Content = []
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
-        $Content.push(
-            await New_TervisPersonalizationForm({
-                $ProductSize,
-                $ProductFormType,
+        Set_ContainerContent({
+            $TargetElementSelector: "#QuantityRemainingToPersonalizeContainer",
+            $Content: await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({
                 $ProductQuantityRemainingThatCanBePersonalized
             })
-        )
+        })
     }
 
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
-        $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
+        Set_ContainerContent({
+            $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
+            $Content: await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart})
+        })
     }
-
-    // Set_ContainerContent({
-    //     $TargetElementSelector: "#PersonalizationInformationContainer",
-    //     $Content
-    // })
 }
 
 async function Update_PersonalizationForm () {
@@ -299,10 +296,10 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
     }
 
-    Set_ContainerContent({
-        $TargetElementSelector: "#PersonalizationInformationContainer",
-        $Content
-    })
+    // Set_ContainerContent({
+    //     $TargetElementSelector: "#PersonalizationInformationContainer",
+    //     $Content
+    // })
 }
 
 async function New_TervisPersonalizationForm ({
@@ -314,10 +311,6 @@ async function New_TervisPersonalizationForm ({
 }) {
     return html`
         ${await New_TervisShopifyPersonalizationChargeLineItemIDInput({$IndexOfPersonalizationChargeLineInCart})}
-        ${await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({
-            $PersonalizationChargeLineItem,
-            $ProductQuantityRemainingThatCanBePersonalized
-        })}
         ${await New_TervisPersonalizationPropertiesForm({
             $PersonalizationChargeLineItem,
             $ProductSize,
