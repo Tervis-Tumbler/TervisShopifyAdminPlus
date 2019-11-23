@@ -199,10 +199,10 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
     }
 
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
-        $Content = []
+        var $Content = []
         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
     }
-    
+
     Set_ContainerContent({
         $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
         $Content
