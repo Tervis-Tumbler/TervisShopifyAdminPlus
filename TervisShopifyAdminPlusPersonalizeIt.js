@@ -35,39 +35,47 @@ function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title.substring(0,5)
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
-    .forEach($Node => $Node.hidden = this.checked)
+    .forEach($Element => {
+        $Element.hidden = this.checked
+        $Element.dispatchEvent(new Event('change', { bubbles: true }))
+    })
 
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}CustomerSuppliedDecorationNote"]`)
-    .forEach($Node => $Node.hidden = !this.checked)
+    .forEach($Element => $Element.hidden = !this.checked)
 }
 
 function Receive_FontNameOnChnage ($Event) {
+    //Need to account for products that limit the number of lines that can be personalized for non monogram fonts
     var $SideName = $Event.target.title.substring(0,5)
-    var $SideNumber = $SideName[4]
     var $FormContainer = this.closest('div')
-    $FormContainer
+    var $NodesToHide = []
+    var $NodesToShow = []
 
-    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
-    var $NodesToHide
-    var $NodesToShow
-    if ($FontMetadata.MonogramStyle) {
-        if ($FontMetadata.AllCharactersRequired) {
-            $NodesToHide = $FormContainer.querySelectorAll(
-                `[type='text'][title='${$SideName}MonogramAllCharactersNotRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersRequired'])`
-            )
-            $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersRequired'][hidden]`)
+    if (!$Event.target.hidden) {
+        var $SideNumber = $SideName[4]
+        var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
+
+        if ($FontMetadata.MonogramStyle) {
+            if ($FontMetadata.AllCharactersRequired) {
+                $NodesToHide = $FormContainer.querySelectorAll(
+                    `[type='text'][title='${$SideName}MonogramAllCharactersNotRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersRequired'])`
+                )
+                $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersRequired'][hidden]`)
+            } else {
+                $NodesToHide = $FormContainer.querySelectorAll(
+                    `[type='text'][title='${$SideName}MonogramAllCharactersRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersNotRequired'])`
+                )
+                $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersNotRequired'][hidden]`)
+            }
         } else {
-            $NodesToHide = $FormContainer.querySelectorAll(
-                `[type='text'][title='${$SideName}MonogramAllCharactersRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersNotRequired'])`
-            )
-            $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersNotRequired'][hidden]`)
+            $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
+            $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][hidden][title^='${$SideName}'][hidden]:not([title^='${$SideName}Monogram']`)
         }
     } else {
-        $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
-        $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][hidden][title^='${$SideName}'][hidden]:not([title^='${$SideName}Monogram']`)
+        $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title*='${$SideName}']:not([hidden])`)
     }
-
+    
     $NodesToHide.forEach(
         $Node =>
         $Node.hidden = true
