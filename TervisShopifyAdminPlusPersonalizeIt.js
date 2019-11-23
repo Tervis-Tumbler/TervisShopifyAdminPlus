@@ -256,7 +256,7 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
         })
     }
 
-    document.querySelectorAll("#Side1, $Side2")
+    document.querySelectorAll("#Side1, #Side2")
     .forEach( $Element =>
         $Element.dispatchEvent(new Event('change', { bubbles: true }))
     )
