@@ -41,6 +41,12 @@ async function Receive_SideCheckboxOnChnage ($Event) {
             $Element.selected = $SupportedFontNames.length === 1 && $SupportedFontNames.includes($Element.value)
         }
     })
+
+    this.closest('div')
+    .querySelectorAll(`[title="${$SideName}FontName"]`)
+    .forEach( $Element =>
+        $Element.dispatchEvent(new Event('change', { bubbles: true }))
+    )
 }
 
 async function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
