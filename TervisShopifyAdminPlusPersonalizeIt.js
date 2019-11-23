@@ -44,6 +44,7 @@ function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
 
 function Receive_FontNameOnChnage ($Event) {
     var $SideName = $Event.target.title.substring(0,5)
+    var $SideNumber = $SideName[4]
     var $FormContainer = this.closest('div')
     $FormContainer
 
