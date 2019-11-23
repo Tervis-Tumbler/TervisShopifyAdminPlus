@@ -40,8 +40,14 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                 <div id="QuantityRemainingToPersonalizeContainer"></div>
                 <div id="PersonalizationInformationContainer">
                     <input type="hidden" value="">
-                    <input type="checkbox" title="Side1" @change=${Recieve_SideCheckboxOnChnage}>
-                    <input type="checkbox" title="Side1CustomerSupplied" hidden>
+                    <label>
+                        Enable Side 1 Personalization
+                        <input type="checkbox" title="Side1" @change=${Recieve_SideCheckboxOnChnage}>
+                    </label>
+                    <label>
+                        Customer Supplied Decoration
+                        <input type="checkbox" title="Side1CustomerSupplied" hidden>
+                    </label>
                     <input type="text" title="Side1CustomerSuppliedNote" hidden>
                     <select title="Side1ColorName" required="" hidden>
                         <option selected="" disabled="" value="">Side1ColorName</option>
@@ -72,8 +78,14 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                     <input type="text" title="Side1Line3" maxlength="13" placeholder="Side1Line3" hidden>
                     <input type="text" title="Side1MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden="" pattern="[A-Z]*" placeholder="Side1MonogramAllCharactersRequiredLine1">
                     <input type="text" title="Side1MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden="" pattern="[A-Z]*" placeholder="Side1MonogramAllCharactersNotRequiredLine1">
-                    <input type="checkbox" title="Side2" @change=${Recieve_SideCheckboxOnChnage}>
-                    <input type="checkbox" title="Side2CustomerSupplied" hidden>
+                    <label>
+                        Enable Side 2 Personalization
+                        <input type="checkbox" title="Side2" @change=${Recieve_SideCheckboxOnChnage}>
+                    </label>
+                    <label>
+                        Customer Supplied Decoration
+                        <input type="checkbox" title="Side2CustomerSupplied" hidden>
+                    </label>
                     <input type="text" title="Side2CustomerSuppliedNote" hidden>
                     <select title="Side2ColorName" required="" hidden>
                         <option selected="" disabled="" value="">Side2ColorName</option>
