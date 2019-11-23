@@ -40,7 +40,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                 <div id="QuantityRemainingToPersonalizeContainer"></div>
                 <div id="PersonalizationInformationContainer">
                     <input type="hidden" value="">
-                    <input type="checkbox" title="Side1" onchange=${Recieve_SideCheckboxOnChnage}>
+                    <input type="checkbox" title="Side1" @change=${Recieve_SideCheckboxOnChnage}>
                     <input type="checkbox" title="Side1CustomerSupplied" hidden>
                     <input type="text" title="Side1CustomerSuppliedNote" hidden>
                     <select title="Side1ColorName" required="" hidden>
@@ -72,7 +72,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                     <input type="text" title="Side1Line3" maxlength="13" placeholder="Side1Line3" hidden>
                     <input type="text" title="Side1MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden="" pattern="[A-Z]*" placeholder="Side1MonogramAllCharactersRequiredLine1">
                     <input type="text" title="Side1MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden="" pattern="[A-Z]*" placeholder="Side1MonogramAllCharactersNotRequiredLine1">
-                    <input type="checkbox" title="Side2" onchange=${Recieve_SideCheckboxOnChnage}>
+                    <input type="checkbox" title="Side2" @change=${Recieve_SideCheckboxOnChnage}>
                     <input type="checkbox" title="Side2CustomerSupplied" hidden>
                     <input type="text" title="Side2CustomerSuppliedNote" hidden>
                     <select title="Side2ColorName" required="" hidden>
