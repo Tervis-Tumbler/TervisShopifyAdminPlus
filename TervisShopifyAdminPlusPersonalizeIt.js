@@ -27,7 +27,7 @@ async function main () {
 function Recieve_SideCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title
     this.closest('div')
-    .querySelectorAll(`[title="${$SideName}CustomerSupplied"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
+    .querySelectorAll(`[title="${$SideName}CustomerSuppliedLabel"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
     .forEach($Node => $Node.hidden = !this.checked)
 }
 
@@ -44,9 +44,9 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                         Enable Side 1 Personalization
                         <input type="checkbox" title="Side1" @change=${Recieve_SideCheckboxOnChnage}>
                     </label>
-                    <label>
+                    <label title="Side2CustomerSuppliedLabel" hidden>
                         Customer Supplied Decoration
-                        <input type="checkbox" title="Side1CustomerSupplied" hidden>
+                        <input type="checkbox" title="Side1CustomerSupplied">
                     </label>
                     <input type="text" title="Side1CustomerSuppliedNote" hidden>
                     <select title="Side1ColorName" required="" hidden>
@@ -82,9 +82,9 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                         Enable Side 2 Personalization
                         <input type="checkbox" title="Side2" @change=${Recieve_SideCheckboxOnChnage}>
                     </label>
-                    <label>
+                    <label title="Side2CustomerSuppliedLabel" hidden>
                         Customer Supplied Decoration
-                        <input type="checkbox" title="Side2CustomerSupplied" hidden>
+                        <input type="checkbox" title="Side2CustomerSupplied">
                     </label>
                     <input type="text" title="Side2CustomerSuppliedNote" hidden>
                     <select title="Side2ColorName" required="" hidden>
