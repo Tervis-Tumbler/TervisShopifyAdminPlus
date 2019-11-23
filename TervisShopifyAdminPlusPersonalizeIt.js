@@ -29,9 +29,21 @@ function Receive_SideCheckboxOnChnage ($Event) {
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}IsCustomerSuppliedDecorationLabel"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
     .forEach($Node => $Node.hidden = !this.checked)
+
+    var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
+    var $SupportedFontNames = $ProductMetadata.Personalization.SupportedFontName
+    
+    this.closest('div')
+    .querySelectorAll(`[title="${$SideName}ColorName"] option`)
+    .forEach($Element => {
+        if(!$Element.disabled) {
+            $Element.hidden = !$SupportedFontNames.includes($Element.value)
+            $Element.selected = $SupportedFontNames.length === 1 && $SupportedFontNames.includes($Element.value)
+        }
+    })
 }
 
-function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
+async function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title.substring(0,5)
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
@@ -69,13 +81,8 @@ async function Receive_FontNameOnChnage ($Event) {
             }
         } else {
             $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
-
-            var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
-            var {
-                $ProductSize,
-                $ProductFormType
-            } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
-            var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+            
+            var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
             var $MaximumLineCount = $ProductMetadata.Personalization.MaximumLineCount
             
             var $Selector = New_Range({$Start: 1, $Stop: $MaximumLineCount})
@@ -102,6 +109,7 @@ async function Receive_FontNameOnChnage ($Event) {
 }
 
 function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
+    var $SideNumbers = [1,2]
     Set_ContainerContent({
         $TargetElementSelector: "#content",
         $Content: html`
@@ -110,82 +118,48 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                 <div id="QuantityRemainingToPersonalizeContainer"></div>
                 <div id="PersonalizationInformationContainer">
                     <input type="hidden" value="">
-                    <label>
-                        Enable Side 1 Personalization
-                        <input type="checkbox" title="Side1" @change=${Receive_SideCheckboxOnChnage}>
-                    </label>
-                    <label title="Side1IsCustomerSuppliedDecorationLabel" hidden>
-                        Is Customer Supplied Decoration
-                        <input type="checkbox" title="Side1IsCustomerSuppliedDecoration" @change=${Receive_CustomerSuppliedDecorationCheckboxOnChnage}>
-                    </label>
-                    <input type="text" title="Side1CustomerSuppliedDecorationNote" placeholder="Side1CustomerSuppliedDecorationNote" hidden>
-                    <select title="Side1ColorName" required="" hidden>
-                        <option selected="" disabled="" value="">Side1ColorName</option>
-                        <option>Black</option>
-                        <option>Chocolate</option>
-                        <option>Fuchsia</option>
-                        <option>Green</option>
-                        <option>Hunter</option>
-                        <option>Navy</option>
-                        <option>Orange</option>
-                        <option>Purple</option>
-                        <option>Red</option>
-                        <option>Royal Blue</option>
-                        <option>Turquoise</option>
-                        <option>White</option>
-                        <option>Yellow</option>
-                    </select>
-                    <select title="Side1FontName" required="" @change=${Receive_FontNameOnChnage} hidden>
-                        <option selected="" disabled="" value="">Side1FontName</option>
-                        <option>Script</option>
-                        <option>Block U/L</option>
-                        <option>Monogram</option>
-                        <option>Initials Block</option>
-                        <option>Initials Script</option>
-                    </select>
-                    <input type="text" title="Side1Line1" maxlength="13" placeholder="Side1Line1" hidden>
-                    <input type="text" title="Side1Line2" maxlength="13" placeholder="Side1Line2" hidden>
-                    <input type="text" title="Side1Line3" maxlength="13" placeholder="Side1Line3" hidden>
-                    <input type="text" title="Side1MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden="" pattern="[A-Z]*" placeholder="Side1MonogramAllCharactersRequiredLine1">
-                    <input type="text" title="Side1MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden="" pattern="[A-Z]*" placeholder="Side1MonogramAllCharactersNotRequiredLine1">
-                    <label>
-                        Enable Side 2 Personalization
-                        <input type="checkbox" title="Side2" @change=${Receive_SideCheckboxOnChnage}>
-                    </label>
-                    <label title="Side2IsCustomerSuppliedDecorationLabel" hidden>
-                        Is Customer Supplied Decoration
-                        <input type="checkbox" title="Side2IsCustomerSuppliedDecoration" @change=${Receive_CustomerSuppliedDecorationCheckboxOnChnage}>
-                    </label>
-                    <input type="text" title="Side2CustomerSuppliedDecorationNote" placeholder="Side2CustomerSuppliedDecorationNote" hidden>
-                    <select title="Side2ColorName" required="" hidden>
-                        <option selected="" disabled="" value="">Side2ColorName</option>
-                        <option>Black</option>
-                        <option>Chocolate</option>
-                        <option>Fuchsia</option>
-                        <option>Green</option>
-                        <option>Hunter</option>
-                        <option>Navy</option>
-                        <option>Orange</option>
-                        <option>Purple</option>
-                        <option>Red</option>
-                        <option>Royal Blue</option>
-                        <option>Turquoise</option>
-                        <option>White</option>
-                        <option>Yellow</option>
-                    </select>
-                    <select title="Side2FontName" required="" hidden>
-                        <option selected="" disabled="" value="">Side2FontName</option>
-                        <option>Script</option>
-                        <option>Block U/L</option>
-                        <option>Monogram</option>
-                        <option>Initials Block</option>
-                        <option>Initials Script</option>
-                    </select>
-                    <input type="text" title="Side2Line1" maxlength="13" placeholder="Side2Line1" hidden>
-                    <input type="text" title="Side2Line2" maxlength="13" placeholder="Side2Line2" hidden>
-                    <input type="text" title="Side2Line3" maxlength="13" placeholder="Side2Line3" hidden>
-                    <input type="text" title="Side2MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden="" pattern="[A-Z]*" placeholder="Side2MonogramAllCharactersRequiredLine1">
-                    <input type="text" title="Side2MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden="" pattern="[A-Z]*" placeholder="Side2MonogramAllCharactersNotRequiredLine1">
+                    ${$SideNumbers.map(
+                        $SideNumber => html`
+                            <label>
+                                Enable Side ${$SideNumber} Personalization
+                                <input type="checkbox" title="Side${$SideNumber}" @change=${Receive_SideCheckboxOnChnage}>
+                            </label>
+                            <label title="Side${$SideNumber}IsCustomerSuppliedDecorationLabel" hidden>
+                                Is Customer Supplied Decoration
+                                <input type="checkbox" title="Side${$SideNumber}IsCustomerSuppliedDecoration" @change=${Receive_CustomerSuppliedDecorationCheckboxOnChnage}>
+                            </label>
+                            <input type="text" title="Side${$SideNumber}CustomerSuppliedDecorationNote" placeholder="Side${$SideNumber}CustomerSuppliedDecorationNote" hidden>
+                            <select title="Side${$SideNumber}ColorName" required="" hidden>
+                                <option selected="" disabled="" value="">Side${$SideNumber}ColorName</option>
+                                <option>Black</option>
+                                <option>Chocolate</option>
+                                <option>Fuchsia</option>
+                                <option>Green</option>
+                                <option>Hunter</option>
+                                <option>Navy</option>
+                                <option>Orange</option>
+                                <option>Purple</option>
+                                <option>Red</option>
+                                <option>Royal Blue</option>
+                                <option>Turquoise</option>
+                                <option>White</option>
+                                <option>Yellow</option>
+                            </select>
+                            <select title="Side${$SideNumber}FontName" required="" @change=${Receive_FontNameOnChnage} hidden>
+                                <option selected="" disabled="" value="">Side${$SideNumber}FontName</option>
+                                <option>Script</option>
+                                <option>Block U/L</option>
+                                <option>Monogram</option>
+                                <option>Initials Block</option>
+                                <option>Initials Script</option>
+                            </select>
+                            <input type="text" title="Side${$SideNumber}Line1" maxlength="13" placeholder="Side${$SideNumber}Line1" hidden>
+                            <input type="text" title="Side${$SideNumber}Line2" maxlength="13" placeholder="Side${$SideNumber}Line2" hidden>
+                            <input type="text" title="Side${$SideNumber}Line3" maxlength="13" placeholder="Side${$SideNumber}Line3" hidden>
+                            <input type="text" title="Side${$SideNumber}MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden="" pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersRequiredLine1">
+                            <input type="text" title="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden="" pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1">
+                        `
+                    )}
                     <button type="button">Save</button>
                     <br>
                 </div>
@@ -510,6 +484,15 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
     return $Cart.line_items[$SelectedLineItemIndex]
 }
 
+async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata () {
+    var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
+    var {
+        $ProductSize,
+        $ProductFormType
+    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
+    return await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
+}
+
 function Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex () {
     return Get_ElementPropertyValue({
         $QuerySelector: "#LineItemSelectContainer > select",
@@ -527,16 +510,6 @@ async function Receive_TervisPersonalizationFontNameSelectOnChange ($Event) {
     })
 
     var $SideNumber = $Event.target.title[4]
-    
-    var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
-
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
-
-    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-
     var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
 
     var $NodesToHide
