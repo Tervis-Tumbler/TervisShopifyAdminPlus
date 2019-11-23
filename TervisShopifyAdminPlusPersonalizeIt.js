@@ -44,7 +44,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                         Enable Side 1 Personalization
                         <input type="checkbox" title="Side1" @change=${Recieve_SideCheckboxOnChnage}>
                     </label>
-                    <label title="Side2CustomerSuppliedLabel" hidden>
+                    <label title="Side1CustomerSuppliedLabel" hidden>
                         Customer Supplied Decoration
                         <input type="checkbox" title="Side1CustomerSupplied">
                     </label>
