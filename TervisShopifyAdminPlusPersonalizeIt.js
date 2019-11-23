@@ -33,7 +33,11 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                 <div id="QuantityRemainingToPersonalizeContainer"></div>
                 <div id="PersonalizationInformationContainer">
                     <input type="hidden" value="">
-                    <input type="checkbox" title="Side1" onchange="this.closest('div').querySelector('[title=&quot;Side1CustomerSupplied&quot;], [title=&quot;Side1ColorName&quot;], [title=&quot;Side1FontName&quot;]').hidden = !this.checked">
+                    <input type="checkbox" title="Side1" onchange="
+                        this.closest('div')
+                        .querySelectorAll('[title=&quot;Side1CustomerSupplied&quot;], [title=&quot;Side1ColorName&quot;], [title=&quot;Side1FontName&quot;]')
+                        .forEach($Node => $Node.hidden = !this.checked)
+                    ">
                     <input type="checkbox" title="Side1CustomerSupplied" hidden>
                     <input type="text" title="Side1CustomerSuppliedNote" hidden>
                     <select title="Side1ColorName" required="" hidden>
