@@ -247,11 +247,6 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
         $PersonalizationChargeLineItems
     })
 
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
-
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
         Set_ContainerContent({
             $TargetElementSelector: "#QuantityRemainingToPersonalizeContainer",
@@ -260,6 +255,11 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
             })
         })
     }
+
+    document.querySelectorAll("#Side1, $Side2")
+    .forEach( $Element =>
+        $Element.dispatchEvent(new Event('change', { bubbles: true }))
+    )
 
     var $Content = []
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
