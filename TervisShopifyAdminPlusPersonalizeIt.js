@@ -81,7 +81,7 @@ async function Receive_FontNameOnChnage ($Event) {
             var $Selector = New_Range({$Start: 1, $Stop: $MaximumSideCount})
             .map(
                 $LineNumber =>
-                `[type='text'][title='${$SideName}Line${$LineNumber}'][hidden]:not([title^='${$SideName}Monogram']`
+                `[type='text'][title='${$SideName}Line${$LineNumber}'][hidden]:not([title^='${$SideName}Monogram'])`
             )
             .join(",")
             $NodesToShow = $FormContainer.querySelectorAll($Selector)
