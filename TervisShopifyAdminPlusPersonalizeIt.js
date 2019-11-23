@@ -24,14 +24,14 @@ async function main () {
     Receive_ShopifyPOSPersonalizationCart()
 }
 
-function Recieve_SideCheckboxOnChnage ($Event) {
+function Receive_SideCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}IsCustomerSuppliedDecorationLabel"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
     .forEach($Node => $Node.hidden = !this.checked)
 }
 
-function Recieve_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
+function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title.substring(0,5)
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
@@ -40,6 +40,42 @@ function Recieve_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}CustomerSuppliedDecorationNote"]`)
     .forEach($Node => $Node.hidden = !this.checked)
+}
+
+function Receive_FontNameOnChnage ($Event) {
+    var $SideName = $Event.target.title.substring(0,5)
+    $FormContainer = this.closest('div')
+    $FormContainer
+
+    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
+    var $NodesToHide
+    var $NodesToShow
+    if ($FontMetadata.MonogramStyle) {
+        if ($FontMetadata.AllCharactersRequired) {
+            $NodesToHide = $FormContainer.querySelectorAll(
+                `[type='text'][title='${$SideName}MonogramAllCharactersNotRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersRequired'])`
+            )
+            $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersRequired'][hidden]`)
+        } else {
+            $NodesToHide = $FormContainer.querySelectorAll(
+                `[type='text'][title='${$SideName}MonogramAllCharactersRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersNotRequired'])`
+            )
+            $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersNotRequired'][hidden]`)
+        }
+    } else {
+        $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
+        $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][hidden][title^='${$SideName}'][hidden]:not([title^='${$SideName}Monogram']`)
+    }
+
+    $NodesToHide.forEach(
+        $Node =>
+        $Node.hidden = true
+    )
+
+    $NodesToShow.forEach(
+        $Node =>
+        $Node.hidden = false
+    )
 }
 
 function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
@@ -53,13 +89,13 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                     <input type="hidden" value="">
                     <label>
                         Enable Side 1 Personalization
-                        <input type="checkbox" title="Side1" @change=${Recieve_SideCheckboxOnChnage}>
+                        <input type="checkbox" title="Side1" @change=${Receive_SideCheckboxOnChnage}>
                     </label>
                     <label title="Side1IsCustomerSuppliedDecorationLabel" hidden>
                         Is Customer Supplied Decoration
-                        <input type="checkbox" title="Side1IsCustomerSuppliedDecoration" @change=${Recieve_CustomerSuppliedDecorationCheckboxOnChnage}>
+                        <input type="checkbox" title="Side1IsCustomerSuppliedDecoration" @change=${Receive_CustomerSuppliedDecorationCheckboxOnChnage}>
                     </label>
-                    <input type="text" title="Side1CustomerSuppliedDecorationNote" hidden>
+                    <input type="text" title="Side1CustomerSuppliedDecorationNote" placeholder="Side1CustomerSuppliedDecorationNote" hidden>
                     <select title="Side1ColorName" required="" hidden>
                         <option selected="" disabled="" value="">Side1ColorName</option>
                         <option>Black</option>
@@ -76,7 +112,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                         <option>White</option>
                         <option>Yellow</option>
                     </select>
-                    <select title="Side1FontName" required="" hidden>
+                    <select title="Side1FontName" required="" @change=${Receive_FontNameOnChnage} hidden>
                         <option selected="" disabled="" value="">Side1FontName</option>
                         <option>Script</option>
                         <option>Block U/L</option>
@@ -91,13 +127,13 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                     <input type="text" title="Side1MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden="" pattern="[A-Z]*" placeholder="Side1MonogramAllCharactersNotRequiredLine1">
                     <label>
                         Enable Side 2 Personalization
-                        <input type="checkbox" title="Side2" @change=${Recieve_SideCheckboxOnChnage}>
+                        <input type="checkbox" title="Side2" @change=${Receive_SideCheckboxOnChnage}>
                     </label>
                     <label title="Side2IsCustomerSuppliedDecorationLabel" hidden>
                         Is Customer Supplied Decoration
-                        <input type="checkbox" title="Side2IsCustomerSuppliedDecoration" @change=${Recieve_CustomerSuppliedDecorationCheckboxOnChnage}>
+                        <input type="checkbox" title="Side2IsCustomerSuppliedDecoration" @change=${Receive_CustomerSuppliedDecorationCheckboxOnChnage}>
                     </label>
-                    <input type="text" title="Side2CustomerSuppliedDecorationNote" hidden>
+                    <input type="text" title="Side2CustomerSuppliedDecorationNote" placeholder="Side2CustomerSuppliedDecorationNote" hidden>
                     <select title="Side2ColorName" required="" hidden>
                         <option selected="" disabled="" value="">Side2ColorName</option>
                         <option>Black</option>
@@ -222,7 +258,7 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
         Set_ContainerContent({
             $TargetElementSelector: "#QuantityRemainingToPersonalizeContainer",
-            $Content: await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect({
+            $Content: await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiveThisPersonalizationSelect({
                 $ProductQuantityRemainingThatCanBePersonalized
             })
         })
@@ -427,7 +463,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
     Out_TervisShopifyPOSDebug({$Object: $Cart})
 }
 
-async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToRecieveThisPersonalizationSelect ({
+async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiveThisPersonalizationSelect ({
     $PersonalizationChargeLineItem,
     $ProductQuantityRemainingThatCanBePersonalized
 }) {
