@@ -32,7 +32,7 @@ function Recieve_SideCheckboxOnChnage ($Event) {
 }
 
 function Recieve_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
-    var $SideName = $Event.target.title.substring(0,4)
+    var $SideName = $Event.target.title.substring(0,5)
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
     .forEach($Node => $Node.hidden = this.checked)
