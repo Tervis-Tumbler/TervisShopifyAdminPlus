@@ -76,9 +76,9 @@ async function Receive_FontNameOnChnage ($Event) {
                 $ProductFormType
             } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
             var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-            var $MaximumSideCount = $ProductMetadata.Personalization.MaximumSideCount
+            var $MaximumLineCount = $ProductMetadata.Personalization.MaximumLineCount
             
-            var $Selector = New_Range({$Start: 1, $Stop: $MaximumSideCount})
+            var $Selector = New_Range({$Start: 1, $Stop: $MaximumLineCount})
             .map(
                 $LineNumber =>
                 `[type='text'][title='${$SideName}Line${$LineNumber}'][hidden]:not([title^='${$SideName}Monogram'])`
