@@ -28,7 +28,10 @@ async function Receive_SideCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}IsCustomerSuppliedDecorationLabel"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
-    .forEach($Node => $Node.hidden = !this.checked)
+    .forEach($Node => {
+        $Node.hidden = !this.checked
+        $Node.disabled = !this.checked
+    })
 
     var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
     var $SupportedFontNames = $ProductMetadata.Personalization.SupportedFontName
@@ -38,6 +41,7 @@ async function Receive_SideCheckboxOnChnage ($Event) {
     .forEach($Element => {
         if(!$Element.disabled) {
             $Element.hidden = !$SupportedFontNames.includes($Element.value)
+            $Element.disabled = !$SupportedFontNames.includes($Element.value)
             $Element.selected = $SupportedFontNames.length === 1 && $SupportedFontNames.includes($Element.value)
         }
     })
@@ -55,12 +59,16 @@ async function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
     .querySelectorAll(`[title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
     .forEach($Element => {
         $Element.hidden = this.checked
+        $Element.disabled = this.checked
         $Element.dispatchEvent(new Event('change', { bubbles: true }))
     })
 
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}CustomerSuppliedDecorationNote"]`)
-    .forEach($Element => $Element.hidden = !this.checked)
+    .forEach($Element => {
+        $Element.hidden = !this.checked
+        $Element.disabled = !this.checked
+    })
 }
 
 async function Receive_FontNameOnChnage ($Event) {
@@ -104,13 +112,17 @@ async function Receive_FontNameOnChnage ($Event) {
     }
     
     $NodesToHide.forEach(
-        $Node =>
-        $Node.hidden = true
+        $Node => {
+            $Node.hidden = true
+            $Node.disabled = true
+        }
     )
 
     $NodesToShow.forEach(
-        $Node =>
-        $Node.hidden = false
+        $Node => {
+            $Node.hidden = false
+            $Node.disabled = false
+        }
     )
 }
 
@@ -126,17 +138,17 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                     <input type="hidden" value="">
                     ${$SideNumbers.map(
                         $SideNumber => html`
-                            <label>
+                            <label hidden>
                                 Enable Side ${$SideNumber} Personalization
-                                <input type="checkbox" title="Side${$SideNumber}" @change=${Receive_SideCheckboxOnChnage}>
+                                <input type="checkbox" title="Side${$SideNumber}" @change=${Receive_SideCheckboxOnChnage} hidden disabled>
                             </label>
                             <label title="Side${$SideNumber}IsCustomerSuppliedDecorationLabel" hidden>
                                 Is Customer Supplied Decoration
                                 <input type="checkbox" title="Side${$SideNumber}IsCustomerSuppliedDecoration" @change=${Receive_CustomerSuppliedDecorationCheckboxOnChnage}>
                             </label>
-                            <input type="text" title="Side${$SideNumber}CustomerSuppliedDecorationNote" placeholder="Side${$SideNumber}CustomerSuppliedDecorationNote" hidden>
-                            <select title="Side${$SideNumber}ColorName" required="" hidden>
-                                <option selected="" disabled="" value="">Side${$SideNumber}ColorName</option>
+                            <input type="text" title="Side${$SideNumber}CustomerSuppliedDecorationNote" placeholder="Side${$SideNumber}CustomerSuppliedDecorationNote" hidden disabled>
+                            <select title="Side${$SideNumber}ColorName" required hidden disabled>
+                                <option selected disabled value="">Side${$SideNumber}ColorName</option>
                                 <option>Black</option>
                                 <option>Chocolate</option>
                                 <option>Fuchsia</option>
@@ -151,7 +163,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                                 <option>White</option>
                                 <option>Yellow</option>
                             </select>
-                            <select title="Side${$SideNumber}FontName" required="" @change=${Receive_FontNameOnChnage} hidden>
+                            <select title="Side${$SideNumber}FontName" required @change=${Receive_FontNameOnChnage} hidden disabled>
                                 <option selected="" disabled="" value="">Side${$SideNumber}FontName</option>
                                 <option>Script</option>
                                 <option>Block U/L</option>
@@ -159,11 +171,11 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                                 <option>Initials Block</option>
                                 <option>Initials Script</option>
                             </select>
-                            <input type="text" title="Side${$SideNumber}Line1" maxlength="13" placeholder="Side${$SideNumber}Line1" hidden>
-                            <input type="text" title="Side${$SideNumber}Line2" maxlength="13" placeholder="Side${$SideNumber}Line2" hidden>
-                            <input type="text" title="Side${$SideNumber}Line3" maxlength="13" placeholder="Side${$SideNumber}Line3" hidden>
-                            <input type="text" title="Side${$SideNumber}MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden="" pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersRequiredLine1">
-                            <input type="text" title="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden="" pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1">
+                            <input type="text" title="Side${$SideNumber}Line1" maxlength="13" placeholder="Side${$SideNumber}Line1" hidden disabled>
+                            <input type="text" title="Side${$SideNumber}Line2" maxlength="13" placeholder="Side${$SideNumber}Line2" hidden disabled>
+                            <input type="text" title="Side${$SideNumber}Line3" maxlength="13" placeholder="Side${$SideNumber}Line3" hidden disabled>
+                            <input type="text" title="Side${$SideNumber}MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden disabled pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersRequiredLine1">
+                            <input type="text" title="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden disabled pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1">
                         `
                     )}
                     <button type="button" @click=${Invoke_TervisShopifyPOSPersonalizationSave}>Save</button>
@@ -263,9 +275,14 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
     }
 
     document.querySelectorAll("[title='Side1'], [title='Side2']")
-    .forEach( $Element =>
+    .forEach( $Element => {
+        $Element.hidden = false
+        $Element.disabled = false
+        $LabelElement = $Element.closest("label")
+        $LabelElement.hidden = false
+        $LabelElement = false
         $Element.dispatchEvent(new Event('change', { bubbles: true }))
-    )
+    })
 
     var $Content = []
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
