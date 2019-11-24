@@ -286,7 +286,7 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
         $Element.dispatchEvent(new Event('change', { bubbles: true }))
     })
 
-    document.querySelector("button[value='Save']").hidden = false
+    document.querySelector("button").hidden = false
 
 
     var $Content = []
