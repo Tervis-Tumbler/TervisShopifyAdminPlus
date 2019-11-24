@@ -74,7 +74,7 @@ async function Receive_FontNameOnChnage ($Event) {
     var $NodesToHide = []
     var $NodesToShow = []
 
-    if (!$Event.target.hidden) {
+    if (!$Event.target.hidden && $Event.target.value) {
         var $SideNumber = $SideName[4]
         var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
 
