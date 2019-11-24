@@ -57,8 +57,8 @@ async function Receive_SideCheckboxOnChnage ($Event) {
 }
 
 async function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
+    var $SideName = $Event.target.title.substring(0,5)
     if (!this.hidden) {
-        var $SideName = $Event.target.title.substring(0,5)
         this.closest('div')
         .querySelectorAll(`[title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
         .forEach($Element => {
@@ -72,6 +72,21 @@ async function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
         .forEach($Element => {
             $Element.hidden = !this.checked
             $Element.disabled = !this.checked
+        })
+    } else {
+        this.closest('div')
+        .querySelectorAll(`[title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
+        .forEach($Element => {
+            $Element.hidden = true
+            $Element.disabled = true
+            $Element.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+    
+        this.closest('div')
+        .querySelectorAll(`[title="${$SideName}CustomerSuppliedDecorationNote"]`)
+        .forEach($Element => {
+            $Element.hidden = true
+            $Element.disabled = true
         })
     }
 }
