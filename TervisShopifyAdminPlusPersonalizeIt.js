@@ -31,9 +31,6 @@ async function Receive_SideCheckboxOnChnage ($Event) {
     .forEach($Element => {
         $Element.hidden = !this.checked || this.hidden
         $Element.disabled = !this.checked || this.hidden
-        if ($Element.title === `${$SideName}FontName`) {
-            $Element.dispatchEvent(new Event('change', { bubbles: true }))
-        }
     })
 
     var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
@@ -46,8 +43,16 @@ async function Receive_SideCheckboxOnChnage ($Event) {
             $Element.hidden = !$SupportedFontNames.includes($Element.value)
             $Element.disabled = !$SupportedFontNames.includes($Element.value)
             $Element.selected = $SupportedFontNames.length === 1 && $SupportedFontNames.includes($Element.value)
+            $Element.closest("select").dispatchEvent(new Event('change', { bubbles: true }))
         }
     })
+
+    // //Must be run after the above as the above may change the selected font name
+    // this.closest('div')
+    // .querySelectorAll(`[title="${$SideName}FontName"]`)
+    // .forEach($Element => {
+    //     $Element.dispatchEvent(new Event('change', { bubbles: true }))
+    // })
 }
 
 async function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
