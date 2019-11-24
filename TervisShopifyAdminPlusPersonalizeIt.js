@@ -48,13 +48,12 @@ async function Receive_SideCheckboxOnChnage ($Event) {
             }
         }
     })
-
-    // //Must be run after the above as the above may change the selected font name
-    // this.closest('div')
-    // .querySelectorAll(`[title="${$SideName}FontName"]`)
-    // .forEach($Element => {
-    //     $Element.dispatchEvent(new Event('change', { bubbles: true }))
-    // })
+    
+    this.closest('div')
+    .querySelectorAll(`[title="${$SideName}IsCustomerSuppliedDecoration"]`)
+    .forEach($Element => {
+        $Element.dispatchEvent(new Event('change', { bubbles: true }))  
+    })
 }
 
 async function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
