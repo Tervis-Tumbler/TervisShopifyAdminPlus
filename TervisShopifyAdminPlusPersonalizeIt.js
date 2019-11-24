@@ -42,7 +42,7 @@ async function Receive_SideCheckboxOnChnage ($Event) {
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}FontName"] option`)
     .forEach($Element => {
-        if(!$Element.disabled) {
+        if($Element.value) {
             $Element.hidden = !$SupportedFontNames.includes($Element.value)
             $Element.disabled = !$SupportedFontNames.includes($Element.value)
             $Element.selected = $SupportedFontNames.length === 1 && $SupportedFontNames.includes($Element.value)
