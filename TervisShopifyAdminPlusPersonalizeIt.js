@@ -99,7 +99,11 @@ async function Receive_FontNameOnChnage ($Event) {
             $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
             
             var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
-            var $MaximumLineCount = $ProductMetadata.Personalization.MaximumLineCount
+
+            //This shouldn't be needed, we need to fix in TervisProductMetadata.js to set this value to 1 on all objects that don't have the values specified
+            var $MaximumLineCount = $ProductMetadata.Personalization.MaximumLineCount ? 
+                $ProductMetadata.Personalization.MaximumLineCount :
+                1
             
             var $Selector = New_Range({$Start: 1, $Stop: $MaximumLineCount})
             .map(
