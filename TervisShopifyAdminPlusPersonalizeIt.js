@@ -28,9 +28,12 @@ async function Receive_SideCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}IsCustomerSuppliedDecorationLabel"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
-    .forEach($Node => {
-        $Node.hidden = !this.checked
-        $Node.disabled = !this.checked
+    .forEach($Element => {
+        $Element.hidden = !this.checked || this.hidden
+        $Element.disabled = !this.checked || this.hidden
+        if ($Element.title === `${$SideName}FontName`) {
+            $Element.dispatchEvent(new Event('change', { bubbles: true }))
+        }
     })
 
     var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
@@ -45,12 +48,6 @@ async function Receive_SideCheckboxOnChnage ($Event) {
             $Element.selected = $SupportedFontNames.length === 1 && $SupportedFontNames.includes($Element.value)
         }
     })
-
-    this.closest('div')
-    .querySelectorAll(`[title="${$SideName}FontName"]`)
-    .forEach( $Element =>
-        $Element.dispatchEvent(new Event('change', { bubbles: true }))
-    )
 }
 
 async function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
