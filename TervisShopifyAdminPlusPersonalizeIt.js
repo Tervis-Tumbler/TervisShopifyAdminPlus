@@ -278,9 +278,11 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
     .forEach( $Element => {
         $Element.hidden = false
         $Element.disabled = false
-        $LabelElement = $Element.closest("label")
+        
+        var $LabelElement = $Element.closest("label")
         $LabelElement.hidden = false
         $LabelElement = false
+        
         $Element.dispatchEvent(new Event('change', { bubbles: true }))
     })
 
