@@ -288,7 +288,6 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
 
     document.querySelector("button[title='Save']").hidden = false
 
-
     var $Content = []
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
@@ -420,16 +419,16 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
 //     `
 // }
 
-async function New_TervisShopifyPersonalizationChargeLineItemIDInput({
-    $IndexOfPersonalizationChargeLineInCart
-}) {
-    return html`
-        <input 
-            type="hidden"
-            .value=${forceWrite($IndexOfPersonalizationChargeLineInCart ? $IndexOfPersonalizationChargeLineInCart : "")}
-        >
-    `
-}
+// async function New_TervisShopifyPersonalizationChargeLineItemIDInput({
+//     $IndexOfPersonalizationChargeLineInCart
+// }) {
+//     return html`
+//         <input 
+//             type="hidden"
+//             .value=${forceWrite($IndexOfPersonalizationChargeLineInCart ? $IndexOfPersonalizationChargeLineInCart : "")}
+//         >
+//     `
+// }
 
 async function New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay ({
     $PersonalizationChargeLineItem,
@@ -470,7 +469,6 @@ function Get_LineItemRelatedToPersonalizationChargeLineItem ({
     $PersonalizationChargeLineItem,
     $Cart
 }) {
-
     return $Cart.line_items.filter( 
         $LineItem =>
         $LineItem.sku === $PersonalizationChargeLineItem.PropertiesObject.RelatedLineItemSKU
@@ -486,7 +484,12 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
         $LineItemIndex: $IndexOfPersonalizationChargeLineToRemove
     })
 
-    await Update_PersonalizationForm()
+    // await Update_PersonalizationForm()
+    document
+    .querySelectorAll(`[title="Select Line Item To Personalize"]`)
+    .forEach( $Element =>
+        $Element.dispatchEvent(new Event('change', { bubbles: true }))
+    )
     Out_TervisShopifyPOSDebug({$Object: $Cart})
 }
 
