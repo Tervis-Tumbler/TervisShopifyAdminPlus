@@ -166,7 +166,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                             <input type="text" title="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden="" pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1">
                         `
                     )}
-                    <button type="button">Save</button>
+                    <button type="button" @click=${Invoke_TervisShopifyPOSPersonalizationSave}>Save</button>
                     <br>
                 </div>
                 <div id="PersonalizationChargeLineItemsContainer"></div>
