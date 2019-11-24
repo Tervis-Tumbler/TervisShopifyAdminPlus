@@ -178,7 +178,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                             <input type="text" title="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden disabled pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1">
                         `
                     )}
-                    <button type="button" @click=${Invoke_TervisShopifyPOSPersonalizationSave} hidden>Save</button>
+                    <button type="button" @click=${Invoke_TervisShopifyPOSPersonalizationSave} title="Save" hidden>Save</button>
                     <br>
                 </div>
                 <div id="PersonalizationChargeLineItemsContainer"></div>
@@ -286,7 +286,7 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
         $Element.dispatchEvent(new Event('change', { bubbles: true }))
     })
 
-    document.querySelector("button").hidden = false
+    document.querySelector("button[title='Save']").hidden = false
 
 
     var $Content = []
@@ -321,21 +321,23 @@ async function Update_PersonalizationForm () {
 
     var $Content = []
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
-        $Content.push(
-            await New_TervisPersonalizationForm({
-                $ProductSize,
-                $ProductFormType,
-                $ProductQuantityRemainingThatCanBePersonalized
-            })
-        )
+        // Regenerate remaining line item quantity selector
+        // $Content.push(
+        //     await New_TervisPersonalizationForm({
+        //         $ProductSize,
+        //         $ProductFormType,
+        //         $ProductQuantityRemainingThatCanBePersonalized
+        //     })
+        // )
     }
 
+    var $Content = []
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
     }
 
     Set_ContainerContent({
-        $TargetElementSelector: "#PersonalizationInformationContainer",
+        $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
         $Content
     })
 }
@@ -396,27 +398,27 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
     // })
 }
 
-async function New_TervisPersonalizationForm ({
-    $PersonalizationChargeLineItem,
-    $IndexOfPersonalizationChargeLineInCart,
-    $ProductSize,
-    $ProductFormType,
-    $ProductQuantityRemainingThatCanBePersonalized
-}) {
-    return html`
-        ${await New_TervisShopifyPersonalizationChargeLineItemIDInput({$IndexOfPersonalizationChargeLineInCart})}
-        ${await New_TervisPersonalizationPropertiesForm({
-            $PersonalizationChargeLineItem,
-            $ProductSize,
-            $ProductFormType
-        })}
-        <button
-            type="button"
-            @click=${Invoke_TervisShopifyPOSPersonalizationSave}
-        >Save</button>
-        <br>
-    `
-}
+// async function New_TervisPersonalizationForm ({
+//     $PersonalizationChargeLineItem,
+//     $IndexOfPersonalizationChargeLineInCart,
+//     $ProductSize,
+//     $ProductFormType,
+//     $ProductQuantityRemainingThatCanBePersonalized
+// }) {
+//     return html`
+//         ${await New_TervisShopifyPersonalizationChargeLineItemIDInput({$IndexOfPersonalizationChargeLineInCart})}
+//         ${await New_TervisPersonalizationPropertiesForm({
+//             $PersonalizationChargeLineItem,
+//             $ProductSize,
+//             $ProductFormType
+//         })}
+//         <button
+//             type="button"
+//             @click=${Invoke_TervisShopifyPOSPersonalizationSave}
+//         >Save</button>
+//         <br>
+//     `
+// }
 
 async function New_TervisShopifyPersonalizationChargeLineItemIDInput({
     $IndexOfPersonalizationChargeLineInCart
@@ -617,63 +619,6 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
 }
 
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
-
-async function New_TervisPersonalizationPropertiesForm ({
-    $PersonalizationChargeLineItem,
-    $ProductSize,
-    $ProductFormType
-}) {
-    var $ProductMetadata = await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
-    
-    var $Content = []
-    for (var $SideNumber of New_Range({$Start: 1, $Stop: $ProductMetadata.Personalization.MaximumSideCount})) {
-        $Content.push(
-            New_TervisSelect({
-                $Title: `Side${$SideNumber}ColorName`,
-                $Required: true,
-                $Options: $PersonalizationColors.map(
-                    $Color =>
-                    ({
-                        Text: $Color,
-                        Selected: $PersonalizationChargeLineItem ?
-                            $Color === $PersonalizationChargeLineItem.PropertiesObject[`Side${$SideNumber}ColorName`] :
-                            undefined
-                    })
-                )
-            })
-        )
-        
-        var $FontNames = $ProductMetadata.Personalization.SupportedFontName
-        $Content.push(
-            New_TervisSelect({
-                $Title: `Side${$SideNumber}FontName`,
-                $Required: true,
-                $Options: $FontNames.map(
-                    $FontName => ({
-                        Text: $FontName,
-                        Selected: $PersonalizationChargeLineItem ?
-                        $FontName === $PersonalizationChargeLineItem.PropertiesObject[`Side${$SideNumber}FontName`] :
-                        undefined
-                    })
-                ),
-                $OnChange: Receive_TervisPersonalizationFontNameSelectOnChange
-            })
-        )
-
-        var $Thing = New_TervisPersonalizationPropertiesSideAndLineForm({
-            $PersonalizationChargeLineItem,
-            $ProductMetadata,
-            $SideNumber
-        })
-
-        $Content.push(
-            html`
-                ${$Thing}
-            `
-        )
-    }
-    return $Content
-}
 
 async function Invoke_TervisShopifyPOSPersonalizationSave () {
     if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
