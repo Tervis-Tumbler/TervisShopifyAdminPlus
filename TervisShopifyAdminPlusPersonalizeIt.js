@@ -272,21 +272,36 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
                 $ProductQuantityRemainingThatCanBePersonalized
             })
         })
+        document.querySelectorAll("[title='Side1'], [title='Side2']")
+        .forEach( $Element => {
+            $Element.hidden = false
+            $Element.disabled = false
+            
+            var $LabelElement = $Element.closest("label")
+            $LabelElement.hidden = false
+            
+            $Element.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+    
+        document.querySelector("button[title='Save']").hidden = false
+    } else {
+        Set_ContainerContent({
+            $TargetElementSelector: "#QuantityRemainingToPersonalizeContainer",
+            $Content: ""
+        })
+        document.querySelectorAll("[title='Side1'], [title='Side2']")
+        .forEach( $Element => {
+            $Element.hidden = true
+            $Element.disabled = true
+            
+            var $LabelElement = $Element.closest("label")
+            $LabelElement.hidden = true
+            
+            $Element.dispatchEvent(new Event('change', { bubbles: true }))
+        })
+    
+        document.querySelector("button[title='Save']").hidden = true
     }
-
-    document.querySelectorAll("[title='Side1'], [title='Side2']")
-    .forEach( $Element => {
-        $Element.hidden = false
-        $Element.disabled = false
-        
-        var $LabelElement = $Element.closest("label")
-        $LabelElement.hidden = false
-        $LabelElement = false
-        
-        $Element.dispatchEvent(new Event('change', { bubbles: true }))
-    })
-
-    document.querySelector("button[title='Save']").hidden = false
 
     var $Content = []
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
@@ -299,47 +314,47 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
     })
 }
 
-// async function Update_PersonalizationForm () {
-//     var $Cart = await Get_TervisShopifyCart()
-//     var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
-//     var $PersonalizationChargeLineItems =
-//     Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine({
-//         $Cart,
-//         $PersonalizableLineItem: $SelectedPersonalizableLineItem
-//     })
+async function Update_PersonalizationForm () {
+    var $Cart = await Get_TervisShopifyCart()
+    var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
+    var $PersonalizationChargeLineItems =
+    Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine({
+        $Cart,
+        $PersonalizableLineItem: $SelectedPersonalizableLineItem
+    })
 
-//     var $ProductQuantityRemainingThatCanBePersonalized = Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
-//         $PersonalizableLineItem: $SelectedPersonalizableLineItem,
-//         $PersonalizationChargeLineItems
-//     })
+    var $ProductQuantityRemainingThatCanBePersonalized = Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
+        $PersonalizableLineItem: $SelectedPersonalizableLineItem,
+        $PersonalizationChargeLineItems
+    })
 
-//     var {
-//         $ProductSize,
-//         $ProductFormType
-//     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
+    var {
+        $ProductSize,
+        $ProductFormType
+    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
 
-//     var $Content = []
-//     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
-//         // Regenerate remaining line item quantity selector
-//         // $Content.push(
-//         //     await New_TervisPersonalizationForm({
-//         //         $ProductSize,
-//         //         $ProductFormType,
-//         //         $ProductQuantityRemainingThatCanBePersonalized
-//         //     })
-//         // )
-//     }
+    var $Content = []
+    if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
+        // Regenerate remaining line item quantity selector
+        // $Content.push(
+        //     await New_TervisPersonalizationForm({
+        //         $ProductSize,
+        //         $ProductFormType,
+        //         $ProductQuantityRemainingThatCanBePersonalized
+        //     })
+        // )
+    }
 
-//     var $Content = []
-//     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
-//         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
-//     }
+    var $Content = []
+    for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
+        $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
+    }
 
-//     Set_ContainerContent({
-//         $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
-//         $Content
-//     })
-// }
+    Set_ContainerContent({
+        $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
+        $Content
+    })
+}
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Event) {
     var $IndexOfPersonalizationChargeLineInCart = $Event.target.id
@@ -678,7 +693,7 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
         .forEach( $Element =>
             $Element.dispatchEvent(new Event('change', { bubbles: true }))
         )
-
+        
         Out_TervisShopifyPOSDebug({$Object: $Cart})
     }
 }
