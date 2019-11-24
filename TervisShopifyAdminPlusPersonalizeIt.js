@@ -42,8 +42,10 @@ async function Receive_SideCheckboxOnChnage ($Event) {
         if($Element.value) {
             $Element.hidden = !$SupportedFontNames.includes($Element.value)
             $Element.disabled = !$SupportedFontNames.includes($Element.value)
-            $Element.selected = $SupportedFontNames.length === 1 && $SupportedFontNames.includes($Element.value)
-            $Element.closest("select").dispatchEvent(new Event('change', { bubbles: true }))
+            if($SupportedFontNames.length === 1 && $SupportedFontNames.includes($Element.value)) {
+                $Element.selected = true
+                $Element.closest("select").dispatchEvent(new Event('change', { bubbles: true }))    
+            }
         }
     })
 
