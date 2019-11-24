@@ -299,47 +299,47 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
     })
 }
 
-async function Update_PersonalizationForm () {
-    var $Cart = await Get_TervisShopifyCart()
-    var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
-    var $PersonalizationChargeLineItems =
-    Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine({
-        $Cart,
-        $PersonalizableLineItem: $SelectedPersonalizableLineItem
-    })
+// async function Update_PersonalizationForm () {
+//     var $Cart = await Get_TervisShopifyCart()
+//     var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
+//     var $PersonalizationChargeLineItems =
+//     Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine({
+//         $Cart,
+//         $PersonalizableLineItem: $SelectedPersonalizableLineItem
+//     })
 
-    var $ProductQuantityRemainingThatCanBePersonalized = Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
-        $PersonalizableLineItem: $SelectedPersonalizableLineItem,
-        $PersonalizationChargeLineItems
-    })
+//     var $ProductQuantityRemainingThatCanBePersonalized = Get_TervisShopifyPOSPersonalizableLineItemQuantityRemainingToPersonalize ({
+//         $PersonalizableLineItem: $SelectedPersonalizableLineItem,
+//         $PersonalizationChargeLineItems
+//     })
 
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
+//     var {
+//         $ProductSize,
+//         $ProductFormType
+//     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
 
-    var $Content = []
-    if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
-        // Regenerate remaining line item quantity selector
-        // $Content.push(
-        //     await New_TervisPersonalizationForm({
-        //         $ProductSize,
-        //         $ProductFormType,
-        //         $ProductQuantityRemainingThatCanBePersonalized
-        //     })
-        // )
-    }
+//     var $Content = []
+//     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
+//         // Regenerate remaining line item quantity selector
+//         // $Content.push(
+//         //     await New_TervisPersonalizationForm({
+//         //         $ProductSize,
+//         //         $ProductFormType,
+//         //         $ProductQuantityRemainingThatCanBePersonalized
+//         //     })
+//         // )
+//     }
 
-    var $Content = []
-    for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
-        $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
-    }
+//     var $Content = []
+//     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
+//         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
+//     }
 
-    Set_ContainerContent({
-        $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
-        $Content
-    })
-}
+//     Set_ContainerContent({
+//         $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
+//         $Content
+//     })
+// }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Event) {
     var $IndexOfPersonalizationChargeLineInCart = $Event.target.id
@@ -671,7 +671,14 @@ async function Invoke_TervisShopifyPOSPersonalizationSave () {
             $LineItemProperties
         })
 
-        await Update_PersonalizationForm()
+        // await Update_PersonalizationForm()
+
+        document
+        .querySelectorAll(`[title="Select Line Item To Personalize"]`)
+        .forEach( $Element =>
+            $Element.dispatchEvent(new Event('change', { bubbles: true }))
+        )
+
         Out_TervisShopifyPOSDebug({$Object: $Cart})
     }
 }
