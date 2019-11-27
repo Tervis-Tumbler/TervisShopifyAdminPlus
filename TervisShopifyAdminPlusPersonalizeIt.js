@@ -33,22 +33,24 @@ async function Receive_SideCheckboxOnChnage ($Event) {
         $Element.disabled = !this.checked || this.hidden
     })
 
-    var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
-    var $SupportedFontNames = $ProductMetadata.Personalization.SupportedFontName
-    
-    this.closest('div')
-    .querySelectorAll(`[title="${$SideName}FontName"] option`)
-    .forEach($Element => {
-        if($Element.value) {
-            $Element.hidden = !$SupportedFontNames.includes($Element.value)
-            $Element.disabled = !$SupportedFontNames.includes($Element.value)
-            if($SupportedFontNames.length === 1 && $SupportedFontNames.includes($Element.value)) {
-                $Element.selected = true
-                $Element.closest("select").dispatchEvent(new Event('change', { bubbles: true }))    
+    if (this.checked) {
+        var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
+        var $SupportedFontNames = $ProductMetadata.Personalization.SupportedFontName
+        
+        this.closest('div')
+        .querySelectorAll(`[title="${$SideName}FontName"] option`)
+        .forEach($Element => {
+            if($Element.value) {
+                $Element.hidden = !$SupportedFontNames.includes($Element.value)
+                $Element.disabled = !$SupportedFontNames.includes($Element.value)
+                if($SupportedFontNames.length === 1 && $SupportedFontNames.includes($Element.value)) {
+                    $Element.selected = true
+                    $Element.closest("select").dispatchEvent(new Event('change', { bubbles: true }))    
+                }
             }
-        }
-    })
-    
+        })
+    }
+
     this.closest('div')
     .querySelectorAll(`[title="${$SideName}IsCustomerSuppliedDecoration"]`)
     .forEach($Element => {
