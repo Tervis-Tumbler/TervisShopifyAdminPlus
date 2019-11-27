@@ -200,7 +200,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                             <input type="text" title="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden disabled pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1">
                         `
                     )}
-                    <button type="button" @click=${Invoke_TervisShopifyPOSPersonalizationSave} title="Save" hidden>Save</button>
+                    <button type="button" @click=${Receive_TervisShopifyPOSPersonalizationSaveOnClick} title="Save" hidden>Save</button>
                     <br>
                 </div>
                 <div id="PersonalizationChargeLineItemsContainer"></div>
@@ -424,7 +424,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
 //         })}
 //         <button
 //             type="button"
-//             @click=${Invoke_TervisShopifyPOSPersonalizationSave}
+//             @click=${Receive_TervisShopifyPOSPersonalizationSaveOnClick}
 //         >Save</button>
 //         <br>
 //     `
@@ -629,7 +629,7 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
 
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
 
-async function Invoke_TervisShopifyPOSPersonalizationSave () {
+async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
     if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
         var $Cart = await Get_TervisShopifyCart()
         var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
@@ -712,7 +712,7 @@ async function Get_TervisPersonalizationFormProperties () {
     )
     .filter( $Node => $Node.value)
     .forEach(
-        $Node => $Properties[$Node.title] = $Node.value
+        $Node => $Properties[$Node.title] = $Node.type === "checkbox" ? $Node.checked : $Node.value
     )
 
     Array.from(document.querySelectorAll("#PersonalizationInformationContainer input[title*='Monogram']:not([hidden])"))
