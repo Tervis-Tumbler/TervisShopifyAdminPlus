@@ -724,6 +724,7 @@ async function Get_TervisPersonalizationFormProperties () {
     
 
     return Object.keys($Properties)
+    .sort()
     .reduce(
         ($SortedProperties, $PropertyName) => {
             $SortedProperties[$PropertyName] = $Properties[$PropertyName]
