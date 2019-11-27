@@ -721,9 +721,16 @@ async function Get_TervisPersonalizationFormProperties () {
     .forEach(
         $Node => $Properties[$Node.title.replace(/MonogramAllCharactersRequired/, "").replace(/MonogramAllCharactersNotRequired/, "")] = $Node.value
     )
-    .sort()
+    
 
-    return $Properties
+    return Object.keys($Properties)
+    .reduce(
+        ($SortedProperties, $PropertyName) => {
+            $SortedProperties[$PropertyName] = $Properties[$PropertyName]
+            return $SortedProperties
+        },
+        {}
+    )
 }
 
 function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChargeLine ({
