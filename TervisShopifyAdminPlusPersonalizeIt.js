@@ -721,6 +721,7 @@ async function Get_TervisPersonalizationFormProperties () {
     .forEach(
         $Node => $Properties[$Node.title.replace(/MonogramAllCharactersRequired/, "").replace(/MonogramAllCharactersNotRequired/, "")] = $Node.value
     )
+    .sort()
 
     return $Properties
 }
