@@ -711,6 +711,7 @@ async function Get_TervisPersonalizationFormProperties () {
         )
     )
     .filter( $Node => $Node.value)
+    .filter( $Node => $Node.type !== "checkbox" || $Node.checked === "true")
     .forEach(
         $Node => $Properties[$Node.title] = $Node.type === "checkbox" ? $Node.checked : $Node.value
     )
