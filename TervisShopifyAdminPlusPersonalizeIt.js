@@ -27,7 +27,7 @@ async function main () {
 async function Receive_SideCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title
     this.closest('div')
-    .querySelectorAll(`[title="${$SideName}IsCustomerSuppliedDecorationLabel"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
+    .querySelectorAll(`[title="${$SideName}IsCustomerSuppliedDecorationLabel"], [title="${$SideName}IsCustomerSuppliedDecoration"], [title="${$SideName}ColorName"], [title="${$SideName}FontName"]`)
     .forEach($Element => {
         $Element.hidden = !this.checked || this.hidden
         $Element.disabled = !this.checked || this.hidden
@@ -58,7 +58,7 @@ async function Receive_SideCheckboxOnChnage ($Event) {
     })
 }
 
-async function Receive_CustomerSuppliedDecorationCheckboxOnChnage ($Event) {
+async function Receive_IsCustomerSuppliedDecorationCheckboxOnChnage ($Event) {
     var $SideName = $Event.target.title.substring(0,5)
     if (!this.hidden) {
         this.closest('div')
@@ -164,14 +164,10 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                     <input type="hidden" value="">
                     ${$SideNumbers.map(
                         $SideNumber => html`
-                            <label hidden>
-                                Enable Side ${$SideNumber} Personalization
-                                <input type="checkbox" title="Side${$SideNumber}" @change=${Receive_SideCheckboxOnChnage} hidden disabled>
-                            </label>
-                            <label title="Side${$SideNumber}IsCustomerSuppliedDecorationLabel" hidden>
-                                Is Customer Supplied Decoration
-                                <input type="checkbox" title="Side${$SideNumber}IsCustomerSuppliedDecoration" @change=${Receive_CustomerSuppliedDecorationCheckboxOnChnage}>
-                            </label>
+                            <label hidden>Enable Side ${$SideNumber} Personalization</label>
+                            <input type="checkbox" title="Side${$SideNumber}" @change=${Receive_SideCheckboxOnChnage} hidden disabled>
+                            <label title="Side${$SideNumber}IsCustomerSuppliedDecorationLabel" hidden>Is Customer Supplied Decoration</label>
+                            <input type="checkbox" title="Side${$SideNumber}IsCustomerSuppliedDecoration" @change=${Receive_IsCustomerSuppliedDecorationCheckboxOnChnage}>
                             <input type="text" title="Side${$SideNumber}CustomerSuppliedDecorationNote" placeholder="Side${$SideNumber}CustomerSuppliedDecorationNote" hidden disabled>
                             <select title="Side${$SideNumber}ColorName" required hidden disabled>
                                 <option selected disabled value="">Side${$SideNumber}ColorName</option>
