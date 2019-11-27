@@ -164,7 +164,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                     <input type="hidden" value="">
                     ${$SideNumbers.map(
                         $SideNumber => html`
-                            <label hidden>Enable Side ${$SideNumber} Personalization</label>
+                            <label title="Side${$SideNumber}Label" hidden>Enable Side ${$SideNumber} Personalization</label>
                             <input type="checkbox" title="Side${$SideNumber}" @change=${Receive_SideCheckboxOnChnage} hidden disabled>
                             <label title="Side${$SideNumber}IsCustomerSuppliedDecorationLabel" hidden>Is Customer Supplied Decoration</label>
                             <input type="checkbox" title="Side${$SideNumber}IsCustomerSuppliedDecoration" @change=${Receive_IsCustomerSuppliedDecorationCheckboxOnChnage} hidden disabled>
@@ -294,13 +294,17 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
                 $ProductQuantityRemainingThatCanBePersonalized
             })
         })
+
+        document.querySelectorAll("[title='Side1Label'], [title='Side2Label']")
+        .forEach( $Element => {
+            $Element.hidden = false
+            $Element.disabled = false
+        })
+
         document.querySelectorAll("[title='Side1'], [title='Side2']")
         .forEach( $Element => {
             $Element.hidden = false
             $Element.disabled = false
-            
-            var $LabelElement = $Element.closest("label")
-            $LabelElement.hidden = false
             
             $Element.dispatchEvent(new Event('change', { bubbles: true }))
         })
