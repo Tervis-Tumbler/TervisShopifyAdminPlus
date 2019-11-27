@@ -167,7 +167,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                             <label hidden>Enable Side ${$SideNumber} Personalization</label>
                             <input type="checkbox" title="Side${$SideNumber}" @change=${Receive_SideCheckboxOnChnage} hidden disabled>
                             <label title="Side${$SideNumber}IsCustomerSuppliedDecorationLabel" hidden>Is Customer Supplied Decoration</label>
-                            <input type="checkbox" title="Side${$SideNumber}IsCustomerSuppliedDecoration" @change=${Receive_IsCustomerSuppliedDecorationCheckboxOnChnage}>
+                            <input type="checkbox" title="Side${$SideNumber}IsCustomerSuppliedDecoration" @change=${Receive_IsCustomerSuppliedDecorationCheckboxOnChnage} hidden disabled>
                             <input type="text" title="Side${$SideNumber}CustomerSuppliedDecorationNote" placeholder="Side${$SideNumber}CustomerSuppliedDecorationNote" hidden disabled>
                             <select title="Side${$SideNumber}ColorName" required hidden disabled>
                                 <option selected disabled value="">Side${$SideNumber}ColorName</option>
