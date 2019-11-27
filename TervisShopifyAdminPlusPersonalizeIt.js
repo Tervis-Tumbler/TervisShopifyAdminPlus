@@ -315,13 +315,17 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
             $TargetElementSelector: "#QuantityRemainingToPersonalizeContainer",
             $Content: ""
         })
+
+        document.querySelectorAll("[title='Side1Label'], [title='Side2Label']")
+        .forEach( $Element => {
+            $Element.hidden = true
+            $Element.disabled = true
+        })
+
         document.querySelectorAll("[title='Side1'], [title='Side2']")
         .forEach( $Element => {
             $Element.hidden = true
             $Element.disabled = true
-            
-            var $LabelElement = $Element.closest("label")
-            $LabelElement.hidden = true
             
             $Element.dispatchEvent(new Event('change', { bubbles: true }))
         })
