@@ -382,14 +382,18 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
 
     var $Content = []
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
-        $Content.push(
-            await New_TervisPersonalizationForm({
-                $ProductSize,
-                $ProductFormType,
-                $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit,
-                $IndexOfPersonalizationChargeLineInCart,
-                $ProductQuantityRemainingThatCanBePersonalized
-            })
+        Object.entries($PersonalizationChargeLineItemToEdit.PropertiesObject)
+        .forEach(
+            ([$PropertyName, $PropertyValue]) => {
+                $Element = document.querySelector(`[title='${$PropertyName}']`)
+                $Element.hidden = false
+                $Element.disabled = false
+                if ($Element.type !== "checkbox") {
+                    $Element.value = $PropertyValue
+                } else {
+                    $Element.checked = true
+                }
+            }
         )
     }
 
@@ -401,11 +405,6 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
     }
-
-    // Set_ContainerContent({
-    //     $TargetElementSelector: "#PersonalizationInformationContainer",
-    //     $Content
-    // })
 }
 
 // async function New_TervisPersonalizationForm ({
