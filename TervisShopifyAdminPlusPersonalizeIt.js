@@ -385,7 +385,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         Object.entries($PersonalizationChargeLineItemToEdit.PropertiesObject)
         .forEach(
             ([$PropertyName, $PropertyValue]) => {
-                $Element = document.querySelector(`[title='${$PropertyName}']`)
+                var $Element = document.querySelector(`[title='${$PropertyName}']`)
                 $Element.hidden = false
                 $Element.disabled = false
                 if ($Element.type !== "checkbox") {
