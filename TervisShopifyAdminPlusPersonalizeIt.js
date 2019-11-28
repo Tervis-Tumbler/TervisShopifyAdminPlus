@@ -392,6 +392,9 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
                     $Element.value = $PropertyValue
                 } else {
                     $Element.checked = true
+                    var $LabelElement = document.querySelector(`[title='${$PropertyName}Label']`)
+                    $LabelElement.hidden = false
+                    $LabelElement.disabled = false
                 }
             }
         )
