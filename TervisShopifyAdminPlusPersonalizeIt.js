@@ -385,19 +385,29 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         Object.entries($PersonalizationChargeLineItemToEdit.PropertiesObject)
         .forEach(
             ([$PropertyName, $PropertyValue]) => {
-                var $Element = document.querySelector(`[title='${$PropertyName}']`)
-                $Element.hidden = false
-                $Element.disabled = false
-                if ($Element.type !== "checkbox") {
-                    $Element.value = $PropertyValue
-                } else {
-                    $Element.checked = true
-                    var $LabelElement = document.querySelector(`[title='${$PropertyName}Label']`)
-                    $LabelElement.hidden = false
-                    $LabelElement.disabled = false
+                if ($PropertyName.substring(0,4) === "Side") {
+                    var $Element = document.querySelector(`[title='${$PropertyName}']`)
+                    $Element.hidden = false
+                    $Element.disabled = false
+                    if ($Element.type !== "checkbox") {
+                        $Element.value = $PropertyValue
+                    } else {
+                        $Element.checked = true
+                        var $LabelElement = document.querySelector(`[title='${$PropertyName}Label']`)
+                        $LabelElement.hidden = false
+                        $LabelElement.disabled = false
+                    }    
                 }
             }
         )
+
+        document.querySelectorAll("[title='Side1'], [title='Side2']")
+        .forEach( $Element => {
+            $Element.hidden = false
+            $Element.disabled = false
+            
+            $Element.dispatchEvent(new Event('change', { bubbles: true }))
+        })
     }
 
     $PersonalizationChargeLineItems.splice(
