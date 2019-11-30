@@ -424,7 +424,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
     }
 
     $PersonalizationChargeLineItems.splice(
-        $PersonalizationChargeLineToEditIndexInCart,
+        $PersonalizationChargeLineItems.indexOf($PersonalizationChargeLineItemToEdit),
         1
     )
 
@@ -432,7 +432,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
     }
-    
+
     Set_ContainerContent({
         $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
         $Content
