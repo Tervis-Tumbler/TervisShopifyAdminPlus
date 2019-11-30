@@ -388,11 +388,10 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         .filter(([$PropertyName, ]) => $PropertyName.slice(0,4) === "Side")
         .forEach(
             ([$PropertyName, $PropertyValue]) => {
-                var $SideName = $PropertyName.slice(0,5)
-                var $FontName = $PersonalizationChargeLineItemToEdit.PropertiesObject[`${$SideName}FontName`]
-                var $FontMetadata = $FontMetadataHashtable[$FontName]
-                
-                if ($FontMetadata.MonogramStyle) {
+                if ($PropertyName.includes("Monogram")) {
+                    var $SideName = $PropertyName.slice(0,5)
+                    var $FontName = $PersonalizationChargeLineItemToEdit.PropertiesObject[`${$SideName}FontName`]
+                    var $FontMetadata = $FontMetadataHashtable[$FontName]
                     var $ElementTitle = `${$SideName}MonogramAllCharacters${!$FontMetadata.AllCharactersRequired ? "Not" : "" }RequiredLine1`
                 } else {
                     var $ElementTitle = $PropertyName
