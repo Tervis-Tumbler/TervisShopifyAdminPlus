@@ -393,7 +393,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
                 var $SideName = $PropertyName.slice(0,5)
                 var $FontName = $PersonalizationChargeLineItemToEdit.PropertiesObject[`${$SideName}FontName`]
                 var $FontMetadata = $FontMetadataHashtable[$FontName]                
-                if ($FontMetadata.MonogramStyle) {
+                if ($PropertyName.slice(-5) === "Line1" && $FontMetadata.MonogramStyle) {
                     $ElementTitle = `${$SideName}MonogramAllCharacters${!$FontMetadata.AllCharactersRequired ? "Not" : "" }RequiredLine1`
                 }
 
