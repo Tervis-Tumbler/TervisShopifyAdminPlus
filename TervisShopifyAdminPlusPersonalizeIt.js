@@ -376,7 +376,6 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
     }) + $PersonalizationChargeLineItemToEdit.quantity
 
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
-
         Set_ContainerContent({
             $TargetElementSelector: "#QuantityRemainingToPersonalizeContainer",
             $Content: await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiveThisPersonalizationSelect({
@@ -422,6 +421,10 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
             
             $Element.dispatchEvent(new Event('change', { bubbles: true }))
         })
+
+        var $SaveButtonElement = document.querySelector("[title='Save']")
+        $SaveButtonElement.hidden = false
+        $SaveButtonElement.disabled = false
     }
 
     $PersonalizationChargeLineItems.splice(
