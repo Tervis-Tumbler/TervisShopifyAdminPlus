@@ -735,8 +735,9 @@ async function Get_TervisPersonalizationFormProperties () {
             "input:not([title*='Monogram']):not([hidden]), select:not([hidden])"
         )
     )
-    .filter( $Node => $Node.value)
-    .filter( $Node => $Node.type !== "checkbox" || $Node.checked === true)
+    .filter($Node => $Node.value)
+    .filter($Node => $Node.type !== "checkbox" || $Node.checked === true)
+    .filter($Node => $Node.type !== "hidden")
     .forEach(
         $Node => $Properties[$Node.title] = $Node.type === "checkbox" ? $Node.checked : $Node.value
     )
