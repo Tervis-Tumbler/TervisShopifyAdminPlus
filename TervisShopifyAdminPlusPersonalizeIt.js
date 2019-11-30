@@ -690,11 +690,12 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             $PropertyName: "value"
         })
 
-        if($IndexOfPersonalizationChargeLineBeingEdited) {
+        if ($IndexOfPersonalizationChargeLineBeingEdited) {
             $Cart = await Remove_TervisShopifyCartLineItem({
                 $Cart,
                 $LineItemIndex: $IndexOfPersonalizationChargeLineBeingEdited
             })
+            document.querySelector("input[type='hidden']").removeAttribute("value")
         }
 
         $Cart = await Add_TervisShopifyCartLineItem({
