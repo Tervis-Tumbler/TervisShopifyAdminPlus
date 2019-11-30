@@ -380,6 +380,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         Set_ContainerContent({
             $TargetElementSelector: "#QuantityRemainingToPersonalizeContainer",
             $Content: await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiveThisPersonalizationSelect({
+                $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit,
                 $ProductQuantityRemainingThatCanBePersonalized
             })
         })
