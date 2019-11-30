@@ -353,9 +353,9 @@ async function Update_PersonalizationForm () {
 }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Event) {
-    var $IndexOfPersonalizationChargeLineInCart = $Event.target.id
+    var $PersonalizationChargeLineToEditIndexInCart = $Event.target.id
     var $Cart = await Get_TervisShopifyCart()
-    var $PersonalizationChargeLineItemToEdit = $Cart.line_items[$IndexOfPersonalizationChargeLineInCart]
+    var $PersonalizationChargeLineItemToEdit = $Cart.line_items[$PersonalizationChargeLineToEditIndexInCart]
     Add_PersonalizationChargeLineCustomProperties({
         $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit
     })
@@ -382,21 +382,26 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
 
     var $Content = []
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
+        document.querySelector("[type='hidden']").value = $PersonalizationChargeLineToEditIndexInCart
+
         Object.entries($PersonalizationChargeLineItemToEdit.PropertiesObject)
+        .filter(([$PropertyName, ]) => $PropertyName.slice(0,4) === "Side")
         .forEach(
             ([$PropertyName, $PropertyValue]) => {
-                if ($PropertyName.substring(0,4) === "Side") {
-                    var $Element = document.querySelector(`[title='${$PropertyName}']`)
-                    $Element.hidden = false
-                    $Element.disabled = false
-                    if ($Element.type !== "checkbox") {
-                        $Element.value = $PropertyValue
-                    } else {
-                        $Element.checked = true
-                        var $LabelElement = document.querySelector(`[title='${$PropertyName}Label']`)
-                        $LabelElement.hidden = false
-                        $LabelElement.disabled = false
-                    }    
+                if ($PropertyName.includes("Monogram")) {
+                    $PropertyName = $PropertyName.slice(0,5) + $PropertyName.slice(-5)
+                }
+
+                var $Element = document.querySelector(`[title='${$PropertyName}']`)
+                $Element.hidden = false
+                $Element.disabled = false
+                if ($Element.type !== "checkbox") {
+                    $Element.value = $PropertyValue
+                } else {
+                    $Element.checked = true
+                    var $LabelElement = document.querySelector(`[title='${$PropertyName}Label']`)
+                    $LabelElement.hidden = false
+                    $LabelElement.disabled = false
                 }
             }
         )
@@ -408,10 +413,12 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
             
             $Element.dispatchEvent(new Event('change', { bubbles: true }))
         })
+
+
     }
 
     $PersonalizationChargeLineItems.splice(
-        $PersonalizationChargeLineItems.indexOf($PersonalizationChargeLineItemToEdit),
+        $PersonalizationChargeLineToEditIndexInCart,
         1
     )
 
