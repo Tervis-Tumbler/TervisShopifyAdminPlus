@@ -388,18 +388,25 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         .filter(([$PropertyName, ]) => $PropertyName.slice(0,4) === "Side")
         .forEach(
             ([$PropertyName, $PropertyValue]) => {
-                if ($PropertyName.includes("Monogram")) {
-                    $PropertyName = $PropertyName.slice(0,5) + $PropertyName.slice(-5)
+                var $SideName = $PropertyName.slice(0,5)
+                var $FontName = $PersonalizationChargeLineItemToEdit.PropertiesObject[`${$SideName}FontName`]
+                var $FontMetadata = $FontMetadataHashtable[$FontName]
+                
+                if ($FontMetadata.MonogramStyle) {
+                    var $ElementTitle = `${$SideName}MonogramAllCharacters${!$FontMetadata.AllCharactersRequired ? "Not" : "" }RequiredLine1`
+                } else {
+                    var $ElementTitle = $PropertyName
                 }
 
-                var $Element = document.querySelector(`[title='${$PropertyName}']`)
+                var $Element = document.querySelector(`[title='${$ElementTitle}']`)
                 $Element.hidden = false
                 $Element.disabled = false
+
                 if ($Element.type !== "checkbox") {
                     $Element.value = $PropertyValue
                 } else {
                     $Element.checked = true
-                    var $LabelElement = document.querySelector(`[title='${$PropertyName}Label']`)
+                    var $LabelElement = document.querySelector(`[title='${$ElementTitle}Label']`)
                     $LabelElement.hidden = false
                     $LabelElement.disabled = false
                 }
