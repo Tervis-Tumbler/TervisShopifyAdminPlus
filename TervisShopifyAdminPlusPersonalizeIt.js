@@ -375,13 +375,15 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         $PersonalizationChargeLineItems
     }) + $PersonalizationChargeLineItemToEdit.quantity
 
-    var {
-        $ProductSize,
-        $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
-
-    var $Content = []
     if ($ProductQuantityRemainingThatCanBePersonalized > 0) {
+
+        Set_ContainerContent({
+            $TargetElementSelector: "#QuantityRemainingToPersonalizeContainer",
+            $Content: await New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiveThisPersonalizationSelect({
+                $ProductQuantityRemainingThatCanBePersonalized
+            })
+        })
+
         document.querySelector("[type='hidden']").value = $PersonalizationChargeLineToEditIndexInCart
 
         Object.entries($PersonalizationChargeLineItemToEdit.PropertiesObject)
@@ -419,8 +421,6 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
             
             $Element.dispatchEvent(new Event('change', { bubbles: true }))
         })
-
-
     }
 
     $PersonalizationChargeLineItems.splice(
@@ -428,9 +428,15 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         1
     )
 
+    var $Content = []
     for (var $PersonalizationChargeLineItem of $PersonalizationChargeLineItems) {
         $Content.push(await New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay({$PersonalizationChargeLineItem, $Cart}))
     }
+    
+    Set_ContainerContent({
+        $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
+        $Content
+    })
 }
 
 // async function New_TervisPersonalizationForm ({
