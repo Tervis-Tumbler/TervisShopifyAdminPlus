@@ -712,7 +712,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             // $LineItemProperties,
             {thing: "ham"},
             {
-                success: () => {
+                success: ($Cart) => {
                     Out_TervisShopifyPOSDebug({$Object: $Cart})
                 },
                 error: () => {
