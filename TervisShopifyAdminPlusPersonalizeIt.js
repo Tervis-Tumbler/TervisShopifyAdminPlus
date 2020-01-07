@@ -727,7 +727,13 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         $Cart = await Add_TervisShopifyCartLineItemProperties({
             $Cart,
             $LineItemIndex,
-            $LineItemProperties
+            $LineItemProperties: {
+                "Side1": true,
+                "Side1ColorName": "Black",
+                "Side1FontName": "Script",
+                "Side1Line1": "Ham",
+                "RelatedLineItemSKU": "1149472P"
+            }
             // $LineItemProperties: {thing: "ham"}
         })
 
