@@ -707,16 +707,19 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
 
         var $LineItemIndex = $Cart.line_items.length - 1
         
-        // $Cart.addLineItemProperties(
-        //     $LineItemIndex,
-        //     $LineItemProperties,
-        //     {
-        //         success: resolve,
-        //         error: reject
-        //     }
-        // )
-
-        Out_TervisShopifyPOSDebug({$Object: `${$Cart.addLineItemProperties}`})
+        $Cart.addLineItemProperties(
+            $LineItemIndex,
+            // $LineItemProperties,
+            {thing: "ham"},
+            {
+                success: () => {
+                    Out_TervisShopifyPOSDebug({$Object: $Cart})
+                },
+                error: () => {
+                    Out_TervisShopifyPOSDebug({$Object: "Error"})
+                }
+            }
+        )
 
         $Cart = await Add_TervisShopifyCartLineItemProperties({
             $Cart,
