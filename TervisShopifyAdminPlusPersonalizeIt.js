@@ -707,24 +707,25 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
 
         var $LineItemIndex = $Cart.line_items.length - 1
         
-        $Cart.addLineItemProperties(
-            $LineItemIndex,
-            // $LineItemProperties,
-            {thing: "ham"},
-            {
-                success: ($Cart) => {
-                    Out_TervisShopifyPOSDebug({$Object: $Cart})
-                },
-                error: () => {
-                    Out_TervisShopifyPOSDebug({$Object: "Error"})
-                }
-            }
-        )
+        // $Cart.addLineItemProperties(
+        //     $LineItemIndex,
+        //     // $LineItemProperties,
+        //     {thing: "ham"},
+        //     {
+        //         success: ($Cart) => {
+        //             Out_TervisShopifyPOSDebug({$Object: $Cart})
+        //         },
+        //         error: () => {
+        //             Out_TervisShopifyPOSDebug({$Object: "Error"})
+        //         }
+        //     }
+        // )
 
         $Cart = await Add_TervisShopifyCartLineItemProperties({
             $Cart,
             $LineItemIndex,
-            $LineItemProperties
+            // $LineItemProperties
+            $LineItemProperties: {thing: "ham"}
         })
 
         Update_PersonalizationForm()
