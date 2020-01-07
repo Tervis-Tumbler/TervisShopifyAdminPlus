@@ -721,11 +721,14 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         //     }
         // )
 
+        
+        Out_TervisShopifyPOSDebug({$Object: $LineItemProperties})
+
         $Cart = await Add_TervisShopifyCartLineItemProperties({
             $Cart,
             $LineItemIndex,
-            // $LineItemProperties
-            $LineItemProperties: {thing: "ham"}
+            $LineItemProperties
+            // $LineItemProperties: {thing: "ham"}
         })
 
         Update_PersonalizationForm()
