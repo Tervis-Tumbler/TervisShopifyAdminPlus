@@ -707,7 +707,16 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
 
         var $LineItemIndex = $Cart.line_items.length - 1
         
-        Out_TervisShopifyPOSDebug({$Object: $LineItemProperties})
+        // $Cart.addLineItemProperties(
+        //     $LineItemIndex,
+        //     $LineItemProperties,
+        //     {
+        //         success: resolve,
+        //         error: reject
+        //     }
+        // )
+
+        Out_TervisShopifyPOSDebug({$Object: `${$Cart.addLineItemProperties}`})
 
         $Cart = await Add_TervisShopifyCartLineItemProperties({
             $Cart,
