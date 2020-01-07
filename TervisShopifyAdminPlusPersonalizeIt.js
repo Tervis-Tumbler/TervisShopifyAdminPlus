@@ -728,7 +728,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             $Cart,
             $LineItemIndex,
             $LineItemProperties: {
-                "Side1": true,
+                "Side1": "true",
                 "Side1ColorName": "Black",
                 "Side1FontName": "Script",
                 "Side1Line1": "Ham",
