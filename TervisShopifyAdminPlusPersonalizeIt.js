@@ -239,7 +239,7 @@ async function Get_TervisShopifyPOSPersonalizableLineItem ({
     $Cart
 }) {
     return $Cart.line_items.filter(
-        $LineItem => await Test_IsTervisItemPersonalizable($LineItem.sku)
+        async ($LineItem) => await Test_IsTervisItemPersonalizable($LineItem.sku)
     )
 }
 
