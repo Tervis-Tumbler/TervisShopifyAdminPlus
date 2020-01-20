@@ -17,6 +17,10 @@ import {
     Add_MemberScriptProperty
 } from 'https://unpkg.com/@tervis/tervisutilityjs?module'
 
+import {
+    Test_IsTervisItemPersonalizable
+} from 'https://unpkg.com/@tervis/tervispersonalizableitemsjs?module'
+
 var $Debug = true
 
 async function main () {
@@ -213,7 +217,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
 async function Receive_ShopifyPOSPersonalizationCart () {
     var $Cart = await Get_TervisShopifyCart()
     Out_TervisShopifyPOSDebug({$Object: $Cart})
-    var $Content = New_TervisShopifyPOSPersonalizableLineItemSelect({$Cart})
+    var $Content = await New_TervisShopifyPOSPersonalizableLineItemSelect({$Cart})
     Set_ContainerContent({
         $TargetElementSelector: "#LineItemSelectContainer",
         $Content
@@ -231,18 +235,18 @@ function Out_TervisShopifyPOSDebug ({
     }
 }
 
-function Get_TervisShopifyPOSPersonalizableLineItem ({
+async function Get_TervisShopifyPOSPersonalizableLineItem ({
     $Cart
 }) {
     return $Cart.line_items.filter(
-        $LineItem => $LineItem.sku ? $LineItem.sku.slice(-1) === "P" : undefined
+        $LineItem => await Test_IsTervisItemPersonalizable($LineItem.sku)
     )
 }
 
-function New_TervisShopifyPOSPersonalizableLineItemSelect ({
+async function New_TervisShopifyPOSPersonalizableLineItemSelect ({
     $Cart
 }) {
-    var $PersonalizableLineItems = Get_TervisShopifyPOSPersonalizableLineItem({$Cart})
+    var $PersonalizableLineItems = await Get_TervisShopifyPOSPersonalizableLineItem({$Cart})
 
     return New_TervisSelect({
         $Title: "Select Line Item To Personalize",
