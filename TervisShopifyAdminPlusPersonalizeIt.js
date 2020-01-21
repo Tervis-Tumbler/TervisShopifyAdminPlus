@@ -238,9 +238,19 @@ function Out_TervisShopifyPOSDebug ({
 async function Get_TervisShopifyPOSPersonalizableLineItem ({
     $Cart
 }) {
-    return $Cart.line_items.filter(
-        async ($LineItem) => await Test_IsTervisItemPersonalizable($LineItem.sku)
+    $PendingLookup = $Cart.line_items.map(
+        $Line => Test_IsTervisItemPersonalizable({ $ItemNumber: $Line.sku })
     )
+
+    let $IsIndexPersonalizable = await Promise.all($PendingLookup)
+
+    $PersonalizableLineItems = $Cart.line_items.filter(
+        ($LineItem, $LineItemIndex) => {
+            return $IsIndexPersonalizable[$LineItemIndex] ? $LineItem : undefined
+        }
+    )
+
+    return $PersonalizableLineItems
 }
 
 async function New_TervisShopifyPOSPersonalizableLineItemSelect ({
