@@ -1,0 +1,200 @@
+<div id="content">
+    <div id="">
+        Customer: <div id="customerInfo"></div>
+    </div>
+    <label for="select-shipMethod" >Ship method: </label>
+    <select name="Ship Methods" id="select-shipMethod"></select>
+    <button type="button" id="btn-submit" disabled>Submit</button>
+    <div id="debug">
+        <div class="btn">
+            <button type="button" id="btn-clearLog">Clear Log </button>
+            <button type="button" id="btn-showCart">Show Cart</button>
+            <button type="button" id="btn-showShip">Show Ship Method Object</button>
+            <button type="button" id="btn-getSubtotal">Show Cart Subtotal</button>
+            <button type="button" id="btn-test">Test</button>
+        </div>
+        <div>
+            <pre><code id="debugArea">Debug:</code></pre>
+        </div>
+    </div>
+</div>
+<script>
+    let shipMethods = [
+            {
+                name: "Made For Life/Osprey Pickup",
+                value: "000001_CUSTROUTE_L_TBD",
+                price: 0,
+                threshold: undefined
+            },
+            {
+                name: "FedEx Air Standard Overnight",
+                value: "000001_FEDEXP_A_SON",
+                price: 20,
+                threshold: undefined
+            },
+            {
+                name: "FedEx Parcel Ground (Business)",
+                value: "000001_FEDEX_P_GND",
+                price: 6.95,
+                threshold: 49.99
+            },
+            {
+                name: "FedEx Parcel Home Delivery (Residential)",
+                value: "000001_FEDEX_P_HDY",
+                price: 6.95,
+                threshold: 49.99
+            },
+            {
+                name: "Pick up in store",
+                value: "000001_PICKUP_P_TRV",
+                price: 0,
+                threshold: 0
+            }
+        ]
+
+    function writeDebug(msg) {
+        let debugWindow = document.getElementById("debugArea")
+        debugWindow.innerText = `${debugWindow.innerText}\n${JSON.stringify(msg,null,2)}`
+    }
+
+    function clearDebug() {
+        let debugWindow = document.getElementById("debugArea")
+        debugWindow.innerText = "Debug:"
+    }
+
+    let clearButton = document.getElementById("btn-clearLog")
+    clearButton.addEventListener("click", () => clearDebug())
+    
+    function showCart() {
+        ShopifyPOS.fetchCart({
+            success: cart => writeDebug(cart),
+            error: errors => ShopifyPOS.flashError("Failed to retrieve cart")
+        })
+    }
+
+    function showShipMethod() {
+        writeDebug(getShipMethod())
+    }
+    
+    function getShipMethod() {
+        let selectedShipMethod = document.getElementById("select-shipMethod").value
+        let result = shipMethods
+            .filter(shipMethod => {
+                return shipMethod.name === selectedShipMethod
+            })[0]
+        return result
+    }
+    
+    function addShipMethodsToDropdown() {        
+        let dropdown = document.getElementById("select-shipMethod")
+        shipMethods.forEach(method => {
+            let option = document.createElement("option")
+            option.text = method.name
+            dropdown.add(option)
+        })
+    }
+
+    function enableSubmitButton (bool) {
+        document.getElementById("btn-submit").disabled = !bool
+    }
+
+    function showCustomerInformation(customer) {
+        let addr = customer.addresses[0]
+        let customerInfo = `${addr.name}
+            ${addr.address1} ${addr.address2 ? `\n${addr.address2}` : ""}
+            ${addr.city}, ${addr.province_code} ${addr.zip}
+        `
+        document.getElementById("customerInfo").innerText = customerInfo
+    }
+
+    function submitShippingLineItem() {
+        let shipMethod = getShipMethod()
+
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                // if (shipMethod.threshold && )
+                cart.addLineItem({
+                    title: "Shipping",
+                    price: shipMethod.price,
+                    quantity: 1
+                },{
+                    success: cart => {
+                        writeDebug("added item, now adding props")
+                        let index = cart.line_items.findIndex(item => {
+                            return item.title === "Shipping"
+                        })
+                        writeDebug(`index: ${index}`)
+                        cart.addLineItemProperties(index, {
+                            method: shipMethod.value
+                        },{
+                            success: cart => ShopifyPOS.flashNotice("Shipping props added"),
+                            error: errors => ShopifyPOS.flashError(errors)
+                        })
+                        ShopifyPOS.flashNotice("Shipping added")
+                        enableSubmitButton(false)
+                    },
+                    error: errors => ShopifyPOS.flashError(errors)
+                })
+            },
+            error: () => ShopifyPOS.flashError("Error submitting Shipping line item.")
+        })
+    }
+
+    function startForm() {
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                if (cart.customer) {
+                    // writeDebug("Customer found")
+                    // writeDebug(cart.customer)
+                    showCustomerInformation(cart.customer)
+                    enableSubmitButton(true)
+                } else {
+                    // writeDebug("No customer found")
+                    ShopifyPOS.flashError("Please set a customer first.")
+                }
+            },
+            error: errors => writeDebug(errors)
+        })
+        addShipMethodsToDropdown()
+    }
+
+    function buttonTest(){
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                cart.addLineItemProperties(0, {
+                    someProp: "Here it is"
+                }, {
+                    success: ShopifyPOS.flashNotice("yay"),
+                    error: errors => ShopifyPOS.flashError(errors)
+                })
+            },
+            error: errors => ShopifyPOS.flashError(errors)
+        })     
+    }
+
+    function startButtons() {
+        document.getElementById("btn-showCart").addEventListener("click", showCart)
+        document.getElementById("btn-showShip").addEventListener("click",showShipMethod)
+        document.getElementById("btn-submit").addEventListener("click",submitShippingLineItem)
+        document.getElementById("btn-test").addEventListener("click", buttonTest)
+    }
+    
+    ShopifyPOS.ready(function(){
+        try {
+            //App view is now rendered
+            writeDebug("Ready.")
+            startButtons()
+            startForm()
+        } catch(err) {
+            writeDebug(err)
+            alert(err)
+        }
+    });
+</script>
+
+<!--
+    Next up:
+    - validate if there are shipping items in cart already
+    - check why some options don't work (MFL, PickupInStore)
+    - add threshold logic for subtotal
+-->
