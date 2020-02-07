@@ -94,8 +94,15 @@
         })
     }
 
-    function enableSubmitButton (bool) {
+    function enableSubmitButton(bool) {
         document.getElementById("btn-submit").disabled = !bool
+    }
+
+    function getIndexOfShippingItemInCart(cart) {
+        let index = cart.line_items.findIndex(item => {
+            return item.title === "Shipping"
+        })
+        return index
     }
 
     function showCustomerInformation(customer) {
@@ -120,9 +127,7 @@
                 },{
                     success: cart => {
                         writeDebug("added item, now adding props")
-                        let index = cart.line_items.findIndex(item => {
-                            return item.title === "Shipping"
-                        })
+                        let index = getIndexOfShippingItemInCart(cart)
                         writeDebug(`index: ${index}`)
                         cart.addLineItemProperties(index, {
                             method: shipMethod.value
@@ -143,14 +148,14 @@
     function startForm() {
         ShopifyPOS.fetchCart({
             success: cart => {
-                if (cart.customer) {
-                    // writeDebug("Customer found")
-                    // writeDebug(cart.customer)
+                let shippingItemIndex = getIndexOfShippingItemInCart(cart)
+                if (cart.customer && shippingItemIndex === -1) {
                     showCustomerInformation(cart.customer)
                     enableSubmitButton(true)
-                } else {
-                    // writeDebug("No customer found")
+                } elseif (!cart.customer) {
                     ShopifyPOS.flashError("Please set a customer first.")
+                } elseif (shippingItemIndex !== -1) {
+                    ShopifyPOS.flashError("There is already a Shipping item in cart.")
                 }
             },
             error: errors => writeDebug(errors)
@@ -194,7 +199,7 @@
 
 <!--
     Next up:
-    - validate if there are shipping items in cart already
+    X validate if there are shipping items in cart already
     - check why some options don't work (MFL, PickupInStore)
     - add threshold logic for subtotal
 -->
