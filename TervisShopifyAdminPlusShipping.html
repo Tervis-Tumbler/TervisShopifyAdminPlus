@@ -1,10 +1,13 @@
 <div id="content">
-    <div id="">
+    <div id="customer">
         Customer: <div id="customerInfo"></div>
     </div>
-    <label for="select-shipMethod" >Ship method: </label>
-    <select name="Ship Methods" id="select-shipMethod"></select>
-    <button type="button" id="btn-submit" disabled>Submit</button>
+    <div id="shipForm">
+        <label for="select-shipMethod" >Ship method: </label>
+        <select name="Ship Methods" id="select-shipMethod"></select>
+        <button type="button" id="btn-submit" disabled>Submit</button>
+        <button type="button" id="btn-removeShipping">Remove shipping</button>
+    </div>
     <div id="debug">
         <div class="btn">
             <button type="button" id="btn-clearLog">Clear Log </button>
@@ -24,25 +27,28 @@
                 name: "Made For Life/Osprey Pickup",
                 value: "000001_CUSTROUTE_L_TBD",
                 price: 0,
-                threshold: undefined
+                threshold: 0
             },
             {
                 name: "FedEx Air Standard Overnight",
                 value: "000001_FEDEXP_A_SON",
                 price: 20,
-                threshold: undefined
+                threshold: Number.MAX_SAFE_INTEGER,
+                variantId: 31865728598097
             },
             {
                 name: "FedEx Parcel Ground (Business)",
                 value: "000001_FEDEX_P_GND",
                 price: 6.95,
-                threshold: 49.99
+                threshold: 49.99,
+                variantId: 31865728565329
             },
             {
                 name: "FedEx Parcel Home Delivery (Residential)",
                 value: "000001_FEDEX_P_HDY",
                 price: 6.95,
-                threshold: 49.99
+                threshold: 49.99,
+                variantId: 31865728565329
             },
             {
                 name: "Pick up in store",
@@ -114,34 +120,59 @@
         document.getElementById("customerInfo").innerText = customerInfo
     }
 
+    function testIsOverFreeShippingThreshold(cart, shipMethod) {
+        return shipMethod.threshold ? cart.subtotal > shipMethod.threshold : true
+    }
+
     function submitShippingLineItem() {
         let shipMethod = getShipMethod()
-
         ShopifyPOS.fetchCart({
             success: cart => {
-                // if (shipMethod.threshold && )
-                cart.addLineItem({
-                    title: "Shipping",
-                    price: shipMethod.price,
-                    quantity: 1
-                },{
-                    success: cart => {
-                        writeDebug("added item, now adding props")
-                        let index = getIndexOfShippingItemInCart(cart)
-                        writeDebug(`index: ${index}`)
-                        cart.addLineItemProperties(index, {
-                            method: shipMethod.value
-                        },{
-                            success: cart => ShopifyPOS.flashNotice("Shipping props added"),
-                            error: errors => ShopifyPOS.flashError(errors)
-                        })
-                        ShopifyPOS.flashNotice("Shipping added")
-                        enableSubmitButton(false)
+                let isOverFreeShippingThreshold = testIsOverFreeShippingThreshold(cart, shipMethod)
+                let shipFee = isOverFreeShippingThreshold ? "0" : shipMethod.price.toString()
+                if (!isOverFreeShippingThreshold) {
+                    cart.addLineItem({
+                        variantId: shipMethod.variantId,
+                        quantity: 1
+                    },{
+                        success: {},
+                        error: errors => ShopifyPOS.flashError(errors)
+                    })
+                }
+                cart.addProperties({
+                    shipMethod: shipMethod.name,
+                    shipMethodCode: shipMethod.value,
+                    shipFee: shipFee
+                }, {
+                    success: () => {
+                        ShopifyPOS.flashNotice(`${shipMethod.name} shipping added.`)
+                        ShopifyPOS.Modal.close()
                     },
                     error: errors => ShopifyPOS.flashError(errors)
                 })
+                writeDebug(cart)
             },
-            error: () => ShopifyPOS.flashError("Error submitting Shipping line item.")
+            error: () => ShopifyPOS.flashError("Error adding shipping.")
+        })
+    }
+
+    function removeShipping() {
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                cart.removeProperties(["shipFee","shipMethod","shipMethodCode"], {
+                    success: cart => {
+                        let shippingItemIndex = getIndexOfShippingItemInCart(cart)
+                        if (shippingItemIndex !== -1) {
+                            cart.removeLineItem(shippingItemIndex, {
+                                success: () => enableSubmitButton(true),
+                                error: () => ShopifyPOS.flashError("Error removing shipping line item")
+                            })
+                        }
+                    },
+                    error: () => ShopifyPOS.flashError("Error removing shipping")
+                })
+            },
+            error: () => ShopifyPOS.flashError("Error fetching cart")
         })
     }
 
@@ -152,10 +183,12 @@
                 if (cart.customer && shippingItemIndex === -1) {
                     showCustomerInformation(cart.customer)
                     enableSubmitButton(true)
-                } elseif (!cart.customer) {
+                }
+                else if (!cart.customer) {
                     ShopifyPOS.flashError("Please set a customer first.")
-                } elseif (shippingItemIndex !== -1) {
-                    ShopifyPOS.flashError("There is already a Shipping item in cart.")
+                }
+                else if (shippingItemIndex !== -1) {
+                    ShopifyPOS.flashError("There is already a Shipping item in cart. Please remove it to add a new one.")
                 }
             },
             error: errors => writeDebug(errors)
@@ -181,6 +214,7 @@
         document.getElementById("btn-showCart").addEventListener("click", showCart)
         document.getElementById("btn-showShip").addEventListener("click",showShipMethod)
         document.getElementById("btn-submit").addEventListener("click",submitShippingLineItem)
+        document.getElementById("btn-removeShipping").addEventListener("click",removeShipping)
         document.getElementById("btn-test").addEventListener("click", buttonTest)
     }
     
@@ -196,10 +230,3 @@
         }
     });
 </script>
-
-<!--
-    Next up:
-    X validate if there are shipping items in cart already
-    - check why some options don't work (MFL, PickupInStore)
-    - add threshold logic for subtotal
--->
