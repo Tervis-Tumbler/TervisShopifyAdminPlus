@@ -3,12 +3,12 @@
         Customer: <div id="customerInfo"></div>
     </div>
     <div id="shipForm">
-        <label for="select-shipMethod" >Ship method: </label>
+        <label for="select-shipMethod">Ship method: </label>
         <select name="Ship Methods" id="select-shipMethod"></select>
         <button type="button" id="btn-submit" disabled>Submit</button>
         <button type="button" id="btn-removeShipping">Remove shipping</button>
     </div>
-    <div id="debug">
+    <div id="debug" style="display: none;">
         <div class="btn">
             <button type="button" id="btn-clearLog">Clear Log </button>
             <button type="button" id="btn-showCart">Show Cart</button>
@@ -23,44 +23,44 @@
 </div>
 <script>
     let shipMethods = [
-            {
-                name: "Made For Life/Osprey Pickup",
-                value: "000001_CUSTROUTE_L_TBD",
-                price: 0,
-                threshold: 0
-            },
-            {
-                name: "FedEx Air Standard Overnight",
-                value: "000001_FEDEXP_A_SON",
-                price: 20,
-                threshold: Number.MAX_SAFE_INTEGER,
-                variantId: 31865728598097
-            },
-            {
-                name: "FedEx Parcel Ground (Business)",
-                value: "000001_FEDEX_P_GND",
-                price: 6.95,
-                threshold: 49.99,
-                variantId: 31865728565329
-            },
-            {
-                name: "FedEx Parcel Home Delivery (Residential)",
-                value: "000001_FEDEX_P_HDY",
-                price: 6.95,
-                threshold: 49.99,
-                variantId: 31865728565329
-            },
-            {
-                name: "Pick up in store",
-                value: "000001_PICKUP_P_TRV",
-                price: 0,
-                threshold: 0
-            }
-        ]
+        {
+            name: "Made For Life/Osprey Pickup",
+            value: "000001_CUSTROUTE_L_TBD",
+            price: 0,
+            threshold: 0
+        },
+        {
+            name: "FedEx Air Standard Overnight",
+            value: "000001_FEDEXP_A_SON",
+            price: 20,
+            threshold: Number.MAX_SAFE_INTEGER,
+            variantId: 31865728598097
+        },
+        {
+            name: "FedEx Parcel Ground (Business)",
+            value: "000001_FEDEX_P_GND",
+            price: 6.95,
+            threshold: 49.99,
+            variantId: 31865728565329
+        },
+        {
+            name: "FedEx Parcel Home Delivery (Residential)",
+            value: "000001_FEDEX_P_HDY",
+            price: 6.95,
+            threshold: 49.99,
+            variantId: 31865728565329
+        },
+        {
+            name: "Pick up in store",
+            value: "000001_PICKUP_P_TRV",
+            price: 0,
+            threshold: 0
+        }
+    ]
 
     function writeDebug(msg) {
         let debugWindow = document.getElementById("debugArea")
-        debugWindow.innerText = `${debugWindow.innerText}\n${JSON.stringify(msg,null,2)}`
+        debugWindow.innerText = `${debugWindow.innerText}\n${JSON.stringify(msg, null, 2)}`
     }
 
     function clearDebug() {
@@ -70,7 +70,7 @@
 
     let clearButton = document.getElementById("btn-clearLog")
     clearButton.addEventListener("click", () => clearDebug())
-    
+
     function showCart() {
         ShopifyPOS.fetchCart({
             success: cart => writeDebug(cart),
@@ -81,7 +81,7 @@
     function showShipMethod() {
         writeDebug(getShipMethod())
     }
-    
+
     function getShipMethod() {
         let selectedShipMethod = document.getElementById("select-shipMethod").value
         let result = shipMethods
@@ -90,8 +90,8 @@
             })[0]
         return result
     }
-    
-    function addShipMethodsToDropdown() {        
+
+    function addShipMethodsToDropdown() {
         let dropdown = document.getElementById("select-shipMethod")
         shipMethods.forEach(method => {
             let option = document.createElement("option")
@@ -134,7 +134,7 @@
                     cart.addLineItem({
                         variantId: shipMethod.variantId,
                         quantity: 1
-                    },{
+                    }, {
                         success: {},
                         error: errors => ShopifyPOS.flashError(errors)
                     })
@@ -159,7 +159,7 @@
     function removeShipping() {
         ShopifyPOS.fetchCart({
             success: cart => {
-                cart.removeProperties(["shipFee","shipMethod","shipMethodCode"], {
+                cart.removeProperties(["shipFee", "shipMethod", "shipMethodCode"], {
                     success: cart => {
                         let shippingItemIndex = getIndexOfShippingItemInCart(cart)
                         if (shippingItemIndex !== -1) {
@@ -196,7 +196,7 @@
         addShipMethodsToDropdown()
     }
 
-    function buttonTest(){
+    function buttonTest() {
         ShopifyPOS.fetchCart({
             success: cart => {
                 cart.addLineItemProperties(0, {
@@ -207,24 +207,24 @@
                 })
             },
             error: errors => ShopifyPOS.flashError(errors)
-        })     
+        })
     }
 
     function startButtons() {
         document.getElementById("btn-showCart").addEventListener("click", showCart)
-        document.getElementById("btn-showShip").addEventListener("click",showShipMethod)
-        document.getElementById("btn-submit").addEventListener("click",submitShippingLineItem)
-        document.getElementById("btn-removeShipping").addEventListener("click",removeShipping)
+        document.getElementById("btn-showShip").addEventListener("click", showShipMethod)
+        document.getElementById("btn-submit").addEventListener("click", submitShippingLineItem)
+        document.getElementById("btn-removeShipping").addEventListener("click", removeShipping)
         document.getElementById("btn-test").addEventListener("click", buttonTest)
     }
-    
-    ShopifyPOS.ready(function(){
+
+    ShopifyPOS.ready(() => {
         try {
             //App view is now rendered
             writeDebug("Ready.")
             startButtons()
             startForm()
-        } catch(err) {
+        } catch (err) {
             writeDebug(err)
             alert(err)
         }
