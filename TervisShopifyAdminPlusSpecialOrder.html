@@ -1,0 +1,152 @@
+<div id="content">
+    <div>
+        <label for="select-item">Select item to special order:</label>
+        <select id="select-item">
+            <option disabled selected value="">Please select an item</option>
+        </select>
+    </div>
+    <div id="specialOrderProps">
+        <div>
+            Is this currently a special order?: <span id="isSpecialOrder"></span>
+        </div>
+        <div>
+            <label for="SpecialOrderNote">Special Order Note: </label><br>
+            <textarea id="SpecialOrderNote" cols="50" rows="1" placeholder="Insert special order note here"></textarea>
+        </div>
+
+    </div>
+    <div id="buttons">
+        <button type="button" id="btn-submit">Add</button>
+        <button type="button" id="btn-remove">Remove</button>
+    </div>
+    <div id="debug" style="display: inline;">
+        <div class="btn">
+            <button type="button" id="btn-clearLog">Clear Log </button>
+            <button type="button" id="btn-showCart">Show Cart</button>
+            <button type="button" id="btn-test">Test</button>
+        </div>
+        <div>
+            <pre><code id="debugArea">Debug:</code></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    let cachedCart
+    let currentLineItem
+    let itemSelector = document.getElementById("select-item")
+    let isSpecialOrderSpan = document.getElementById("isSpecialOrder")
+    let specialOrderNoteTextbox = document.getElementById("SpecialOrderNote")
+
+    function writeDebug(msg) {
+        let debugWindow = document.getElementById("debugArea")
+        debugWindow.innerText = `${debugWindow.innerText}\n${JSON.stringify(msg, null, 2)}`
+    }
+
+    function clearDebug() {
+        let debugWindow = document.getElementById("debugArea")
+        debugWindow.innerText = "Debug:"
+    }
+
+    function showCart() {
+        ShopifyPOS.fetchCart({
+            success: cart => writeDebug(cart),
+            error: errors => ShopifyPOS.flashError("Failed to retrieve cart")
+        })
+    }
+
+    function addItemToDropdown(lineItem, index) {
+        let dropdown = document.getElementById("select-item")
+        let itemOption = document.createElement("option")
+        itemOption.text = `${index + 1} - ${lineItem.title}`
+        itemOption.value = index
+        dropdown.add(itemOption)
+    }
+
+    function addSpecialOrderProps() {
+        let index = itemSelector.value
+        let newSpecialOrderProps = {
+            isSpecialOrder: "true",
+            specialOrderNote: specialOrderNoteTextbox.value
+        }
+        // writeDebug("item:")
+        // writeDebug(cachedCart.line_items[index])
+        // writeDebug('props:')
+        // writeDebug(newSpecialOrderProps)
+
+        cachedCart.addLineItemProperties(index, newSpecialOrderProps,{
+            success: ShopifyPOS.flashNotice("Added special order notes"),
+            failure: error => ShopifyPOS.flashError(error)
+        })
+        refreshForm()
+    }
+
+    function removeSpecialOrderProps() {
+        let index = itemSelector.value
+        cachedCart.removeLineItemProperties(index, ["isSpecialOrder","specialOrderNote"], {
+            success: ShopifyPOS.flashNotice("Removed special order notes"),
+        },{
+            failure: error => ShopifyPOS.flashError(error)
+        })
+        refreshForm()
+    }
+
+    function refreshForm() {
+        writeDebug('Refreshing form')
+        let index = itemSelector.value
+        writeDebug(index)
+        currentLineItem = cachedCart.line_items[index]
+        writeDebug(currentLineItem)
+        if (
+            currentLineItem.properties !== undefined &&
+            currentLineItem.properties.filter(prop => prop.name === "isSpecialOrder")[0].value === "true"
+        ) {
+            isSpecialOrderSpan.innerText = "Yes"
+        } else {
+            isSpecialOrderSpan.innerText = "No"
+        }
+    }
+
+    function startForm() {
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                cachedCart = cart
+                cachedCart.line_items.forEach((item, index) => {
+                    addItemToDropdown(item, index)
+                });
+            },
+            error: errors => writeDebug(errors)
+        })
+    }
+
+    function buttonTest() {
+        let props = {
+            isSpecialOrder: isSpecialOrderCheckbox.checked.toString(),
+            specialOrderNote: specialOrderNoteTextbox.value
+        }
+        writeDebug(`current index: ${itemSelector.value}`)
+        writeDebug('props to write')
+        writeDebug(props)
+    }
+
+    function startButtons() {
+        itemSelector.addEventListener("change", refreshForm)
+        document.getElementById("btn-clearLog").addEventListener("click", () => clearDebug())
+        document.getElementById("btn-showCart").addEventListener("click", showCart)
+        document.getElementById("btn-submit").addEventListener("click", addSpecialOrderProps)
+        document.getElementById("btn-remove").addEventListener("click", removeSpecialOrderProps)
+        document.getElementById("btn-test").addEventListener("click", buttonTest)
+    }
+
+    ShopifyPOS.ready(() => {
+        try {
+            //App view is now rendered
+            writeDebug("Ready.")
+            startButtons()
+            startForm()
+        } catch (err) {
+            writeDebug(err)
+            alert(err)
+        }
+    });
+</script>
