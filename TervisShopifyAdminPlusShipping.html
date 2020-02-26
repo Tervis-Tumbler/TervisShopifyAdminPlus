@@ -6,7 +6,7 @@
         <h4>
             Customer 
         </h4>
-        <div id="customerInfo"></div>
+        <div id="customerInfo">None</div>
     </div>
     <div id="shipForm">
         <label for="select-shipMethod">
@@ -158,67 +158,85 @@
         return shipMethod.threshold ? cart.subtotal > shipMethod.threshold : true
     }
 
-    function submitShippingLineItem() {
+    async function submitShippingLineItem() {
         let shipMethod = getShipMethod()
         let freeFreight = ""
-        if (shipMethod.name === "None") {
-            removeShipping()
-            ShopifyPOS.flashNotice(`Shipping removed.`)
-            ShopifyPOS.Modal.close()
-        } else {
-            ShopifyPOS.fetchCart({
-                success: cart => {
-                    let isOverFreeShippingThreshold = testIsOverFreeShippingThreshold(cart, shipMethod)
-                    // let shipFee = isOverFreeShippingThreshold ? "0" : shipMethod.price.toString()
-                    if (!isOverFreeShippingThreshold) {
-                        cart.addLineItem({
-                            variantId: shipMethod.variantId,
-                            quantity: 1
+        try {
+            await removeShipping()
+            if (shipMethod.name === "None") {
+                ShopifyPOS.flashNotice(`Shipping removed.`)
+                ShopifyPOS.Modal.close()
+            } else {
+                ShopifyPOS.fetchCart({
+                    success: cart => {
+                        let isOverFreeShippingThreshold = testIsOverFreeShippingThreshold(cart, shipMethod)
+                        // let shipFee = isOverFreeShippingThreshold ? "0" : shipMethod.price.toString()
+                        if (!isOverFreeShippingThreshold) {
+                            cart.addLineItem({
+                                variantId: shipMethod.variantId,
+                                quantity: 1
+                            }, {
+                                success: {},
+                                error: errors => ShopifyPOS.flashError(errors)
+                            })
+                        } else {
+                            // freeFreight = shipMethod.freightTerms === "Freight Collect" ? "Y" : ""
+                            freeFreight = "Y"
+                        }
+                        cart.addProperties({
+                            shipMethod: shipMethod.name,
+                            shipMethodCode: shipMethod.value,
+                            // shipFee: shipFee,
+                            freightTerms: shipMethod.freightTerms,
+                            freeFreight: freeFreight
                         }, {
-                            success: {},
+                            success: () => {
+                                ShopifyPOS.flashNotice(`${shipMethod.name} shipping added.`)
+                                ShopifyPOS.Modal.close()
+                            },
                             error: errors => ShopifyPOS.flashError(errors)
                         })
-                    } else {
-                        // freeFreight = shipMethod.freightTerms === "Freight Collect" ? "Y" : ""
-                        freeFreight = "Y"
-                    }
-                    cart.addProperties({
-                        shipMethod: shipMethod.name,
-                        shipMethodCode: shipMethod.value,
-                        // shipFee: shipFee,
-                        freightTerms: shipMethod.freightTerms,
-                        freeFreight: freeFreight
-                    }, {
-                        success: () => {
-                            ShopifyPOS.flashNotice(`${shipMethod.name} shipping added.`)
-                            ShopifyPOS.Modal.close()
-                        },
-                        error: errors => ShopifyPOS.flashError(errors)
-                    })
-                    writeDebug(cart)
-                },
-                error: () => ShopifyPOS.flashError("Error adding shipping.")
-            })
+                        writeDebug(cart)
+                    },
+                    error: () => ShopifyPOS.flashError("Error adding shipping.")
+                })
+            }
+        } catch {
+            ShopifyPOS.flashError("Error sumbitting changes.")
         }
     }
 
     function removeShipping() {
-        ShopifyPOS.fetchCart({
-            success: cart => {
-                cart.removeProperties(["shipMethod", "shipMethodCode", "freightTerms", "freeFreight"], {
-                    success: cart => {
-                        let shippingItemIndex = getIndexOfShippingItemInCart(cart)
-                        if (shippingItemIndex !== -1) {
-                            cart.removeLineItem(shippingItemIndex, {
-                                success: () => enableSubmitButton(true),
-                                error: () => ShopifyPOS.flashError("Error removing shipping line item")
-                            })
+        return new Promise((resolve,reject) => {
+            ShopifyPOS.fetchCart({
+                success: cart => {
+                    cart.removeProperties(["shipMethod", "shipMethodCode", "freightTerms", "freeFreight"], {
+                        success: cart => {
+                            let shippingItemIndex = getIndexOfShippingItemInCart(cart)
+                            if (shippingItemIndex !== -1) {
+                                cart.removeLineItem(shippingItemIndex, {
+                                    success: () => {
+                                        enableSubmitButton(true)
+                                    },
+                                    error: e => {
+                                        ShopifyPOS.flashError("Error removing shipping line item")
+                                        reject(e)
+                                    }
+                                })
+                            }
+                            resolve()
+                        },
+                        error: e => {
+                            ShopifyPOS.flashError("Error removing shipping")
+                            reject(e)
                         }
-                    },
-                    error: () => ShopifyPOS.flashError("Error removing shipping")
-                })
-            },
-            error: () => ShopifyPOS.flashError("Error fetching cart")
+                    })
+                },
+                error: e => {
+                    ShopifyPOS.flashError("Error fetching cart")
+                    reject(e)
+                }
+            })
         })
     }
 
