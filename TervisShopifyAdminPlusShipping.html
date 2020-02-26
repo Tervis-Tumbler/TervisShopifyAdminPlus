@@ -1,20 +1,30 @@
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
+
 <div id="content">
     <div id="customer">
-        Customer: <div id="customerInfo"></div>
+        <h4>
+            Customer 
+        </h4>
+        <div id="customerInfo"></div>
     </div>
     <div id="shipForm">
-        <label for="select-shipMethod">Ship method: </label>
-        <select name="Ship Methods" id="select-shipMethod"></select>
-        <button type="button" id="btn-submit" disabled>Submit</button>
-        <button type="button" id="btn-removeShipping">Remove shipping</button>
+        <label for="select-shipMethod">
+            <h4>
+                Select ship method
+            </h4>
+        </label>
+        <select name="Ship Methods" class="input-block-level" id="select-shipMethod"></select>
+        <button type="button" class="btn btn-large btn-block btn-success" id="btn-submit" disabled>Submit</button>
+        <button type="button" class="btn btn-large btn-block btn-danger hidden" id="btn-removeShipping">Remove shipping</button>
     </div>
-    <div id="debug" style="display: none;">
-        <div class="btn">
-            <button type="button" id="btn-clearLog">Clear Log </button>
-            <button type="button" id="btn-showCart">Show Cart</button>
-            <button type="button" id="btn-showShip">Show Ship Method Object</button>
-            <button type="button" id="btn-getSubtotal">Show Cart Subtotal</button>
-            <button type="button" id="btn-test">Test</button>
+    <div id="debug" class="hidden">
+        <div>
+            <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
+            <button class="btn" type="button" id="btn-showCart">Show Cart</button>
+            <button class="btn" type="button" id="btn-showShip">Show Ship Method Object</button>
+            <button class="btn" type="button" id="btn-getSubtotal">Show Cart Subtotal</button>
+            <button class="btn" type="button" id="btn-test">Test</button>
         </div>
         <div>
             <pre><code id="debugArea">Debug:</code></pre>
