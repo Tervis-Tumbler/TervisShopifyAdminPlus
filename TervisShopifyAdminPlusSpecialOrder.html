@@ -1,29 +1,41 @@
-<div id="content">
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
+
+<div id="content" class="container">
     <div>
-        <label for="select-item">Select item to special order:</label>
-        <select id="select-item">
+        <label for="select-item">
+            <h4>
+                Select item to special order:
+            </h4>
+        </label>
+        <select id="select-item" class="input-block-level">
             <option disabled selected value="">Please select an item</option>
         </select>
     </div>
+    <div></div>
     <div id="specialOrderProps">
+        <p id="isSpecialOrder" class="muted">
+            Waiting on item...
+        </p>
         <div>
-            Is this currently a special order?: <span id="isSpecialOrder"></span>
-        </div>
-        <div>
-            <label for="SpecialOrderNote">Special Order Note: </label><br>
-            <textarea id="SpecialOrderNote" cols="50" rows="1" placeholder="Insert special order note here"></textarea>
+            <label for="SpecialOrderNote">
+                <h4>
+                    Special order note: 
+                </h4>
+            </label>
+            <textarea id="SpecialOrderNote" cols="50" rows="1" placeholder="Enter special order note here" class="input-block-level"></textarea>
         </div>
 
     </div>
     <div id="buttons">
-        <button type="button" id="btn-submit">Add</button>
-        <button type="button" id="btn-remove">Remove</button>
+        <button type="button" class="btn btn-large btn-block btn-success" id="btn-submit">Add</button>
+        <button type="button" class="btn btn-large btn-block btn-danger" id="btn-remove">Remove</button>
     </div>
-    <div id="debug" style="display: inline;">
-        <div class="btn">
-            <button type="button" id="btn-clearLog">Clear Log </button>
-            <button type="button" id="btn-showCart">Show Cart</button>
-            <button type="button" id="btn-test">Test</button>
+    <div id="debug" class="">
+        <div>
+            <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
+            <button class="btn" type="button" id="btn-showCart">Show Cart</button>
+            <button class="btn" type="button" id="btn-test">Test</button>
         </div>
         <div>
             <pre><code id="debugArea">Debug:</code></pre>
@@ -35,7 +47,7 @@
     let cachedCart
     let currentLineItem
     let itemSelector = document.getElementById("select-item")
-    let isSpecialOrderSpan = document.getElementById("isSpecialOrder")
+    let specialOrderStatusElement = document.getElementById("isSpecialOrder")
     let specialOrderNoteTextbox = document.getElementById("SpecialOrderNote")
 
     function writeDebug(msg) {
@@ -49,10 +61,14 @@
     }
 
     function showCart() {
-        ShopifyPOS.fetchCart({
-            success: cart => writeDebug(cart),
-            error: errors => ShopifyPOS.flashError("Failed to retrieve cart")
-        })
+        try {
+            ShopifyPOS.fetchCart({
+                success: cart => writeDebug(cart),
+                error: errors => ShopifyPOS.flashError("Failed to retrieve cart.")
+            })
+        } catch (err) {
+            writeDebug(err)
+        }
     }
 
     function addItemToDropdown(lineItem, index) {
@@ -74,37 +90,58 @@
         // writeDebug('props:')
         // writeDebug(newSpecialOrderProps)
 
-        cachedCart.addLineItemProperties(index, newSpecialOrderProps,{
-            success: ShopifyPOS.flashNotice("Added special order notes"),
-            failure: error => ShopifyPOS.flashError(error)
-        })
-        refreshForm()
+        if (index !== "") {
+            cachedCart.addLineItemProperties(index, newSpecialOrderProps,{
+                success: ShopifyPOS.flashNotice("Added special order notes successfully."),
+                failure: error => ShopifyPOS.flashError(error)
+            })
+            refreshForm()
+        } else {
+            ShopifyPOS.flashError("Please select an item.")
+        }
     }
 
     function removeSpecialOrderProps() {
         let index = itemSelector.value
-        cachedCart.removeLineItemProperties(index, ["isSpecialOrder","specialOrderNote"], {
-            success: ShopifyPOS.flashNotice("Removed special order notes"),
-        },{
-            failure: error => ShopifyPOS.flashError(error)
-        })
-        refreshForm()
+
+        if (index !== "") {
+            cachedCart.removeLineItemProperties(index, ["isSpecialOrder","specialOrderNote"], {
+                success: ShopifyPOS.flashNotice("Removed special order notes successfully."),
+            },{
+                failure: error => ShopifyPOS.flashError(error)
+            })
+            refreshForm()
+        } else {
+            ShopifyPOS.flashError("Please select an item.")
+        }
     }
 
+    // Currently does not refresh the form if a personalization item is selected
     function refreshForm() {
         writeDebug('Refreshing form')
         let index = itemSelector.value
         writeDebug(index)
-        currentLineItem = cachedCart.line_items[index]
-        writeDebug(currentLineItem)
-        if (
-            currentLineItem.properties !== undefined &&
-            currentLineItem.properties.filter(prop => prop.name === "isSpecialOrder")[0].value === "true"
-        ) {
-            isSpecialOrderSpan.innerText = "Yes"
-        } else {
-            isSpecialOrderSpan.innerText = "No"
-        }
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                cachedCart = cart
+                currentLineItem = cachedCart.line_items[index]
+                writeDebug(currentLineItem)
+                if (
+                    currentLineItem.properties !== undefined &&
+                    currentLineItem.properties.filter(prop => prop.name === "isSpecialOrder")[0].value === "true"
+                ) {
+                    specialOrderStatusElement.innerText = "This item is currently a special order"
+                    specialOrderStatusElement.className = "text-success"
+                    writeDebug(currentLineItem.properties.filter(prop => prop.name === "specialOrderNote")[0])
+                    specialOrderNoteTextbox.value = currentLineItem.properties.filter(prop => prop.name === "specialOrderNote")[0].value
+                } else {
+                    specialOrderStatusElement.innerText = "This item is not currently a special order"
+                    specialOrderStatusElement.className = "text-warning"
+                    specialOrderNoteTextbox.value = ""
+                }
+            },
+            error: errors => ShopifyPOS.flashError(errors)
+        })
     }
 
     function startForm() {
