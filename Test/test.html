@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<title>Shipping</title>
+
+<div id="content">
+    <label for="ship-select" >Shipping Option
+    </label>
+    <select 
+        name="Ship Methods" 
+        id="ship-select" 
+        v-model="selectedShipMethod"
+    >
+        <option 
+            v-for="shipMethod in shipMethods" 
+        >{{ shipMethod.name }}</option>
+    </select>
+    <div id="debug">
+        <div>
+            <button type="submit" @click="doThing">Submit</button>
+            <button type="button" @click="showCart">Show Cart</button>
+            <button type="button" @click="getShipMethod">Show Ship Method Object</button>
+            <button type="button" @click="getCartSubtotal">Get Cart Subtotal</button>
+        </div>
+        <div>
+            <textarea cols="120" rows="10" readonly>{{cart}}</textarea>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import {
+        Remove_ObjectKeyWithEmptyOrNullValue
+    } from 'https://unpkg.com/@tervis/tervisutilityjs?module'
+
+    // Refactor these functions into separate module once we are no longer embedded using admin+
+    async function Get_TervisShopifyCart () {
+        return new Promise((resolve, reject) => {
+            ShopifyPOS.fetchCart({
+                success: resolve,
+                error: reject
+            })
+        })
+    }
+    window.Get_TervisShopifyCart = Get_TervisShopifyCart
+
+    // https://help.shopify.com/en/api/embedded-apps/shopify-pos-app-sdk/methods#add-line-item
+    async function Add_TervisShopifyCartLineItem ({
+        $Cart,
+        $Price,
+        $Quantity,
+        $Title,
+        $VariantID
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.addLineItem(
+                    Remove_ObjectKeyWithEmptyOrNullValue({
+                        price: $Price,
+                        quantity: $Quantity,
+                        title: $Title,
+                        variant_id: $VariantID
+                    }),
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Add_TervisShopifyCartLineItem = Add_TervisShopifyCartLineItem
+
+    // https://help.shopify.com/en/api/embedded-apps/shopify-pos-app-sdk/methods#add-line-item-properties
+    async function Add_TervisShopifyCartLineItemProperties ({
+        $Cart,
+        $LineItemIndex,
+        $LineItemProperties
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.addLineItemProperties(
+                    $LineItemIndex,
+                    $LineItemProperties,
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Add_TervisShopifyCartLineItemProperties = Add_TervisShopifyCartLineItemProperties
+
+    async function Remove_TervisShopifyCartLineItem ({
+        $Cart,
+        $LineItemIndex
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.removeLineItem(
+                    $LineItemIndex,
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Remove_TervisShopifyCartLineItem = Remove_TervisShopifyCartLineItem
+    alert("after initial window functions")
+    var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)
+    if (isChrome) {
+        alert("is chrome")
+        var ShopifyPOS = {
+            fetchCart: function ({
+                success,
+                error
+            }) {
+                var $Cart = localStorage.getItem("Cart") ? JSON.parse(localStorage.getItem("Cart")) : undefined
+                if (!$Cart) {
+                    $Cart = {
+                        line_items: [
+                            {
+                                title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
+                                sku: "1001842",
+                                quantity: 2
+                            },
+                            {
+                                title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
+                                sku: "1001837",
+                                quantity: 3
+                            },
+                            {
+                                title: "CLEAR.DWT.CL1.NA.24.OZ.EA.NA",
+                                sku: "1001839",
+                                quantity: 1
+                            },
+                            {
+                                title: "CLEAR.WB.CL1.NA.24.OZ.EA.GY1",
+                                sku: "1070185P",
+                                quantity: 1
+                            }
+                        ]
+                    }
+                }
+
+                $Cart.addLineItemProperties = function (
+                    $LineItemIndex,
+                    $Properties,
+                    {success, error}
+                ) {
+                    this.line_items[$LineItemIndex].properties = Object
+                        .entries($Properties)
+                        .map(
+                            ([$Name, $Value]) => (
+                                {
+                                    name: $Name,
+                                    value: $Value
+                                }
+                            )
+                        )
+                    localStorage.setItem("Cart", JSON.stringify(this))
+                    success(this)
+                }
+
+                $Cart.addLineItem = function ( 
+                    $LineItem,
+                    {success, error}
+                ) {
+                    this.line_items.push( $LineItem )
+                    localStorage.setItem("Cart", JSON.stringify(this))
+                    success(this)
+                }
+
+                $Cart.removeLineItem = function (
+                    $LineItemIndex,
+                    {success, error}
+                ) {
+                    this.line_items.splice($LineItemIndex, 1)
+                    localStorage.setItem("Cart", JSON.stringify(this))
+                    success(this)
+                }
+
+                success($Cart)
+            }
+        }
+    }
+    alert("after is chrome")
+</script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+<!-- <script src="https://unpkg.com/vue@1.0.28/dist/vue.js"></script> -->
+<!-- <script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.318?module"></script> -->
+<script type="module">
+    alert("in module")
+    // import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.esm.browser.js'
+import Vue from 'https://unpkg.com/vue@2.6.11/dist/vue.esm.browser.js?module'
+alert("in Vue")
+new Vue({
+    el: "#content",
+    data: {
+        selectedShipMethod: null,
+        shipMethods: [
+            // {
+            //     name: "Select ship method",
+            //     value: undefined,
+            //     price: undefined,
+            //     threshold: undefined
+            // },
+            {
+                name: "Made4Life/Osprey Pickup",
+                value: "000001_CUSTROUTE_L_TBD",
+                price: 0,
+                threshold: undefined
+            },
+            {
+                name: "FedEx Air Standard Overnight",
+                value: "000001_FEDEXP_A_SON",
+                price: 20,
+                threshold: undefined
+            },
+            {
+                name: "FedEx Parcel Ground (Business)",
+                value: "000001_FEDEX_P_GND",
+                price: 6.95,
+                threshold: 49.99
+            },
+            {
+                name: "FedEx Parcel Home Delivery (Residential)",
+                value: "000001_FEDEX_P_HDY",
+                price: 6.95,
+                threshold: 49.99
+            },
+            {
+                name: "Pick up in store",
+                value: "000001_PICKUP_P_TRV",
+                price: 0,
+                threshold: 0
+            }
+        ],
+        cart: "lol"
+    },
+    methods: {
+        doThing() {
+            alert(`Submitted ${this.selectedShipMethod}`)
+            Add_TervisShopifyCartLineItem({
+                $Cart: this.cart,
+                $Price: 9.99,
+                $Quantity: 1,
+                $Title: "wut",
+                $VariantID: 1
+            })
+        },
+        showCart() {
+            alert(JSON.stringify(this.cart.line_items, null, 4))
+        },
+        getShipMethod() {
+            let result = this.shipMethods
+                .filter( shipMethod => {
+                    return shipMethod.name === this.selectedShipMethod
+                })[0]
+            console.log(JSON.stringify(result, null, 4))
+            return result
+        },
+        getCartSubtotal() {
+            let subtotal = this.cart.line_items.reduce((acc,curr) => {
+                return acc + curr.quantity
+            }, 0)
+            console.log(subtotal)
+        }
+    },
+    created: function() {
+        alert("created called")
+        try {Get_TervisShopifyCart()
+            // .then(shopifyCart => this.cart = shopifyCart), x => alert("x")}
+            .then(shopifyCart => alert(shopifyCart)), x => alert("x")}
+            catch {alert("oops")}
+        this.cart = {
+            line_items: [
+                {
+                    title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
+                    sku: "1001842",
+                    quantity: 2
+                },
+                {
+                    title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
+                    sku: "1001837",
+                    quantity: 3
+                }
+            ]
+        }
+    }
+})
+
+alert("after vue")
+</script>

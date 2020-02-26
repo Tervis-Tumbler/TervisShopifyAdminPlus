@@ -34,6 +34,9 @@
 <script>
     let shipMethods = [
             {
+                name: "None"
+            },
+            {
                 name: "Other Store Pickup",
                 value: "000001_FEDEX_P_GND",
                 threshold: 0,
@@ -87,44 +90,6 @@
                 freightCarrierCode: "FEDEX",
                 variantId: 31865728598097
             }
-        // {
-        //     name: "Made For Life",
-        //     value: "000001_CUSTROUTE_L_TBD",
-        //     // price: 0,
-        //     threshold: 0,
-        //     freightTerms: "Prepaid"
-        // },
-        // {
-        //     name: "FedEx Air Standard Overnight",
-        //     value: "000001_FEDEXP_A_SON",
-        //     // price: 20,
-        //     threshold: Number.MAX_SAFE_INTEGER,
-        //     variantId: 31865728598097,
-        //     freightTerms: "Freight Collect"
-        // },
-        // {
-        //     name: "FedEx Parcel Ground (Business)",
-        //     value: "000001_FEDEX_P_GND",
-        //     // price: 6.95,
-        //     threshold: 49.99,
-        //     variantId: 31865728565329,
-        //     freightTerms: "Freight Collect"
-        // },
-        // {
-        //     name: "FedEx Parcel Home Delivery (Residential)",
-        //     value: "000001_FEDEX_P_HDY",
-        //     // price: 6.95,
-        //     threshold: 49.99,
-        //     variantId: 31865728565329,
-        //     freightTerms: "Freight Collect"
-        // },
-        // {
-        //     name: "Pick up in store",
-        //     value: "000001_PICKUP_P_TRV",
-        //     // price: 0,
-        //     threshold: 0,
-        //     freightTerms: "Freight Collect"
-        // }
     ]
 
     function writeDebug(msg) {
@@ -196,45 +161,51 @@
     function submitShippingLineItem() {
         let shipMethod = getShipMethod()
         let freeFreight = ""
-        ShopifyPOS.fetchCart({
-            success: cart => {
-                let isOverFreeShippingThreshold = testIsOverFreeShippingThreshold(cart, shipMethod)
-                // let shipFee = isOverFreeShippingThreshold ? "0" : shipMethod.price.toString()
-                if (!isOverFreeShippingThreshold) {
-                    cart.addLineItem({
-                        variantId: shipMethod.variantId,
-                        quantity: 1
+        if (shipMethod.name === "None") {
+            removeShipping()
+            ShopifyPOS.flashNotice(`Shipping removed.`)
+            ShopifyPOS.Modal.close()
+        } else {
+            ShopifyPOS.fetchCart({
+                success: cart => {
+                    let isOverFreeShippingThreshold = testIsOverFreeShippingThreshold(cart, shipMethod)
+                    // let shipFee = isOverFreeShippingThreshold ? "0" : shipMethod.price.toString()
+                    if (!isOverFreeShippingThreshold) {
+                        cart.addLineItem({
+                            variantId: shipMethod.variantId,
+                            quantity: 1
+                        }, {
+                            success: {},
+                            error: errors => ShopifyPOS.flashError(errors)
+                        })
+                    } else {
+                        // freeFreight = shipMethod.freightTerms === "Freight Collect" ? "Y" : ""
+                        freeFreight = "Y"
+                    }
+                    cart.addProperties({
+                        shipMethod: shipMethod.name,
+                        shipMethodCode: shipMethod.value,
+                        // shipFee: shipFee,
+                        freightTerms: shipMethod.freightTerms,
+                        freeFreight: freeFreight
                     }, {
-                        success: {},
+                        success: () => {
+                            ShopifyPOS.flashNotice(`${shipMethod.name} shipping added.`)
+                            ShopifyPOS.Modal.close()
+                        },
                         error: errors => ShopifyPOS.flashError(errors)
                     })
-                } else {
-                    // freeFreight = shipMethod.freightTerms === "Freight Collect" ? "Y" : ""
-                    freeFreight = "Y"
-                }
-                cart.addProperties({
-                    shipMethod: shipMethod.name,
-                    shipMethodCode: shipMethod.value,
-                    // shipFee: shipFee,
-                    freightTerms: shipMethod.freightTerms,
-                    freeFreight: freeFreight
-                }, {
-                    success: () => {
-                        ShopifyPOS.flashNotice(`${shipMethod.name} shipping added.`)
-                        ShopifyPOS.Modal.close()
-                    },
-                    error: errors => ShopifyPOS.flashError(errors)
-                })
-                writeDebug(cart)
-            },
-            error: () => ShopifyPOS.flashError("Error adding shipping.")
-        })
+                    writeDebug(cart)
+                },
+                error: () => ShopifyPOS.flashError("Error adding shipping.")
+            })
+        }
     }
 
     function removeShipping() {
         ShopifyPOS.fetchCart({
             success: cart => {
-                cart.removeProperties(["shipFee", "shipMethod", "shipMethodCode", "freightTerms", "freeFreight"], {
+                cart.removeProperties(["shipMethod", "shipMethodCode", "freightTerms", "freeFreight"], {
                     success: cart => {
                         let shippingItemIndex = getIndexOfShippingItemInCart(cart)
                         if (shippingItemIndex !== -1) {
@@ -255,16 +226,17 @@
         ShopifyPOS.fetchCart({
             success: cart => {
                 let shippingItemIndex = getIndexOfShippingItemInCart(cart)
-                if (cart.customer && shippingItemIndex === -1) {
+                // if (cart.customer && shippingItemIndex === -1) {
+                if (cart.customer) {
                     showCustomerInformation(cart.customer)
                     enableSubmitButton(true)
                 }
                 else if (!cart.customer) {
                     ShopifyPOS.flashError("Please set a customer first.")
                 }
-                else if (shippingItemIndex !== -1) {
-                    ShopifyPOS.flashError("There is already a Shipping item in cart. Please remove it to add a new one.")
-                }
+                // else if (shippingItemIndex !== -1) {
+                //     ShopifyPOS.flashError("There is already a Shipping item in cart. Please remove it to add a new one.")
+                // }
             },
             error: errors => writeDebug(errors)
         })

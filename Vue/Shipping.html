@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Vue</title>
+</head>
+<body>
+    <div id="content">
+        <div>
+            <select name="shipMethod" id="shipMethod" v-model="selectedShipMethod">
+                <option v-for="method in shipMethods">{{ method.name }}</option>
+            </select>
+        </div>
+        <div>
+            <h2>{{ selectedShipMethod }}</h2>
+        </div>
+        <div>
+            <h1>CART</h1>
+        </div>
+        <div>{{ JSON.stringify(cart, null, 4) }}</div>
+    </div>
+    <script type="module" src="Shipping.js"></script>
+</body>
+</html>
