@@ -162,54 +162,63 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
         $TargetElementSelector: "#content",
         $Content: html`
             <form id="ShopifyPOSPersonalizationForm">
-                <div id="LineItemSelectContainer"></div>
-                <div id="QuantityRemainingToPersonalizeContainer"></div>
-                <div id="PersonalizationInformationContainer">
-                    <input type="hidden" value="">
-                    ${$SideNumbers.map(
-                        $SideNumber => html`
-                            <label title="Side${$SideNumber}Label" hidden>Enable Side ${$SideNumber} Personalization</label>
-                            <input type="checkbox" title="Side${$SideNumber}" @change=${Receive_SideCheckboxOnChnage} hidden disabled>
-                            <label title="Side${$SideNumber}IsCustomerSuppliedDecorationLabel" hidden>Is Customer Supplied Decoration</label>
-                            <input type="checkbox" title="Side${$SideNumber}IsCustomerSuppliedDecoration" @change=${Receive_IsCustomerSuppliedDecorationCheckboxOnChnage} hidden disabled>
-                            <input type="text" title="Side${$SideNumber}CustomerSuppliedDecorationNote" placeholder="Side${$SideNumber}CustomerSuppliedDecorationNote" hidden disabled>
-                            <select title="Side${$SideNumber}ColorName" required hidden disabled>
-                                <option selected disabled value="">Side${$SideNumber}ColorName</option>
-                                <option>Black</option>
-                                <option>Chocolate</option>
-                                <option>Fuchsia</option>
-                                <option>Green</option>
-                                <option>Hunter</option>
-                                <option>Navy</option>
-                                <option>Orange</option>
-                                <option>Purple</option>
-                                <option>Red</option>
-                                <option>Royal Blue</option>
-                                <option>Turquoise</option>
-                                <option>White</option>
-                                <option>Yellow</option>
-                            </select>
-                            <select title="Side${$SideNumber}FontName" required @change=${Receive_FontNameOnChnage} hidden disabled>
-                                <option selected="" disabled="" value="">Side${$SideNumber}FontName</option>
-                                <option>Script</option>
-                                <option>Block U/L</option>
-                                <option>Monogram</option>
-                                <option>Initials Block</option>
-                                <option>Initials Script</option>
-                            </select>
-                            <input type="text" title="Side${$SideNumber}Line1" maxlength="13" placeholder="Side${$SideNumber}Line1" hidden disabled>
-                            <input type="text" title="Side${$SideNumber}Line2" maxlength="13" placeholder="Side${$SideNumber}Line2" hidden disabled>
-                            <input type="text" title="Side${$SideNumber}Line3" maxlength="13" placeholder="Side${$SideNumber}Line3" hidden disabled>
-                            <input type="text" title="Side${$SideNumber}MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden disabled pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersRequiredLine1">
-                            <input type="text" title="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden disabled pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1">
-                        `
-                    )}
-                    <button type="button" @click=${Receive_TervisShopifyPOSPersonalizationSaveOnClick} title="Save" hidden>Save</button>
-                    <br>
+                <div id="PersonalizationOptions">
+                    <div id="LineItemSelectContainer"></div>
+                    <div id="QuantityRemainingToPersonalizeContainer"></div>
+                    <div id="PersonalizationInformationContainer">
+                        <input type="hidden" value="">
+                        ${$SideNumbers.map(
+                            $SideNumber => html`
+                                <label title="Side${$SideNumber}Label" hidden>
+                                    <input type="checkbox" title="Side${$SideNumber}" @change=${Receive_SideCheckboxOnChnage} hidden disabled>
+                                    <span class="labelText">Enable Side ${$SideNumber} Personalization</span>
+                                </label>
+                                <label title="Side${$SideNumber}IsCustomerSuppliedDecorationLabel" hidden>
+                                    <input type="checkbox" title="Side${$SideNumber}IsCustomerSuppliedDecoration" @change=${Receive_IsCustomerSuppliedDecorationCheckboxOnChnage} hidden disabled>
+                                    <span class="labelText">Is Customer Supplied Decoration</span>
+                                </label>
+                                <input type="text" title="Side${$SideNumber}CustomerSuppliedDecorationNote" placeholder="Side${$SideNumber}CustomerSuppliedDecorationNote" hidden disabled>
+                                <select title="Side${$SideNumber}ColorName" required hidden disabled>
+                                    <option selected disabled value="">Side${$SideNumber}ColorName</option>
+                                    <option>Black</option>
+                                    <option>Chocolate</option>
+                                    <option>Fuchsia</option>
+                                    <option>Green</option>
+                                    <option>Hunter</option>
+                                    <option>Navy</option>
+                                    <option>Orange</option>
+                                    <option>Purple</option>
+                                    <option>Red</option>
+                                    <option>Royal Blue</option>
+                                    <option>Turquoise</option>
+                                    <option>White</option>
+                                    <option>Yellow</option>
+                                </select>
+                                <select title="Side${$SideNumber}FontName" required @change=${Receive_FontNameOnChnage} hidden disabled>
+                                    <option selected="" disabled="" value="">Side${$SideNumber}FontName</option>
+                                    <option>Script</option>
+                                    <option>Block U/L</option>
+                                    <option>Monogram</option>
+                                    <option>Initials Block</option>
+                                    <option>Initials Script</option>
+                                </select>
+                                <input type="text" title="Side${$SideNumber}Line1" maxlength="13" placeholder="Side${$SideNumber}Line1" hidden disabled>
+                                <input type="text" title="Side${$SideNumber}Line2" maxlength="13" placeholder="Side${$SideNumber}Line2" hidden disabled>
+                                <input type="text" title="Side${$SideNumber}Line3" maxlength="13" placeholder="Side${$SideNumber}Line3" hidden disabled>
+                                <input type="text" title="Side${$SideNumber}MonogramAllCharactersRequiredLine1" maxlength="3" minlength="3" hidden disabled pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersRequiredLine1">
+                                <input type="text" title="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden disabled pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1">
+                            `
+                        )}
+                        <button type="button" @click=${Receive_TervisShopifyPOSPersonalizationSaveOnClick} title="Save" hidden>Save</button>
+                        <br>
+                    </div>
                 </div>
-                <div id="PersonalizationChargeLineItemsContainer"></div>
-                <div id="Debug"></div>
+                <div>
+                    <strong>Personalization Cart:</strong>
+                    <div id="PersonalizationChargeLineItemsContainer"></div>
+                <div>
             </form>
+            <div id="Debug"></div>
         `
     })
 }
@@ -503,11 +512,11 @@ async function New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay ({
     .map(
         ([$Name, $Value]) =>
         html`
-            ${$Name}: ${$Value}<br />
+            <span class="PersonalizationPropertyName">${$Name}:</span> ${$Value}<br />
         `
     )
 
-    $Content.push(html`Quantity: ${$PersonalizationChargeLineItem.quantity}<br />`)
+    $Content.push(html`<span class="PersonalizationPropertyName">Quantity:</span> ${$PersonalizationChargeLineItem.quantity}<br />`)
     $Content.push(html`
         <button
             type="button"
