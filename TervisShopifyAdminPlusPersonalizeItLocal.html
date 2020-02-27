@@ -1,7 +1,59 @@
 <!DOCTYPE html>
 <title>Personalization</title>
+<!-- <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" /> -->
+<!-- <link href="https://stackpath.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" integrity="sha384-4FeI0trTH/PCsLWrGCD1mScoFu9Jf2NdknFdFoJhXZFwsvzZ3Bo5sAh7+zL8Xgnd" crossorigin="anonymous"> -->
+<style>
+    body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+    }
+    button {
+        /* display: inline-block; */
+        padding: 10px 15px;
+        margin: 0.5em 0em;
+        border: 0px;
+        background: #08C;
+        /* Font styles */
+        color: white;
+        font-weight: bold;
+        text-decoration: none;
+    }
+    #ShopifyPOSPersonalizationForm {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-around;
+    }
+    #PersonalizationInformationContainer {
+        display: flex;
+        flex-direction: column;
+    }
+    select {
+        margin: 0.5em 0em;
+        height: 2em;
+    }
+    input[type="text"] {
+        margin: 0.5em 0em;
+        height: 2em;
+    }
+    :checked + .labelText {
+        color: #08C;
+        /* font-weight: bold; */
+    }
+    label {
+        margin: 0.5em 0em;
+    }
+    .PersonalizationPropertyName {
+        font-weight: bold;
+        color: slategray;
+    }
+    #Debug {
+        display: none;
+    }
+</style>
 
-<div id="content"></div>
+
+<div id="content">Loading Personalization...</div>
 <script type="module">
     import {
         Remove_ObjectKeyWithEmptyOrNullValue
