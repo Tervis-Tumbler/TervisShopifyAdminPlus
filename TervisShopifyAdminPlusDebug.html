@@ -1,0 +1,84 @@
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
+
+<div id="content" class="container">
+    <div id="debug" class="">
+        <div>
+            <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
+            <button class="btn" type="button" id="btn-showCart">Show Cart</button>
+            <button class="btn" type="button" id="btn-showUser">Show User</button>
+            <button class="btn" type="button" id="btn-showLocation">Show Location</button>
+            <button class="btn" type="button" id="btn-test">Test</button>
+        </div>
+        <div>
+            <pre><code id="debugArea">Debug:</code></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    function writeDebug(msg) {
+        let debugWindow = document.getElementById("debugArea")
+        debugWindow.innerText = `${debugWindow.innerText}\n${JSON.stringify(msg, null, 2)}`
+    }
+
+    function clearDebug() {
+        let debugWindow = document.getElementById("debugArea")
+        debugWindow.innerText = "Debug:"
+    }
+
+    function showCart() {
+        try {
+            ShopifyPOS.fetchCart({
+                success: cart => writeDebug(cart),
+                error: errors => ShopifyPOS.flashError("Failed to retrieve cart.")
+            })
+        } catch (err) {
+            writeDebug(err)
+        }
+    }
+
+    function showUser() {
+        try {
+            ShopifyPOS.fetchUser({
+                success: user => writeDebug(user),
+                error: errors => writeDebug(errors)
+            })
+        } catch (err) {
+            writeDebug(err)
+        }
+    }
+
+    function showLocation() {
+        try {
+            ShopifyPOS.fetchLocation({
+                success: location => writeDebug(location),
+                error: errors => writeDebug(errors)
+            })
+        } catch (err) {
+            writeDebug(err)
+        }
+    }
+
+    function buttonTest() {
+    }
+
+    function startButtons() {
+        document.getElementById("btn-clearLog").addEventListener("click", () => clearDebug())
+        document.getElementById("btn-showCart").addEventListener("click", showCart)
+        document.getElementById("btn-showUser").addEventListener("click", showUser)
+        document.getElementById("btn-showLocation").addEventListener("click", showLocation)
+        document.getElementById("btn-test").addEventListener("click", buttonTest)
+    }
+
+    ShopifyPOS.ready(() => {
+        try {
+            //App view is now rendered
+            writeDebug("Ready.")
+            startButtons()
+        } catch (err) {
+            writeDebug(err)
+            alert(err)
+        }
+    });
+</script>
