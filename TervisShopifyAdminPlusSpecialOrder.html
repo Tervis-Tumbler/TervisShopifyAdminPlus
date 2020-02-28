@@ -31,7 +31,7 @@
         <button type="button" class="btn btn-large btn-block btn-success" id="btn-submit">Add</button>
         <button type="button" class="btn btn-large btn-block btn-danger" id="btn-remove">Remove</button>
     </div>
-    <div id="debug" class="">
+    <div id="debug" class="hidden">
         <div>
             <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
             <button class="btn" type="button" id="btn-showCart">Show Cart</button>
@@ -49,6 +49,7 @@
     let itemSelector = document.getElementById("select-item")
     let specialOrderStatusElement = document.getElementById("isSpecialOrder")
     let specialOrderNoteTextbox = document.getElementById("SpecialOrderNote")
+    let buttonSubmit = document.getElementById("btn-submit")
 
     function writeDebug(msg) {
         let debugWindow = document.getElementById("debugArea")
@@ -116,7 +117,6 @@
         }
     }
 
-    // Currently does not refresh the form if a personalization item is selected
     function refreshForm() {
         writeDebug('Refreshing form')
         let index = itemSelector.value
@@ -126,22 +126,55 @@
                 cachedCart = cart
                 currentLineItem = cachedCart.line_items[index]
                 writeDebug(currentLineItem)
-                if (
-                    currentLineItem.properties !== undefined &&
-                    currentLineItem.properties.filter(prop => prop.name === "isSpecialOrder")[0].value === "true"
-                ) {
-                    specialOrderStatusElement.innerText = "This item is currently a special order"
-                    specialOrderStatusElement.className = "text-success"
-                    writeDebug(currentLineItem.properties.filter(prop => prop.name === "specialOrderNote")[0])
-                    specialOrderNoteTextbox.value = currentLineItem.properties.filter(prop => prop.name === "specialOrderNote")[0].value
-                } else {
-                    specialOrderStatusElement.innerText = "This item is not currently a special order"
-                    specialOrderStatusElement.className = "text-warning"
-                    specialOrderNoteTextbox.value = ""
+                try {
+                    if (
+                        currentLineItem.properties !== undefined &&
+                        currentLineItem.properties.filter(prop => prop.name === "isSpecialOrder").length === 1 &&
+                        currentLineItem.properties.filter(prop => prop.name === "isSpecialOrder")[0].value === "true"
+                    ) {
+                        specialOrderStatusElement.innerText = "This item is currently a special order"
+                        specialOrderStatusElement.className = "text-success"
+                        writeDebug(currentLineItem.properties.filter(prop => prop.name === "specialOrderNote")[0])
+                        specialOrderNoteTextbox.value = currentLineItem.properties.filter(prop => prop.name === "specialOrderNote")[0].value
+                        enableSubmitButton(true)
+                    } else if (
+                        // need logic for check EBS/Shopify to see if the item is available to be special ordered
+                        currentLineItem.custom || 
+                        currentLineItem.title === "Shipping"
+                    ) {
+                        specialOrderStatusElement.innerText = "This item cannot be special ordered."
+                        specialOrderStatusElement.className = "text-error"
+                        specialOrderNoteTextbox.value = "N/A"
+                        enableSubmitButton(false)
+                        
+                    } else {
+                        specialOrderStatusElement.innerText = "This item is not currently a special order"
+                        specialOrderStatusElement.className = "text-warning"
+                        specialOrderNoteTextbox.value = ""
+                        enableSubmitButton(true)
+                    }
+                } catch (e) {
+                    writeDebug(e)
+                    alert(e)
                 }
             },
             error: errors => ShopifyPOS.flashError(errors)
         })
+    }
+    
+    function enableSubmitButton(boolean) {
+        try {
+            if (boolean) {
+                buttonSubmit.classList.remove("disabled")
+                buttonSubmit.disabled = false
+            } else {
+                buttonSubmit.classList.add("disabled")
+                buttonSubmit.disabled = true
+            }
+        } catch (e) {
+            alert(e)
+            writeDebug(e)
+        }
     }
 
     function startForm() {
