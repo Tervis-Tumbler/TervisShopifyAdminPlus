@@ -268,7 +268,7 @@ async function New_TervisShopifyPOSPersonalizableLineItemSelect ({
     var $PersonalizableLineItems = await Get_TervisShopifyPOSPersonalizableLineItem({$Cart})
 
     return New_TervisSelect({
-        $Title: "Select Line Item To Personalize",
+        $Title: "Select item to personalize",
         $Options: $PersonalizableLineItems.map(
             $LineItem => ({
                 Value: $Cart.line_items.indexOf($LineItem),
@@ -369,7 +369,7 @@ async function Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange ($Ev
 
 async function Update_PersonalizationForm () {
     document
-    .querySelectorAll(`[title="Select Line Item To Personalize"]`)
+    .querySelectorAll(`[title="Select item to personalize"]`)
     .forEach( $Element =>
         $Element.dispatchEvent(new Event('change', { bubbles: true }))
     )
@@ -562,7 +562,7 @@ async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiv
     $ProductQuantityRemainingThatCanBePersonalized
 }) {
     return New_TervisSelect({
-        $Title: "Quantity of line item to apply personalization to",
+        $Title: "Select number of cups to personalize",
         $Required: true,
         $Options:  New_Range({$Start: 1, $Stop: $ProductQuantityRemainingThatCanBePersonalized})
         .map(
@@ -693,7 +693,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()
         var $PersonalizationChargeLineItemQuantity = Number(Get_ElementPropertyValue({
-            $QuerySelector: "[title='Quantity of line item to apply personalization to']",
+            $QuerySelector: "[title='Select number of cups to personalize']",
             $PropertyName: "value"
         }))
         var $NumberOfPersonalizedSides = Get_TervisPersonalizationNumberSides({$PersonalizationProperties})
