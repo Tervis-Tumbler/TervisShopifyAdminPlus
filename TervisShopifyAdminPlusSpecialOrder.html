@@ -86,17 +86,18 @@
             isSpecialOrder: "true",
             specialOrderNote: specialOrderNoteTextbox.value
         }
-        // writeDebug("item:")
-        // writeDebug(cachedCart.line_items[index])
-        // writeDebug('props:')
-        // writeDebug(newSpecialOrderProps)
 
         if (index !== "") {
             cachedCart.addLineItemProperties(index, newSpecialOrderProps,{
-                success: ShopifyPOS.flashNotice("Added special order notes successfully."),
-                failure: error => ShopifyPOS.flashError(error)
+                success: () => {
+                    ShopifyPOS.flashNotice("Added special order notes successfully.")
+                    ShopifyPOS.Modal.close()
+                },
+                failure: error => {
+                    ShopifyPOS.flashError(error)
+                    refreshForm()
+                }
             })
-            refreshForm()
         } else {
             ShopifyPOS.flashError("Please select an item.")
         }
