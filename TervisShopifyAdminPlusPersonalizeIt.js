@@ -171,7 +171,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                             $SideNumber => html`
                                 <label title="Side${$SideNumber}Label" hidden>
                                     <input type="checkbox" title="Side${$SideNumber}" @change=${Receive_SideCheckboxOnChnage} hidden disabled>
-                                    <span class="labelText">Enable Side ${$SideNumber} Personalization</span>
+                                    <span class="labelText">Personalize side ${$SideNumber}</span>
                                 </label>
                                 <label title="Side${$SideNumber}IsCustomerSuppliedDecorationLabel" hidden>
                                     <input type="checkbox" title="Side${$SideNumber}IsCustomerSuppliedDecoration" @change=${Receive_IsCustomerSuppliedDecorationCheckboxOnChnage} hidden disabled>
@@ -373,6 +373,7 @@ async function Update_PersonalizationForm () {
     .forEach( $Element =>
         $Element.dispatchEvent(new Event('change', { bubbles: true }))
     )
+    window.scrollTo(0,0)
 }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Event) {
