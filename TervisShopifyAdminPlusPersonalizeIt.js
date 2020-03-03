@@ -754,7 +754,8 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             // $LineItemProperties: {thing: "ham"}
         })
 
-        Update_PersonalizationForm()
+        // Update_PersonalizationForm()
+        Initialize_TervisShopifyPOSPersonalizationFormStructure()
         Out_TervisShopifyPOSDebug({$Object: $Cart})
     }
 }
