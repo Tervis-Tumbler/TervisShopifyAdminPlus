@@ -373,7 +373,7 @@ async function Update_PersonalizationForm () {
     .forEach( $Element =>
         $Element.dispatchEvent(new Event('change', { bubbles: true }))
     )
-    window.scrollTo(0,0)
+    setTimeout(() => window.scrollTo(0,0), 1000)
 }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Event) {
