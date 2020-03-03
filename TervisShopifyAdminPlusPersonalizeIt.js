@@ -754,11 +754,21 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             // $LineItemProperties: {thing: "ham"}
         })
 
+        Clear_Form()
         Update_PersonalizationForm()
-        Initialize_TervisShopifyPOSPersonalizationFormStructure()
         Out_TervisShopifyPOSDebug({$Object: $Cart})
     }
 }
+
+function Clear_Form () {
+    let $TextFields = document.querySelectorAll('input[type="text"]')
+    let $Selectors = document.querySelectorAll('select:not([title="Select item to personalize"]')
+    let $Checkboxes = document.querySelectorAll('input[type="checkbox"]')
+    $TextFields.forEach($Node => $Node.value = "")
+    $Selectors.forEach($Node => $Node.selectedIndex = 0)
+    $Checkboxes.forEach($Node => $Node.checked = false)
+  }
+  
 
 function Get_TervisPersonalizationNumberSides ({
    $PersonalizationProperties
