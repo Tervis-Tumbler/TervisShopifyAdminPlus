@@ -21,7 +21,7 @@
         <button type="button" class="btn btn-large btn-block btn-success" id="btn-submit" disabled>Submit</button>
         <button type="button" class="btn btn-large btn-block btn-danger hidden" id="btn-removeShipping">Remove shipping</button>
     </div>
-    <div id="debug" class="">
+    <div id="debug" class="hidden">
         <div>
             <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
             <button class="btn" type="button" id="btn-showCart">Show Cart</button>
@@ -207,54 +207,63 @@
     async function submitShippingLineItem() {
         let shipMethod = getShipMethod()
         let freeFreight = ""
-        try {
-            await removeShipping()
-            if (shipMethod.name === "None - Remove Shipping") {
-                ShopifyPOS.flashNotice(`Shipping removed.`)
-                ShopifyPOS.Modal.close()
-            } else {
-                ShopifyPOS.fetchCart({
-                    success: cart => {
-                        let isOverFreeShippingThreshold = testIsOverFreeShippingThreshold(cart, shipMethod)
-                        if (!isOverFreeShippingThreshold) {
-                            cart.addLineItem({
-                                variantId: shipMethod.variantId,
-                                quantity: 1
+        if (
+            shipMethod.name !== "None - Remove Shipping" &&
+            shipToSelect.value === ""
+        ) {
+            ShopifyPOS.flashError("Please select a Ship To location")
+        }
+        else {
+            try {
+                await removeShipping()
+                if (shipMethod.name === "None - Remove Shipping") {
+                    ShopifyPOS.flashNotice(`Shipping removed.`)
+                    ShopifyPOS.Modal.close()
+                } else {
+                    ShopifyPOS.fetchCart({
+                        success: cart => {
+                            let isOverFreeShippingThreshold = testIsOverFreeShippingThreshold(cart, shipMethod)
+                            if (!isOverFreeShippingThreshold) {
+                                cart.addLineItem({
+                                    variantId: shipMethod.variantId,
+                                    quantity: 1
+                                }, {
+                                    success: {},
+                                    error: errors => ShopifyPOS.flashError(errors)
+                                })
+                            } else {
+                                freeFreight = "Y"
+                            }
+                            cart.addProperties({
+                                // ship method
+                                shipMethod: shipMethod.name,
+                                shipMethodCode: shipMethod.value,
+                                freightTerms: shipMethod.freightTerms,
+                                freeFreight: freeFreight,
+                                // customer information
+                                customerFirstName: currentShipToAddress.first_name,
+                                customerLastName: currentShipToAddress.last_name,
+                                customerAddress1: currentShipToAddress.address1,
+                                customerAddress2: currentShipToAddress.address2,
+                                customerCity: currentShipToAddress.city,
+                                customerState: currentShipToAddress.province_code,
+                                customerZip: currentShipToAddress.zip,
+                                customerCountryCode: currentShipToAddress.country_code
                             }, {
-                                success: {},
+                                success: () => {
+                                    ShopifyPOS.flashNotice(`${shipMethod.name} shipping added.`)
+                                    ShopifyPOS.Modal.close()
+                                },
                                 error: errors => ShopifyPOS.flashError(errors)
                             })
-                        } else {
-                            freeFreight = "Y"
-                        }
-                        cart.addProperties({
-                            // ship method
-                            shipMethod: shipMethod.name,
-                            shipMethodCode: shipMethod.value,
-                            freightTerms: shipMethod.freightTerms,
-                            freeFreight: freeFreight,
-                            // customer information
-                            customerFirstName: currentShipToAddress.first_name,
-                            customerLastName: currentShipToAddress.last_name,
-                            customerAddress1: currentShipToAddress.address1,
-                            customerAddress2: currentShipToAddress.address2,
-                            customerCity: currentShipToAddress.city,
-                            customerState: currentShipToAddress.province_code,
-                            customerZip: currentShipToAddress.zip
-                        }, {
-                            success: () => {
-                                ShopifyPOS.flashNotice(`${shipMethod.name} shipping added.`)
-                                ShopifyPOS.Modal.close()
-                            },
-                            error: errors => ShopifyPOS.flashError(errors)
-                        })
-                        writeDebug(cart)
-                    },
-                    error: () => ShopifyPOS.flashError("Error adding shipping.")
-                })
+                            writeDebug(cart)
+                        },
+                        error: () => ShopifyPOS.flashError("Error adding shipping.")
+                    })
+                }
+            } catch {
+                ShopifyPOS.flashError("Error sumbitting changes.")
             }
-        } catch {
-            ShopifyPOS.flashError("Error sumbitting changes.")
         }
     }
 
@@ -262,7 +271,7 @@
         return new Promise((resolve,reject) => {
             ShopifyPOS.fetchCart({
                 success: cart => {
-                    cart.removeProperties(["shipMethod", "shipMethodCode", "freightTerms", "freeFreight","customerFirstName","customerLastName","customerAddress1","customerAddress2","customerCity","customerState","customerZip"], {
+                    cart.removeProperties(["shipMethod", "shipMethodCode", "freightTerms", "freeFreight","customerFirstName","customerLastName","customerAddress1","customerAddress2","customerCity","customerState","customerZip","customerCountryCode"], {
                         success: cart => {
                             let shippingItemIndex = getIndexOfShippingItemInCart(cart)
                             if (shippingItemIndex !== -1) {
@@ -318,7 +327,9 @@
         addShipMethodsToDropdown()
     }
 
-    function buttonTest() {}
+    function buttonTest() {
+        writeDebug(shipToSelect.value)
+    }
 
     function addEventListeners() {
         shipToSelect.addEventListener("change", updateCurrentShipToAddress)
