@@ -698,16 +698,13 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             $PropertyName: "value"
         }))
         var $NumberOfPersonalizedSides = Get_TervisPersonalizationNumberSides({$PersonalizationProperties})
+        var $PersonalizationFeeSKU = Get_TervisPersonalizationFeeSKU({$NumberOfPersonalizedSides})
         var $LineItemProperties = $PersonalizationProperties
 
         $LineItemProperties.RelatedLineItemSKU = $SelectedLineItem.sku
+        $LineItemProperties.PersonalizationFeeSKU = $PersonalizationFeeSKU
         
-        var $Price
-        if ($NumberOfPersonalizedSides === 1) {
-            $Price = 5
-        } else if ($NumberOfPersonalizedSides === 2) {
-            $Price = 7.5
-        }
+        var $Price = 0.00000001 // This makes the item basically free, even at the max qty of 99,999
 
         var $IndexOfPersonalizationChargeLineBeingEdited = Get_ElementPropertyValue({
             $QuerySelector: "input[type='hidden']",
@@ -729,32 +726,22 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             $Title: `Personalization for ${$SelectedLineItem.title} ${crypto.getRandomValues(new Uint16Array(1))[0]}`
         })
 
+        
         var $LineItemIndex = $Cart.line_items.length - 1
-        
-        // $Cart.addLineItemProperties(
-        //     $LineItemIndex,
-        //     // $LineItemProperties,
-        //     {thing: "ham"},
-        //     {
-        //         success: ($Cart) => {
-        //             Out_TervisShopifyPOSDebug({$Object: $Cart})
-        //         },
-        //         error: () => {
-        //             Out_TervisShopifyPOSDebug({$Object: "Error"})
-        //         }
-        //     }
-        // )
-
-        
+                                
         Out_TervisShopifyPOSDebug({$Object: $LineItemProperties})
-
+        
         $Cart = await Add_TervisShopifyCartLineItemProperties({
             $Cart,
             $LineItemIndex,
             $LineItemProperties
-            // $LineItemProperties: {thing: "ham"}
         })
-
+                        
+        $Cart = await Add_TervisShopifyCartLineItem({
+            $Cart,
+            $VariantId: $PersonalizationFeeSKU,
+            $Quantity: $PersonalizationChargeLineItemQuantity
+        })
         Clear_Form()
         Update_PersonalizationForm()
         Out_TervisShopifyPOSDebug({$Object: $Cart})
@@ -786,6 +773,16 @@ function Get_TervisPersonalizationNumberSides ({
         (value, index, self) => self.indexOf(value) === index
     )
     .length
+}
+
+function Get_TervisPersonalizationFeeSKU ({
+    $NumberOfPersonalizedSides
+}) {
+    if ($NumberOfPersonalizedSides === 1) {
+        return "1154266"
+    } else if ($NumberOfPersonalizedSides === 2) {
+        return "1154269"
+    }
 }
 
 async function Get_TervisPersonalizationFormProperties () {
