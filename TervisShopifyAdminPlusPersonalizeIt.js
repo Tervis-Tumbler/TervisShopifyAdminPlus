@@ -548,14 +548,43 @@ function Get_LineItemRelatedToPersonalizationChargeLineItem ({
 async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($Event) {
     var $IndexOfPersonalizationChargeLineToRemove = $Event.target.id
     var $Cart = await Get_TervisShopifyCart()
+    var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineToRemove]
+    Add_PersonalizationChargeLineCustomProperties({$PersonalizationChargeLineItem})
+    var $PersonalizationFeeSKU = $PersonalizationChargeLineItem.PropertiesObject.PersonalizationFeeSKU
 
     $Cart = await Remove_TervisShopifyCartLineItem({
         $Cart,
         $LineItemIndex: $IndexOfPersonalizationChargeLineToRemove
     })
 
+    var $PersonalizationFeeLineItemIndex = Get_IndexOfLineItemBySKU({
+        $Cart,
+        $SKU: $PersonalizationFeeSKU
+    })
+    var $PersonalizationFeeLineItem = $Cart.line_items[$PersonalizationFeeLineItemIndex]
+    if ($PersonalizationChargeLineItem.quantity === $PersonalizationFeeLineItem.quantity) {
+        $Cart = await Remove_TervisShopifyCartLineItem({
+            $Cart,
+            $LineItemIndex: $PersonalizationFeeLineItemIndex
+        })
+    } else {
+        $NewPersonalizationFeeLineItemQuantity = $PersonalizationFeeLineItem.quantity - $PersonalizationChargeLineItem.quantity
+        $Cart = await Update_TervisShopifyCartLineItem({
+            $Cart,
+            $LineItemIndex: $PersonalizationFeeLineItemIndex,
+            $Quantity: $NewPersonalizationFeeLineItemQuantity
+        })
+    }
+
     Update_PersonalizationForm()
     Out_TervisShopifyPOSDebug({$Object: $Cart})
+}
+
+function Get_IndexOfLineItemBySKU ({
+    $Cart,
+    $SKU
+}) {
+    return $Cart.line_items.filter($LineItem => $LineItem.sku === $SKU)[0]
 }
 
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiveThisPersonalizationSelect ({

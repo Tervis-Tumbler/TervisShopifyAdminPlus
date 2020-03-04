@@ -131,6 +131,28 @@
         )
     }
     window.Remove_TervisShopifyCartLineItem = Remove_TervisShopifyCartLineItem
+
+    async function Update_TervisShopifyCartLineItem ({
+        $Cart,
+        $LineItemIndex,
+        $Quantity
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.updateLineItem(
+                    $LineItemIndex,
+                    {
+                        quantity: $Quantity
+                    },
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Update_TervisShopifyCartLineItem = Update_TervisShopifyCartLineItem
 </script>
 
-<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.325?module"></script>
+<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.326?module"></script>
