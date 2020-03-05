@@ -592,14 +592,17 @@ function Get_IndexOfLineItemBySKU ({
     $SKU
 }) {
     alert(JSON.stringify($Cart, null, '  '))
-    let index = $Cart.line_items.indexOf($LineItem => {
-        let result = $LineItem.sku === $SKU
+    let $ResultingIndex = -1
+    $Cart.line_items.forEach(($LineItem, $Index) => {
+        let $IsSKUMatch = $LineItem.sku === $SKU
         alert(`Incoming line item SKU: ${$LineItem.sku}
         SKU we're looking for: ${$SKU}
-        Match?: ${result}`)
-        return result
+        Match?: ${$IsSKUMatch}`)
+        if ($IsSKUMatch) {
+            $ResultingIndex = $Index
+        }
     })
-    return index
+    return $ResultingIndex
 }
 
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiveThisPersonalizationSelect ({
