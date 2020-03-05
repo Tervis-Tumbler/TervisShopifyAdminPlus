@@ -769,18 +769,19 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         
         var $Price = 0.00000001 // This makes the item basically free, even at the max qty of 99,999
 
-        var $IndexOfPersonalizationChargeLineBeingEdited = Get_ElementPropertyValue({
-            $QuerySelector: "input[type='hidden']",
-            $PropertyName: "value"
-        })
+        // This is no longer needed because we are removing the item upon edit
+        // var $IndexOfPersonalizationChargeLineBeingEdited = Get_ElementPropertyValue({
+        //     $QuerySelector: "input[type='hidden']",
+        //     $PropertyName: "value"
+        // })
 
-        if ($IndexOfPersonalizationChargeLineBeingEdited) {
-            $Cart = await Remove_TervisShopifyCartLineItem({
-                $Cart,
-                $LineItemIndex: $IndexOfPersonalizationChargeLineBeingEdited
-            })
-            document.querySelector("input[type='hidden']").removeAttribute("value")
-        }
+        // if ($IndexOfPersonalizationChargeLineBeingEdited) {
+        //     $Cart = await Remove_TervisShopifyCartLineItem({
+        //         $Cart,
+        //         $LineItemIndex: $IndexOfPersonalizationChargeLineBeingEdited
+        //     })
+        //     document.querySelector("input[type='hidden']").removeAttribute("value")
+        // }
 
         $Cart = await Add_TervisShopifyCartLineItem({
             $Cart,
@@ -812,6 +813,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
     }
     } catch (e) {
         alert(e)
+        alert(e.stack)
         Out_TervisShopifyPOSDebug({$Object: e})
     }
 }
