@@ -753,6 +753,7 @@ function New_TervisPersonalizationPropertiesSideAndLineForm ({
 var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
 
 async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
+    try {
     if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
         var $Cart = await Get_TervisShopifyCart()
         var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
@@ -810,6 +811,10 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         Clear_Form()
         Update_PersonalizationForm()
         Out_TervisShopifyPOSDebug({$Object: $Cart})
+    }
+    } catch (e) {
+        alert(e)
+        Out_TervisShopifyPOSDebug({$Object: e})
     }
 }
 
