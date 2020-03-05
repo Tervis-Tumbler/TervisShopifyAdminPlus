@@ -377,9 +377,19 @@ async function Update_PersonalizationForm () {
 }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Event) {
+    try {
     var $PersonalizationChargeLineToEditIndexInCart = $Event.target.id
     var $Cart = await Get_TervisShopifyCart()
     var $PersonalizationChargeLineItemToEdit = $Cart.line_items[$PersonalizationChargeLineToEditIndexInCart]
+    // Remove item, then find the index again
+    $Cart = await Remove_TervisShopifyAssociatedPersonalizationFeeItem({
+        $Cart,
+        $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit
+    })
+    $PersonalizationFeeLineItemIndex = $Cart.line_items.findIndex($LineItem => {
+        $LineItem.title === $PersonalizationChargeLineItemToEdit.title
+    })
+
     Add_PersonalizationChargeLineCustomProperties({
         $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit
     })
@@ -465,6 +475,10 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
         $Content
     })
+    } catch (e) {
+        alert(e)
+        Out_TervisShopifyPOSDebug({$Object: e})
+    }
 }
 
 // async function New_TervisPersonalizationForm ({
