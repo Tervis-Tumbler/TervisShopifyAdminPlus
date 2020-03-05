@@ -727,7 +727,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             $PropertyName: "value"
         }))
         var $NumberOfPersonalizedSides = Get_TervisPersonalizationNumberSides({$PersonalizationProperties})
-        var $PersonalizationFeeSKU = Get_TervisPersonalizationFeeSKU({$NumberOfPersonalizedSides})
+        var $PersonalizationFeeObject = Get_TervisPersonalizationFeeObject({$NumberOfPersonalizedSides})
         var $LineItemProperties = $PersonalizationProperties
 
         $LineItemProperties.RelatedLineItemSKU = $SelectedLineItem.sku
@@ -768,15 +768,15 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
                         
         // $Cart = await Add_TervisShopifyCartLineItem({
         //     $Cart,
-        //     $VariantId: $PersonalizationFeeSKU,
+        //     $VariantId: $PersonalizationFeeObject.variant_id,
         //     $Quantity: $PersonalizationChargeLineItemQuantity
         // })
 
         ShopifyPOS.fetchCart({
             success: cart => {
                 cart.addLineItem({
-                    variant_id: 1154266,
-                    quantity: 2
+                    variant_id: $PersonalizationFeeObject.variant_id,
+                    quantity: $Quantity
                 },{
                     success: ShopifyPOS.flashNotice("Added PERS FEE"),
                     error: errors => ShopifyPOS.flashError(errors)
@@ -817,13 +817,19 @@ function Get_TervisPersonalizationNumberSides ({
     .length
 }
 
-function Get_TervisPersonalizationFeeSKU ({
+function Get_TervisPersonalizationFeeObject ({
     $NumberOfPersonalizedSides
 }) {
     if ($NumberOfPersonalizedSides === 1) {
-        return "1154266"
+        return {
+            sku: "1154266",
+            variant_id: 30370826125393
+        }
     } else if ($NumberOfPersonalizedSides === 2) {
-        return "1154269"
+        return {
+            sku: "1154269",
+            variant_id: 31038255431761
+        }
     }
 }
 
