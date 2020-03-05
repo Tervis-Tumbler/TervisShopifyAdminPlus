@@ -546,13 +546,11 @@ function Get_LineItemRelatedToPersonalizationChargeLineItem ({
 }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($Event) {
-    try {
     var $IndexOfPersonalizationChargeLineToRemove = $Event.target.id
     var $Cart = await Get_TervisShopifyCart()
     var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineToRemove]
     Add_PersonalizationChargeLineCustomProperties({$PersonalizationChargeLineItem})
     var $PersonalizationFeeSKU = $PersonalizationChargeLineItem.PropertiesObject.PersonalizationFeeSKU
-    // Out_TervisShopifyPOSDebug({$Object: $PersonalizationChargeLineItem})
     $Cart = await Remove_TervisShopifyCartLineItem({
         $Cart,
         $LineItemIndex: $IndexOfPersonalizationChargeLineToRemove
@@ -562,9 +560,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
         $Cart,
         $SKU: $PersonalizationFeeSKU
     })
-    alert($PersonalizationFeeLineItemIndex)
-    alert($PersonalizationFeeSKU)
-    alert(JSON.stringify($PersonalizationChargeLineItem,null,'  '))
+
     var $PersonalizationFeeLineItem = $Cart.line_items[$PersonalizationFeeLineItemIndex]
     if ($PersonalizationChargeLineItem.quantity === $PersonalizationFeeLineItem.quantity) {
         $Cart = await Remove_TervisShopifyCartLineItem({
@@ -581,24 +577,16 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
     }
 
     Update_PersonalizationForm()
-    } catch (e) {
-        alert(e)
-        Out_TervisShopifyPOSDebug({$Object: e})
-    }
+
 }
 
 function Get_IndexOfLineItemBySKU ({
     $Cart,
     $SKU
 }) {
-    alert(JSON.stringify($Cart, null, '  '))
     let $ResultingIndex = -1
     $Cart.line_items.forEach(($LineItem, $Index) => {
-        let $IsSKUMatch = $LineItem.sku === $SKU
-        alert(`Incoming line item SKU: ${$LineItem.sku}
-        SKU we're looking for: ${$SKU}
-        Match?: ${$IsSKUMatch}`)
-        if ($IsSKUMatch) {
+        if ($LineItem.sku === $SKU) {
             $ResultingIndex = $Index
         }
     })
