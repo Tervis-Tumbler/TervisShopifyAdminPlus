@@ -562,7 +562,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
         $Cart,
         $SKU: $PersonalizationFeeSKU
     })
-    alert(JSON.stringify($PersonalizationFeeLineItemIndex))
+    alert(JSON.stringify($PersonalizationChargeLineItem,null,'  '))
     var $PersonalizationFeeLineItem = $Cart.line_items[$PersonalizationFeeLineItemIndex]
     if ($PersonalizationChargeLineItem.quantity === $PersonalizationFeeLineItem.quantity) {
         $Cart = await Remove_TervisShopifyCartLineItem({
