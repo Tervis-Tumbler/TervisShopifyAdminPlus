@@ -386,7 +386,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         $Cart,
         $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit
     })
-    $PersonalizationFeeLineItemIndex = $Cart.line_items.findIndex($LineItem => {
+    $PersonalizationChargeLineToEditIndexInCart = $Cart.line_items.findIndex($LineItem => {
         $LineItem.title === $PersonalizationChargeLineItemToEdit.title
     })
 
