@@ -591,13 +591,14 @@ function Get_IndexOfLineItemBySKU ({
     $Cart,
     $SKU
 }) {
-    return $Cart.line_items.indexOf($LineItem => {
+    let index = $Cart.line_items.indexOf($LineItem => {
         let result = $LineItem.sku === $SKU
         alert(`Incoming line item SKU: ${$LineItem.sku}
         SKU we're looking for: ${$SKU}
         Match?: ${result}`)
         return result
     })
+    return index
 }
 
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiveThisPersonalizationSelect ({
