@@ -552,7 +552,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
     var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineToRemove]
     Add_PersonalizationChargeLineCustomProperties({$PersonalizationChargeLineItem})
     var $PersonalizationFeeSKU = $PersonalizationChargeLineItem.PropertiesObject.PersonalizationFeeSKU
-
+    Out_TervisShopifyPOSDebug({$Object: $PersonalizationChargeLineItem})
     $Cart = await Remove_TervisShopifyCartLineItem({
         $Cart,
         $LineItemIndex: $IndexOfPersonalizationChargeLineToRemove
@@ -562,6 +562,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
         $Cart,
         $SKU: $PersonalizationFeeSKU
     })
+    alert($PersonalizationFeeLineItemIndex)
     var $PersonalizationFeeLineItem = $Cart.line_items[$PersonalizationFeeLineItemIndex]
     if ($PersonalizationChargeLineItem.quantity === $PersonalizationFeeLineItem.quantity) {
         $Cart = await Remove_TervisShopifyCartLineItem({
@@ -580,7 +581,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
     Update_PersonalizationForm()
     } catch (e) {
         alert(e)
-        Out_TervisShopifyPOSDebug({$Object: e})
+        // Out_TervisShopifyPOSDebug({$Object: e})
     }
 }
 
