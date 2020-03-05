@@ -591,6 +591,7 @@ function Get_IndexOfLineItemBySKU ({
     $Cart,
     $SKU
 }) {
+    alert(JSON.stringify($Cart, null, '  '))
     let index = $Cart.line_items.indexOf($LineItem => {
         let result = $LineItem.sku === $SKU
         alert(`Incoming line item SKU: ${$LineItem.sku}
