@@ -776,8 +776,8 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         ShopifyPOS.fetchCart({
             success: cart => {
                 cart.addLineItem({
-                    variant_id: 30370826125393,
-                    quantity: $Quantity
+                    variant_id: $PersonalizationFeeObject.variant_id,
+                    quantity: 1
                 },{
                     success: cart => Out_TervisShopifyPOSDebug({$Object: cart}),
                     error: errors => Out_TervisShopifyPOSDebug({$Object: errors})
