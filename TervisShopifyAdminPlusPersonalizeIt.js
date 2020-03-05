@@ -719,6 +719,7 @@ var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
 
 async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
     if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
+        try {
         var $Cart = await Get_TervisShopifyCart()
         var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()
@@ -787,6 +788,9 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         Clear_Form()
         Update_PersonalizationForm()
         Out_TervisShopifyPOSDebug({$Object: $Cart})
+        } catch (e) {
+            Out_TervisShopifyPOSDebug({$Object: e})
+        }
     }
 }
 
