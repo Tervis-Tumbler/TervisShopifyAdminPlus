@@ -767,27 +767,27 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             $LineItemProperties
         })
                         
-        // $Cart = await Add_TervisShopifyCartLineItem({
-        //     $Cart,
-        //     $VariantId: $PersonalizationFeeObject.variant_id,
-        //     $Quantity: $PersonalizationChargeLineItemQuantity
-        // })
-
-        ShopifyPOS.fetchCart({
-            success: cart => {
-                cart.addLineItem({
-                    variant_id: $PersonalizationFeeObject.variant_id,
-                    quantity: $PersonalizationChargeLineItemQuantity
-                },{
-                    success: cart => Out_TervisShopifyPOSDebug({$Object: cart}),
-                    error: errors => Out_TervisShopifyPOSDebug({$Object: errors})
-                })
-            },
-            error: errors => Out_TervisShopifyPOSDebug({$Object: errors})
+        $Cart = await Add_TervisShopifyCartLineItem({
+            $Cart,
+            $VariantId: $PersonalizationFeeObject.variant_id,
+            $Quantity: $PersonalizationChargeLineItemQuantity
         })
+
+        // ShopifyPOS.fetchCart({
+        //     success: cart => {
+        //         cart.addLineItem({
+        //             variant_id: $PersonalizationFeeObject.variant_id,
+        //             quantity: $PersonalizationChargeLineItemQuantity
+        //         },{
+        //             success: cart => Out_TervisShopifyPOSDebug({$Object: cart}),
+        //             error: errors => Out_TervisShopifyPOSDebug({$Object: errors})
+        //         })
+        //     },
+        //     error: errors => Out_TervisShopifyPOSDebug({$Object: errors})
+        // })
         Clear_Form()
         Update_PersonalizationForm()
-        // Out_TervisShopifyPOSDebug({$Object: $Cart})
+        Out_TervisShopifyPOSDebug({$Object: $Cart})
         } catch (e) {
             Out_TervisShopifyPOSDebug({$Object: e})
         }
