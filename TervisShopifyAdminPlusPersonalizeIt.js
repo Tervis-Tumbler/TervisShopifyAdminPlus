@@ -225,7 +225,7 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
 
 async function Receive_ShopifyPOSPersonalizationCart () {
     var $Cart = await Get_TervisShopifyCart()
-    Out_TervisShopifyPOSDebug({$Object: $Cart})
+    // Out_TervisShopifyPOSDebug({$Object: $Cart})
     var $Content = await New_TervisShopifyPOSPersonalizableLineItemSelect({$Cart})
     Set_ContainerContent({
         $TargetElementSelector: "#LineItemSelectContainer",
@@ -577,7 +577,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
     }
 
     Update_PersonalizationForm()
-    Out_TervisShopifyPOSDebug({$Object: $Cart})
+    // Out_TervisShopifyPOSDebug({$Object: $Cart})
 }
 
 function Get_IndexOfLineItemBySKU ({
@@ -776,10 +776,10 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         ShopifyPOS.fetchCart({
             success: cart => {
                 cart.addLineItem({
-                    variant_id: $PersonalizationFeeObject.variant_id,
-                    quantity: $Quantity
+                    variant_id: 30370826125393,
+                    quantity: 1
                 },{
-                    success: ShopifyPOS.flashNotice("Added PERS FEE"),
+                    success: cart => Out_TervisShopifyPOSDebug({$Object: cart}),
                     error: errors => Out_TervisShopifyPOSDebug({$Object: errors})
                 })
             },
