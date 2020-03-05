@@ -562,6 +562,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
         $Cart,
         $SKU: $PersonalizationFeeSKU
     })
+    alert($PersonalizationFeeLineItemIndex)
     alert($PersonalizationFeeSKU)
     alert(JSON.stringify($PersonalizationChargeLineItem,null,'  '))
     var $PersonalizationFeeLineItem = $Cart.line_items[$PersonalizationFeeLineItemIndex]
@@ -590,7 +591,13 @@ function Get_IndexOfLineItemBySKU ({
     $Cart,
     $SKU
 }) {
-    return $Cart.line_items.indexOf($LineItem => $LineItem.sku === $SKU)
+    return $Cart.line_items.indexOf($LineItem => {
+        let result = $LineItem.sku === $SKU
+        alert(`Incoming line item SKU: ${$LineItem.sku}
+        SKU we're looking for: ${$SKU}
+        Match?: ${result}`)
+        return result
+    })
 }
 
 async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiveThisPersonalizationSelect ({
