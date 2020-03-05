@@ -766,11 +766,16 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             $LineItemIndex,
             $LineItemProperties
         })
-                        
+        
+        // Not defining price here is causing 1e-8 to be sent for price instead.
+        // Bug may be located in Remove_ObjectKeyWithEmptyOrNullValue from
+        // 'https://unpkg.com/@tervis/tervisutilityjs?module'. Going to try to set Price to 
+        // undefined below.
         $Cart = await Add_TervisShopifyCartLineItem({
             $Cart,
             $VariantId: $PersonalizationFeeObject.variant_id,
-            $Quantity: $PersonalizationChargeLineItemQuantity
+            $Quantity: $PersonalizationChargeLineItemQuantity,
+            $Price: undefined
         })
 
         // ShopifyPOS.fetchCart({
