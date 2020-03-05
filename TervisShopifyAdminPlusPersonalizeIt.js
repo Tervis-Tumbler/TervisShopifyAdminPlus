@@ -759,7 +759,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         
         var $LineItemIndex = $Cart.line_items.length - 1
                                 
-        Out_TervisShopifyPOSDebug({$Object: $LineItemProperties})
+        // Out_TervisShopifyPOSDebug({$Object: $LineItemProperties})
         
         $Cart = await Add_TervisShopifyCartLineItemProperties({
             $Cart,
@@ -780,14 +780,14 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
                     quantity: $Quantity
                 },{
                     success: ShopifyPOS.flashNotice("Added PERS FEE"),
-                    error: errors => ShopifyPOS.flashError(errors)
+                    error: errors => Out_TervisShopifyPOSDebug({$Object: errors})
                 })
             },
-            error: errors => ShopifyPOS.flashError(errors)
+            error: errors => Out_TervisShopifyPOSDebug({$Object: errors})
         })
         Clear_Form()
         Update_PersonalizationForm()
-        Out_TervisShopifyPOSDebug({$Object: $Cart})
+        // Out_TervisShopifyPOSDebug({$Object: $Cart})
         } catch (e) {
             Out_TervisShopifyPOSDebug({$Object: e})
         }
