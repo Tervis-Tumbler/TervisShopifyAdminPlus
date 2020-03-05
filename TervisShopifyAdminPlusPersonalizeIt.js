@@ -732,7 +732,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         var $LineItemProperties = $PersonalizationProperties
 
         $LineItemProperties.RelatedLineItemSKU = $SelectedLineItem.sku
-        $LineItemProperties.PersonalizationFeeSKU = $PersonalizationFeeSKU
+        $LineItemProperties.PersonalizationFeeSKU = $PersonalizationFeeObject.sku
         
         var $Price = 0.00000001 // This makes the item basically free, even at the max qty of 99,999
 
