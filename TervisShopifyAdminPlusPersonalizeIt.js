@@ -775,8 +775,8 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         Shopify.fetchCart({
             success: cart => {
                 cart.addLineItem({
-                    variant_id: Number.parseInt($PersonalizationFeeSKU),
-                    quantity: $Quantity
+                    variant_id: 1154266,
+                    quantity: 1
                 },{
                     success: ShopifyPOS.flashNotice("Added PERS FEE"),
                     error: errors => ShopifyPOS.flashError(errors)
