@@ -381,14 +381,6 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
     var $PersonalizationChargeLineToEditIndexInCart = $Event.target.id
     var $Cart = await Get_TervisShopifyCart()
     var $PersonalizationChargeLineItemToEdit = $Cart.line_items[$PersonalizationChargeLineToEditIndexInCart]
-    // Remove item, then find the index again
-    $Cart = await Remove_TervisShopifyAssociatedPersonalizationFeeItem({
-        $Cart,
-        $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit
-    })
-    $PersonalizationChargeLineToEditIndexInCart = $Cart.line_items.findIndex($LineItem => {
-        $LineItem.title === $PersonalizationChargeLineItemToEdit.title
-    })
 
     Add_PersonalizationChargeLineCustomProperties({
         $PersonalizationChargeLineItem: $PersonalizationChargeLineItemToEdit
@@ -475,6 +467,11 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         $TargetElementSelector: "#PersonalizationChargeLineItemsContainer",
         $Content
     })
+
+    Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick({
+        $Event: { target: { id: $PersonalizationChargeLineToEditIndexInCart } }
+    })
+
     } catch (e) {
         alert(e)
         Out_TervisShopifyPOSDebug({$Object: e})
