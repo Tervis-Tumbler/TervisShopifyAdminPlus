@@ -550,25 +550,41 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
     var $IndexOfPersonalizationChargeLineToRemove = $Event.target.id
     var $Cart = await Get_TervisShopifyCart()
     var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineToRemove]
-    Add_PersonalizationChargeLineCustomProperties({$PersonalizationChargeLineItem})
-    var $PersonalizationFeeSKU = $PersonalizationChargeLineItem.PropertiesObject.PersonalizationFeeSKU
     $Cart = await Remove_TervisShopifyCartLineItem({
         $Cart,
         $LineItemIndex: $IndexOfPersonalizationChargeLineToRemove
     })
+    
+    $Cart = await Remove_TervisShopifyAssociatedPersonalizationFeeItem({
+        $Cart,
+        $PersonalizationChargeLineItem
+    })
+    
+    Update_PersonalizationForm()
+    } catch (e) {
+        alert(e)
+        Out_TervisShopifyPOSDebug({$Object: e})
+    }
+}
 
+async function Remove_TervisShopifyAssociatedPersonalizationFeeItem({
+    $Cart, 
+    $PersonalizationChargeLineItem
+}) {
+    Add_PersonalizationChargeLineCustomProperties({$PersonalizationChargeLineItem})
+    var $PersonalizationFeeSKU = $PersonalizationChargeLineItem.PropertiesObject.PersonalizationFeeSKU
     var $PersonalizationFeeLineItemIndex = Get_IndexOfLineItemBySKU({
         $Cart,
         $SKU: $PersonalizationFeeSKU
     })
-
     var $PersonalizationFeeLineItem = $Cart.line_items[$PersonalizationFeeLineItemIndex]
     if ($PersonalizationChargeLineItem.quantity === $PersonalizationFeeLineItem.quantity) {
         $Cart = await Remove_TervisShopifyCartLineItem({
             $Cart,
             $LineItemIndex: $PersonalizationFeeLineItemIndex
         })
-    } else {
+    }
+    else {
         let $NewPersonalizationFeeLineItemQuantity = $PersonalizationFeeLineItem.quantity - $PersonalizationChargeLineItem.quantity
         $Cart = await Update_TervisShopifyCartLineItem({
             $Cart,
@@ -576,12 +592,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
             $Quantity: $NewPersonalizationFeeLineItemQuantity
         })
     }
-
-    Update_PersonalizationForm()
-    } catch (e) {
-        alert(e)
-        Out_TervisShopifyPOSDebug({$Object: e})
-    }
+    return $Cart
 }
 
 function Get_IndexOfLineItemBySKU ({
