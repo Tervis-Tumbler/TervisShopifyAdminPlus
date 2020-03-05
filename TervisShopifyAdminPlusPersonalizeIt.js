@@ -569,7 +569,7 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($
             $LineItemIndex: $PersonalizationFeeLineItemIndex
         })
     } else {
-        $NewPersonalizationFeeLineItemQuantity = $PersonalizationFeeLineItem.quantity - $PersonalizationChargeLineItem.quantity
+        let $NewPersonalizationFeeLineItemQuantity = $PersonalizationFeeLineItem.quantity - $PersonalizationChargeLineItem.quantity
         $Cart = await Update_TervisShopifyCartLineItem({
             $Cart,
             $LineItemIndex: $PersonalizationFeeLineItemIndex,
