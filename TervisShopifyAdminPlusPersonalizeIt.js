@@ -766,10 +766,23 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             $LineItemProperties
         })
                         
-        $Cart = await Add_TervisShopifyCartLineItem({
-            $Cart,
-            $VariantId: $PersonalizationFeeSKU,
-            $Quantity: $PersonalizationChargeLineItemQuantity
+        // $Cart = await Add_TervisShopifyCartLineItem({
+        //     $Cart,
+        //     $VariantId: $PersonalizationFeeSKU,
+        //     $Quantity: $PersonalizationChargeLineItemQuantity
+        // })
+
+        Shopify.fetchCart({
+            success: cart => {
+                cart.addLineItem({
+                    variant_id: Number.parseInt($PersonalizationFeeSKU),
+                    quantity: $Quantity
+                },{
+                    success: ShopifyPOS.flashNotice("Added PERS FEE"),
+                    error: errors => ShopifyPOS.flashError(errors)
+                })
+            },
+            error: errors => ShopifyPOS.flashError(errors)
         })
         Clear_Form()
         Update_PersonalizationForm()
