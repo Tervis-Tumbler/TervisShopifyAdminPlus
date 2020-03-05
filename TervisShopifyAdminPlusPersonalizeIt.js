@@ -771,9 +771,8 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         alert($PersonalizationFeeObject.variant_id)
         $Cart = await Add_TervisShopifyCartLineItem({
             $Cart,
-            $VariantId: $PersonalizationFeeObject.variant_id,
-            $Quantity: $PersonalizationChargeLineItemQuantity,
-            $Price: undefined
+            $VariantID: $PersonalizationFeeObject.variant_id,
+            $Quantity: $PersonalizationChargeLineItemQuantity
         })
 
         // ShopifyPOS.fetchCart({
