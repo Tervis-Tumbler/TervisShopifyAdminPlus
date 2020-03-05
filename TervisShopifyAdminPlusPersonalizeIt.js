@@ -468,9 +468,9 @@ async function Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick ($Ev
         $Content
     })
 
-    Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick({
-        $Event: { target: { id: $PersonalizationChargeLineToEditIndexInCart } }
-    })
+    Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick(
+        { target: { id: $PersonalizationChargeLineToEditIndexInCart } }
+    )
 
     } catch (e) {
         alert(e)
