@@ -2,11 +2,11 @@ import {
     html,
     render,
     directive
-} from 'https://unpkg.com/lit-html?module'
+} from 'https://unpkg.com/lit-html@1.1.2?module'
 
 import {
     ifDefined
-} from 'https://unpkg.com/lit-html/directives/if-defined.js?module'
+} from 'https://unpkg.com/lit-html@1.1.2/directives/if-defined.js?module'
 
 import {
     Get_TervisProductMetaDataUsingIndex
