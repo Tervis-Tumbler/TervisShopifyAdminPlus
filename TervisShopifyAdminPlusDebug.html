@@ -17,6 +17,21 @@
 </div>
 
 <script>
+    let domain = ("{{ shop.myshopify_domain }}").split(".")[0]
+    writeDebug(`Domain: ${domain}`)
+    writeDebug("Shop Name: {{ shop.name }}")
+    writeDebug("Shop Description: {{ shop.description }}")
+    // Preload request
+    let fetchPromise = fetch('{{ globals.tervis.itemFetchURL }}', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'x-functions-key':'{{ globals.tervis.authKey }}'
+            },
+            body: `{"domain":"${domain}"}`
+        })
+    let fetchResult
+
     function writeDebug(msg) {
         let debugWindow = document.getElementById("debugArea")
         debugWindow.innerText = `${debugWindow.innerText}\n${JSON.stringify(msg, null, 2)}`
@@ -60,21 +75,18 @@
         }
     }
 
-    function buttonTest() {
-        writeDebug('global template - shop name')
-        writeDebug('{{ shop.myshopify_domain}}')
-        writeDebug('Option 1')
-        writeDebug('{{ global.environment }}')
-        writeDebug('Option 2')
-        writeDebug('{{ global.environment.env }}')
-        writeDebug('Option 3')
-        writeDebug('{{ global.env }}')
-        writeDebug('Option 4')
-        writeDebug(global.env)
-        writeDebug('Option 4')
-        writeDebug(global.environment)
-        writeDebug('Option 6')
-        writeDebug(global.environment.env)
+    async function buttonTest() {
+        if (!fetchResult) {
+            try {
+                writeDebug("wait...")
+                let response = await fetchPromise
+                fetchResult = await response.json()
+            } catch (e) {
+                writeDebug(`${e}`)
+                writeDebug(e)
+            }
+        }
+        writeDebug(fetchResult)
     }
 
     function startButtons() {
