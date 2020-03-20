@@ -832,7 +832,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         
         $Cart = await Add_TervisShopifyCartLineItem({
             $Cart,
-            $VariantID: $PersonalizationFeeObject.variant_id,
+            $VariantID: $PersonalizationFeeObject.variantId,
             $Quantity: $PersonalizationChargeLineItemQuantity
         })
 
