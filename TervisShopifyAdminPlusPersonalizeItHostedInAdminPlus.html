@@ -152,6 +152,11 @@
         )
     }
     window.Update_TervisShopifyCartLineItem = Update_TervisShopifyCartLineItem
+
+    // Global variables taken from Admin+ liquid template
+    window.$Domain = ("{{ shop.myshopify_domain}}").split(".")[0]
+    window.$Url = '{{ globals.tervis.itemFetchURL }}'
+    window.$AzureAuthKey = '{{ globals.tervis.authKey }}'
 </script>
 
-<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.366?module"></script>
+<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.367?module"></script>

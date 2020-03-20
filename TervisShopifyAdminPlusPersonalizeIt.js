@@ -26,13 +26,13 @@ let $ItemFetchPromise = Get_ItemFetchPromise()
 let $PersonalizationFeeObjects
 
 function Get_ItemFetchPromise() {
-    let $Domain = ("{{ shop.myshopify_domain}}").split(".")[0]
-    let $Url = '{{ globals.tervis.itemFetchURL }}'
+    // $Domain, $Url, and $AzureAuthKey are global variables found in the 
+    // Admin+ template that imports this module.
     let $Options = {
         method: 'POST',
         headers: {
             'content-type': 'application/json',
-            'x-functions-key':'{{ globals.tervis.authKey }}'
+            'x-functions-key': $AzureAuthKey
         },
         body: `{"domain":"${$Domain}"}`
     }
