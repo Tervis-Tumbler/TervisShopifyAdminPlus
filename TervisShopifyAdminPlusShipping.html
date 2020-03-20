@@ -21,7 +21,7 @@
         <button type="button" class="btn btn-large btn-block btn-success" id="btn-submit" disabled>Submit</button>
         <button type="button" class="btn btn-large btn-block btn-danger hidden" id="btn-removeShipping">Remove shipping</button>
     </div>
-    <div id="debug" class="hidden">
+    <div id="debug" class="">
         <div>
             <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
             <button class="btn" type="button" id="btn-showCart">Show Cart</button>
@@ -39,6 +39,8 @@
     let cartCustomer
     let storeLocation
     let shipToSelect = document.getElementById("select-shipTo")
+    let itemFetchPromise = getItemFetchPromise()
+    let shippingItems
     let shipMethods = [
             {
                 name: "None - Remove Shipping"
@@ -63,7 +65,7 @@
                 threshold: 49.99,
                 freightTerms: "Freight Collect",
                 freightCarrierCode: "FEDEX",
-                variantId: 31865728565329
+                shippingSku: "Shipping-Standard"
             },
             {
                 name: "Home Delivery - Extended",
@@ -71,7 +73,7 @@
                 threshold: 49.99,
                 freightTerms: "Freight Collect",
                 freightCarrierCode: "FEDEX",
-                variantId: 31895877910609
+                shippingSku: "Shipping-Extended"
             },
             {
                 name: "Business Delivery - Regional",
@@ -79,7 +81,7 @@
                 threshold: 49.99,
                 freightTerms: "Freight Collect",
                 freightCarrierCode: "FEDEX",
-                variantId: 31865728565329
+                shippingSku: "Shipping-Standard"
             },
             {
                 name: "Business Delivery - Extended",
@@ -87,7 +89,7 @@
                 threshold: 49.99,
                 freightTerms: "Freight Collect",
                 freightCarrierCode: "FEDEX",
-                variantId: 31895877910609
+                shippingSku: "Shipping-Extended"
             },
             {
                 name: "Overnight Delivery",
@@ -95,9 +97,44 @@
                 threshold: Number.MAX_SAFE_INTEGER,
                 freightTerms: "Freight Collect",
                 freightCarrierCode: "FEDEX",
-                variantId: 31865728598097
+                shippingSku: "Shipping-Overnight"
             }
     ]
+
+    function getItemFetchPromise() {
+        let domain = ("{{ shop.myshopify_domain}}").split(".")[0]
+        let url = '{{ globals.tervis.itemFetchURL }}'
+        let options = {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'x-functions-key':'{{ globals.tervis.authKey }}'
+            },
+            body: `{"domain":"${domain}"}`
+        }
+        return fetch(url, options)
+    }
+
+    async function resolveItemFetchPromise() {
+        if (!shippingItems) {
+            try {
+                let response = await itemFetchPromise
+                shippingItems = await response.json()
+            } catch (error) {
+                writeDebug(error)
+                return
+            }
+        }
+        return
+    }
+
+    async function getShippingItemVariantId(shipMethod) {
+        await resolveItemFetchPromise()
+        let shippingItem = shippingItems.find(item => {
+            return item.title === shipMethod.shippingSku
+        })
+        return shippingItem.variantId
+    }
 
     function writeDebug(msg) {
         let debugWindow = document.getElementById("debugArea")
@@ -221,11 +258,11 @@
                     ShopifyPOS.Modal.close()
                 } else {
                     ShopifyPOS.fetchCart({
-                        success: cart => {
+                        success: async cart => {
                             let isOverFreeShippingThreshold = testIsOverFreeShippingThreshold(cart, shipMethod)
                             if (!isOverFreeShippingThreshold) {
                                 cart.addLineItem({
-                                    variantId: shipMethod.variantId,
+                                    variantId: await getShippingItemVariantId(shipMethod),
                                     quantity: 1
                                 }, {
                                     success: {},
