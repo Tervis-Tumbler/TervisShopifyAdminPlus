@@ -22,6 +22,35 @@ import {
 } from 'https://unpkg.com/@tervis/tervispersonalizableitemsjs?module'
 
 var $Debug = true
+let $ItemFetchPromise = Get_ItemFetchPromise()
+let $PersonalizationFeeObjects
+
+function Get_ItemFetchPromise() {
+    let $Domain = ("{{ shop.myshopify_domain}}").split(".")[0]
+    let $Url = '{{ globals.tervis.itemFetchURL }}'
+    let $Options = {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+            'x-functions-key':'{{ globals.tervis.authKey }}'
+        },
+        body: `{"domain":"${$Domain}"}`
+    }
+    return fetch($Url, $Options)
+}
+
+async function Resolve_ItemFetchPromise() {
+    if (!$PersonalizationFeeObjects) {
+        try {
+            let $Response = await $ItemFetchPromise
+            $PersonalizationFeeObjects = await $Response.json()
+        } catch ($Error) {
+            Out_TervisShopifyPOSDebug($Error)
+            return
+        }
+    }
+    return
+}
 
 async function main () {
     Initialize_TervisShopifyPOSPersonalizationFormStructure()
@@ -761,7 +790,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
             $PropertyName: "value"
         }))
         var $NumberOfPersonalizedSides = Get_TervisPersonalizationNumberSides({$PersonalizationProperties})
-        var $PersonalizationFeeObject = Get_TervisPersonalizationFeeObject({$NumberOfPersonalizedSides})
+        var $PersonalizationFeeObject = await Get_TervisPersonalizationFeeObject({$NumberOfPersonalizedSides})
         var $LineItemProperties = $PersonalizationProperties
 
         $LineItemProperties.RelatedLineItemSKU = $SelectedLineItem.sku
@@ -845,20 +874,14 @@ function Get_TervisPersonalizationNumberSides ({
     .length
 }
 
-function Get_TervisPersonalizationFeeObject ({
+async function Get_TervisPersonalizationFeeObject ({
     $NumberOfPersonalizedSides
 }) {
-    if ($NumberOfPersonalizedSides === 1) {
-        return {
-            sku: "1154266",
-            variant_id: 30370826125393
-        }
-    } else if ($NumberOfPersonalizedSides === 2) {
-        return {
-            sku: "1154269",
-            variant_id: 31038255431761
-        }
-    }
+    await Resolve_ItemFetchPromise()
+    let $PersonalizationFeeObject = $PersonalizationFeeObjects.find( $PersFeeObject => {
+        return $PersFeeObject.title.includes(`PERS FEE ${$NumberOfPersonalizedSides}`)
+    }) 
+    return $PersonalizationFeeObject
 }
 
 async function Get_TervisPersonalizationFormProperties () {
