@@ -50,6 +50,35 @@
     let specialOrderStatusElement = document.getElementById("isSpecialOrder")
     let specialOrderNoteTextbox = document.getElementById("SpecialOrderNote")
     let buttonSubmit = document.getElementById("btn-submit")
+    let endlessAisleItems
+    let endlessAisleItemsFetchPromise = getEndlessAisleItemFetchPromise()
+    
+    function getEndlessAisleItemFetchPromise() {
+        try {
+            let url = "{{ globals.tervis.endlessAisleItemUrl }}"
+            return fetch(url)
+        } catch(e) {
+            writeDebug(e)
+            alert(e)
+        }
+    }
+
+    async function resolveItemFetchPromise() {
+        if (!endlessAisleItems) {
+            let response = await endlessAisleItemsFetchPromise
+            endlessAisleItems = await response.json()
+        }
+    }
+
+    async function testCanItemBeSpecialOrdered(sku) {
+        try {
+            await resolveItemFetchPromise()
+        } catch {
+            throw "Could not retrieve Endless Aisle items list"
+        }
+        writeDebug(`Testing Item ${sku}`)
+        return endlessAisleItems.find( item => item === sku) ? true : false
+    }
 
     function writeDebug(msg) {
         let debugWindow = document.getElementById("debugArea")
@@ -123,11 +152,13 @@
         let index = itemSelector.value
         writeDebug(index)
         ShopifyPOS.fetchCart({
-            success: cart => {
+            success: async (cart) => {
                 cachedCart = cart
                 currentLineItem = cachedCart.line_items[index]
                 writeDebug(currentLineItem)
                 try {
+                    let doNotOrder = !(await testCanItemBeSpecialOrdered(currentLineItem.sku))
+                    writeDebug(`doNotOrder: ${doNotOrder}`)
                     if (
                         currentLineItem.properties !== undefined &&
                         currentLineItem.properties.filter(prop => prop.name === "isSpecialOrder").length === 1 &&
@@ -139,9 +170,9 @@
                         specialOrderNoteTextbox.value = currentLineItem.properties.filter(prop => prop.name === "specialOrderNote")[0].value
                         enableSubmitButton(true)
                     } else if (
-                        // need logic for check EBS/Shopify to see if the item is available to be special ordered
                         currentLineItem.custom || 
-                        currentLineItem.title === "Shipping"
+                        currentLineItem.title === "Shipping" ||
+                        doNotOrder
                     ) {
                         specialOrderStatusElement.innerText = "This item cannot be special ordered."
                         specialOrderStatusElement.className = "text-error"
