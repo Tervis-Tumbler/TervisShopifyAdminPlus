@@ -76,17 +76,15 @@
     }
 
     async function buttonTest() {
-        if (!fetchResult) {
-            try {
-                writeDebug("wait...")
-                let response = await fetchPromise
-                fetchResult = await response.json()
-            } catch (e) {
-                writeDebug(`${e}`)
-                writeDebug(e)
-            }
-        }
-        writeDebug(fetchResult)
+        ShopifyPOS.fetchCart({
+            success: cart => cart.addProperties({
+                discounts: "discountA,discountB"
+            },{
+                success: cart => writeDebug(cart),
+                error: errors => writeDebug(errors)
+            }),
+            error: errors => writeDebug()
+        })
     }
 
     function startButtons() {

@@ -1,0 +1,357 @@
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
+
+<div id="content">
+    <!-- <div id="customer">
+        <h4>
+            Ship To 
+        </h4>
+        <select name="Ship To" class="input-block-level" id="select-shipTo">
+            <option disabled selected value="">Select "ship to" address</option>
+        </select>
+        <div id="customerInfo">None</div>
+    </div> -->
+    <div id="lineItemDiv">
+        <label for="select-lineItem">
+            <h4>
+                Line Item
+            </h4>
+        </label>
+        <select name="lineItems" class="input-block-level" id="select-lineItem">
+            <option disabled selected value="">Select Line Item</option>
+        </select>
+        <!-- <button type="button" class="btn btn-large btn-block btn-success" id="btn-submit" disabled>Submit</button> -->
+        <!-- <button type="button" class="btn btn-large btn-block btn-danger hidden" id="btn-remove">Remove</button> -->
+    </div>
+    <div id="lineItemDiscountDiv">
+        <label for="select-lineItemDiscount">
+            <h4>
+                Line Item Discounts
+            </h4>
+        </label>
+        <select name="lineItemDiscounts" class="input-block-level" id="select-lineItemDiscount" disabled>
+            <option disabled selected value="-1">Select Line Item Discount</option>
+            <option value="-1">None</option>
+        </select>
+        <div id="lineItemDiscountInfo">
+            <span class="text-success">Current Discount: </span>
+            <span id="appliedLineItemDiscount"></span>
+            <!-- <button type="button" class="btn btn-large btn-block btn-danger" id="btn-remove">Remove</button> -->
+        </div>
+    </div>
+    <div id="cartDiscountDiv">
+        <label for="select-cartDiscount">
+            <h4>
+                Cart Discounts
+            </h4>
+        </label>
+        <select name="cartDiscounts" class="input-block-level" id="select-cartDiscount">
+            <option disabled selected value="">Select Cart Discount</option>
+            <option value="-1">None</option>
+        </select>
+        <div id="cartDiscountInfo">
+            <span class="text-success">Current Discount: </span>
+            <span id="appliedCartDiscount"></span>
+        </div>
+    </div>
+    <div id="debug" class="">
+        <div>
+            <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
+            <button class="btn" type="button" id="btn-showCart">Show Cart</button>
+            <button class="btn" type="button" id="btn-getSubtotal">Show Cart Subtotal</button>
+            <button class="btn" type="button" id="btn-test">Test</button>
+        </div>
+        <div>
+            <pre><code id="debugArea">Debug:</code></pre>
+        </div>
+    </div>
+</div>
+<script>
+    // Line Item
+    // type: flat, percent
+    // discount_description - defaults to "Discount"
+    // amount: flat > 0, percent between 0 and 1
+    const discounts = [
+        {
+            discount_description: "$1 Dollar Off",
+            type: "flat",
+            amount: 1,
+            kind: "line"
+        },
+        {
+            discount_description: "BOGO 50% off",
+            type: "percent",
+            amount: .5,
+            kind: "line"
+        },
+        {
+            discount_description: "10% off order",
+            type: "percent",
+            amount: 0.1,
+            kind: "cart"
+        },
+        {
+            discount_description: "25% off order",
+            type: "percent",
+            amount: 0.25,
+            kind: "cart"
+        },
+        {
+            discount_description: "Misc",
+            type: "flat",
+            amount: 0,
+            kind: "cart"
+        }
+    ]
+    const lineItemSelect = document.getElementById("select-lineItem")
+    const lineItemDiscountSelect = document.getElementById("select-lineItemDiscount")
+    const cartDiscountSelect = document.getElementById("select-cartDiscount")
+    const appliedLineItemDiscountSpan = document.getElementById("appliedLineItemDiscount")
+    const appliedCartDiscountSpan = document.getElementById("appliedCartDiscount")
+
+    function writeDebug(msg) {
+        let debugWindow = document.getElementById("debugArea")
+        debugWindow.innerText = `${debugWindow.innerText}\n${JSON.stringify(msg, null, 2)}`
+    }
+
+    function clearDebug() {
+        let debugWindow = document.getElementById("debugArea")
+        debugWindow.innerText = "Debug:"
+    }
+
+    function showCart() {
+        ShopifyPOS.fetchCart({
+            success: cart => writeDebug(cart),
+            error: errors => ShopifyPOS.flashError("Failed to retrieve cart")
+        })
+    }
+
+    function addLineItemsToDropdown(cart) {
+        cart.line_items.forEach((item, index) => {
+            let option = document.createElement("option")
+            option.text = `${item.sku} - ${item.title}`
+            option.value = index
+            lineItemSelect.add(option)
+        });
+    }
+
+    function addDiscountsToDropdowns() {
+        discounts.forEach((discount, index) => {
+            let option = document.createElement("option")
+            option.text = `${discount.discount_description}`
+            option.value = index
+            if (discount.kind === "line") {
+                lineItemDiscountSelect.add(option)
+            } else if (discount.kind === "cart") {
+                cartDiscountSelect.add(option)
+            }
+        })
+    }
+
+    // make sure to enable setting a discount only after a line item has been selected
+    function setLineItemDiscount() {
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                if (lineItemDiscountSelect.value === "-1") {
+                    writeDebug("Removing line item discount")
+                    cart.removeLineItemDiscount(lineItemSelect.value)
+                } else {
+                    let currentDiscount = discounts[lineItemDiscountSelect.value]
+                    cart.setLineItemDiscount(
+                        lineItemSelect.value,
+                        {
+                            type: currentDiscount.type,
+                            amount: currentDiscount.amount,
+                            discount_description: currentDiscount.discount_description
+                        }
+                    )
+                }
+                refreshForm()
+            },
+            error: errors => ShopifyPOS.flashError(errors)
+        })
+    }
+
+    function setCartDiscount() {
+        writeDebug("Cart discount changed")
+        ShopifyPOS.fetchCart({
+            success: async cart => {
+                if (cartDiscountSelect.value === "-1") {
+                    writeDebug("Removing cart discount")
+                    cart.removeDiscount()
+                } else {
+                    writeDebug("Setting cart discount")
+                    writeDebug(`Cart discount index: ${cartDiscountSelect.value}`)
+                    let currentDiscount = discounts[cartDiscountSelect.value]
+                    try {
+                        if (currentDiscount.discount_description === "Misc") {
+                            writeDebug("Discount is Misc")
+                            setMiscDiscount(currentDiscount)
+                        }
+                    } catch (e) {
+                        writeDebug(`${e}`)
+                        writeDebug(e)
+                    }
+                    // writeDebug(currentDiscount)
+                    cart.setDiscount(
+                        {
+                            type: currentDiscount.type,
+                            amount: currentDiscount.amount,
+                            discount_description: currentDiscount.discount_description
+                        }
+                    )
+                }
+                refreshForm()
+            },
+            error: errors => ShopifyPOS.flashError(errors)
+        })
+    }
+
+    function setMiscDiscount(miscDiscount) {
+        writeDebug("Setting Misc Discount")
+        try {
+            let amount
+            writeDebug(amount)
+            while(!amount) {
+                let amountInput = prompt("Enter dollar amount")
+                amount = parseFloat(amountInput)
+            }
+            miscDiscount.amount = amount
+            writeDebug("Misc discount result:")
+            writeDebug(miscDiscount)
+        } catch (e) {
+            writeDebug(`${e}`)
+            writeDebug(e)
+        }
+    }
+    
+    function enableLineItemDiscountSelect() {
+        lineItemDiscountSelect.removeAttribute("disabled")
+    }
+
+    function getDiscountIndexByName(discount_description) {
+        let result = discounts.findIndex(discount => {
+            return discount.discount_description === discount_description
+        })
+        return result
+    }
+
+    function setDiscountSelect(discountSelectElement, discountIndex) {
+        discountSelectElement.value = discountIndex
+    }
+
+    function addDiscountsToCartProperties(cart) {
+        let discountObjects = JSON.parse(JSON.stringify(discounts))
+        discountObjects.forEach(discount => {
+            discount.count = 0
+            discount.discountedAmount = 0
+            discount.discountAmount = 0
+        })
+        // writeDebug(discountObjects)
+        cart.line_items.forEach(item => {
+            if (item.discount === undefined) {return}
+            discountIndex = getDiscountIndexByName(item.discount.discount_description)
+            discountObjects[discountIndex].count += item.quantity
+            writeDebug(`Added ${item.quantity} to ${discountObjects[discountIndex].discount_description}`)
+            // something something for calculating discount amounts
+        })
+        if (cart.cart_discount !== undefined) {
+            discountIndex = getDiscountIndexByName(cart.cart_discount.discount_description)
+            discountObjects[discountIndex].count += 1
+        }
+        let usedDiscountObjects = discountObjects.filter(discount => {
+            return discount.count > 0
+        })
+        writeDebug(`Total discounts used: ${usedDiscountObjects.length}`)
+        let jsonString = JSON.stringify(usedDiscountObjects)
+        cart.addProperties({
+            discountReport: jsonString
+        }, {
+            success: ShopifyPOS.flashNotice("Properties added to cart"),
+            error: errors => writeDebug(errors)
+        })
+    }
+
+    function refreshForm() {
+        // writeDebug("refreshForm: Starting")
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                // writeDebug("refreshForm: Cart fetched")
+                let currentItem = cart.line_items[lineItemSelect.value]
+                // writeDebug(`refreshForm: Current Item value: ${currentItem}`)
+                try {
+                    if (currentItem !== undefined && currentItem.discount !== undefined) {
+                        // writeDebug("refreshForm: Current Item has a value")
+                        // writeDebug(`Should set line item discount to ${currentItem.discount.discount_description}`)
+                        let discountIndex = getDiscountIndexByName(currentItem.discount.discount_description)
+                        setDiscountSelect(lineItemDiscountSelect, discountIndex)
+                        appliedLineItemDiscountSpan.innerText = currentItem.discount.discount_description
+                    } else {
+                        // writeDebug("No line item discount")
+                        appliedLineItemDiscountSpan.innerText = "None"
+                    }
+                    if (cart.cart_discount !== undefined) {
+                        // writeDebug(`Should set cart discount to ${cart.cart_discount.discount_description}`)
+                        let discountIndex = getDiscountIndexByName(cart.cart_discount.discount_description)
+                        setDiscountSelect(cartDiscountSelect, discountIndex)
+                        appliedCartDiscountSpan.innerText = cart.cart_discount.discount_description
+                    } else {
+                        writeDebug("No cart discount")
+                        appliedCartDiscountSpan.innerText = "None"
+                    }
+                    addDiscountsToCartProperties(cart)
+                } catch (e) {
+                    writeDebug(`${e}`)
+                    writeDebug(e)
+                }
+            },
+            error: errors => writeDebug(errors)
+        })
+        // writeDebug("refreshForm: Done")
+    }
+
+    function startForm() {
+        // writeDebug("startForm: Starting")
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                // writeDebug("startForm: Cart fetched")
+                addLineItemsToDropdown(cart)
+                addDiscountsToDropdowns()
+                refreshForm()
+            },
+            error: errors => ShopifyPOS.flashError(errors)
+        })
+        ShopifyPOS.fetchLocation({
+            success: location => storeLocation = location,
+            error: errors => ShopifyPOS.flashError(errors)
+        })
+        // writeDebug("startForm: Done")
+    }
+
+    function buttonTest() {
+    }
+
+    function addEventListeners() {
+        document.getElementById("btn-clearLog").addEventListener("click", clearDebug)
+        document.getElementById("btn-showCart").addEventListener("click", showCart)
+        document.getElementById("btn-test").addEventListener("click", buttonTest)
+        // document.getElementById("btn-remove").addEventListener("click", removeLineItemDiscount)
+
+        lineItemSelect.addEventListener("change", refreshForm)
+        lineItemSelect.addEventListener("change", enableLineItemDiscountSelect)
+        lineItemDiscountSelect.addEventListener("change", setLineItemDiscount)
+        cartDiscountSelect.addEventListener("change", setCartDiscount)
+    }
+
+    ShopifyPOS.ready(() => {
+        try {
+            //App view is now rendered
+            writeDebug("Ready.")
+            addEventListeners()
+            startForm()
+        } catch (err) {
+            writeDebug(err)
+            alert(err)
+        }
+    });
+</script>
