@@ -136,7 +136,7 @@ async function Receive_FontNameOnChnage ($Event) {
     if (!$Event.target.hidden && $Event.target.value) {
         var $SideNumber = $SideName[4]
         var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
-        alert("D1")
+        // alert("D1")
         if ($FontMetadata.MonogramStyle) {
             alert("D1.1")
             if ($FontMetadata.AllCharactersRequired) {
@@ -173,7 +173,7 @@ async function Receive_FontNameOnChnage ($Event) {
         }
     } else {
         $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title*='${$SideName}']:not([hidden])`)
-        alert("D6")
+        // alert("D6")
     }
     
     $NodesToHide.forEach(
@@ -182,7 +182,7 @@ async function Receive_FontNameOnChnage ($Event) {
             $Node.disabled = true
         }
     )
-    alert("D7")
+    // alert("D7")
 
     $NodesToShow.forEach(
         $Node => {
@@ -190,7 +190,7 @@ async function Receive_FontNameOnChnage ($Event) {
             $Node.disabled = false
         }
     )
-    alert("D8")
+    // alert("D8")
 
 }
 
@@ -678,7 +678,8 @@ async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiv
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
     alert("D4.1.1")
-    var $Cart = await Get_TervisShopifyCart()
+    // var $Cart = await Get_TervisShopifyCart()
+    alert("Here we should refresh the cart")
     alert("D4.1.2")
     var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
     alert("D4.1.3")
@@ -686,7 +687,7 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
 }
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata () {
-    alert("D4.1")
+    // alert("D4.1")
     var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
     alert("D4.2")
     var {
