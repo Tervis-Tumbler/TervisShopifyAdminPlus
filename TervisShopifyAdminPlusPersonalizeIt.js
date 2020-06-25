@@ -127,68 +127,63 @@ async function Receive_IsCustomerSuppliedDecorationCheckboxOnChnage ($Event) {
 }
 
 async function Receive_FontNameOnChnage ($Event) {
-    alert("Font change received")
-    try {
-        var $SideName = $Event.target.title.substring(0,5)
-        var $FormContainer = this.closest('div')
-        var $NodesToHide = []
-        var $NodesToShow = []
-    
-        if (!$Event.target.hidden && $Event.target.value) {
-            var $SideNumber = $SideName[4]
-            var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
-    
-            if ($FontMetadata.MonogramStyle) {
-                if ($FontMetadata.AllCharactersRequired) {
-                    $NodesToHide = $FormContainer.querySelectorAll(
-                        `[type='text'][title='${$SideName}MonogramAllCharactersNotRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersRequired'])`
-                    )
-                    $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersRequired'][hidden]`)
-                } else {
-                    $NodesToHide = $FormContainer.querySelectorAll(
-                        `[type='text'][title='${$SideName}MonogramAllCharactersRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersNotRequired'])`
-                    )
-                    $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersNotRequired'][hidden]`)
-                }
-            } else {
-                $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
-                
-                var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
-    
-                //This shouldn't be needed, we need to fix in TervisProductMetadata.js to set this value to 1 on all objects that don't have the values specified
-                var $MaximumLineCount = $ProductMetadata.Personalization.MaximumLineCount ? 
-                    $ProductMetadata.Personalization.MaximumLineCount :
-                    1
-                
-                var $Selector = New_Range({$Start: 1, $Stop: $MaximumLineCount})
-                .map(
-                    $LineNumber =>
-                    `[type='text'][title='${$SideName}Line${$LineNumber}'][hidden]:not([title^='${$SideName}Monogram'])`
+    alert("Font change received 1")
+    var $SideName = $Event.target.title.substring(0,5)
+    var $FormContainer = this.closest('div')
+    var $NodesToHide = []
+    var $NodesToShow = []
+
+    if (!$Event.target.hidden && $Event.target.value) {
+        var $SideNumber = $SideName[4]
+        var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
+
+        if ($FontMetadata.MonogramStyle) {
+            if ($FontMetadata.AllCharactersRequired) {
+                $NodesToHide = $FormContainer.querySelectorAll(
+                    `[type='text'][title='${$SideName}MonogramAllCharactersNotRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersRequired'])`
                 )
-                .join(",")
-                $NodesToShow = $FormContainer.querySelectorAll($Selector)
+                $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersRequired'][hidden]`)
+            } else {
+                $NodesToHide = $FormContainer.querySelectorAll(
+                    `[type='text'][title='${$SideName}MonogramAllCharactersRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersNotRequired'])`
+                )
+                $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersNotRequired'][hidden]`)
             }
         } else {
-            $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title*='${$SideName}']:not([hidden])`)
+            $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
+            
+            var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
+
+            //This shouldn't be needed, we need to fix in TervisProductMetadata.js to set this value to 1 on all objects that don't have the values specified
+            var $MaximumLineCount = $ProductMetadata.Personalization.MaximumLineCount ? 
+                $ProductMetadata.Personalization.MaximumLineCount :
+                1
+            
+            var $Selector = New_Range({$Start: 1, $Stop: $MaximumLineCount})
+            .map(
+                $LineNumber =>
+                `[type='text'][title='${$SideName}Line${$LineNumber}'][hidden]:not([title^='${$SideName}Monogram'])`
+            )
+            .join(",")
+            $NodesToShow = $FormContainer.querySelectorAll($Selector)
         }
-        
-        $NodesToHide.forEach(
-            $Node => {
-                $Node.hidden = true
-                $Node.disabled = true
-            }
-        )
-    
-        $NodesToShow.forEach(
-            $Node => {
-                $Node.hidden = false
-                $Node.disabled = false
-            }
-        )
-    } catch (e) {
-        alert(e)
-        Out_TervisShopifyPOSDebug(e)
+    } else {
+        $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title*='${$SideName}']:not([hidden])`)
     }
+    
+    $NodesToHide.forEach(
+        $Node => {
+            $Node.hidden = true
+            $Node.disabled = true
+        }
+    )
+
+    $NodesToShow.forEach(
+        $Node => {
+            $Node.hidden = false
+            $Node.disabled = false
+        }
+    )
 }
 
 function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
@@ -696,7 +691,7 @@ function Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex () {
 }
 
 async function Receive_TervisPersonalizationFontNameSelectOnChange ($Event) {
-    alert("Font name change event received")
+    alert("Font name change event received 2")
     try {
         var $Element = document.querySelector(`[title='${$Event.target.title}']`)
         var $IndexOfPersonalizationChargeLineBeingEdited = $Element.closest("div").querySelector("[type='hidden']").value
