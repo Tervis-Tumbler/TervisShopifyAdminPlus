@@ -678,10 +678,11 @@ async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiv
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
     alert("D4.1.1")
-    // var $Cart = await Get_TervisShopifyCart()
+    // var $Cart = await Get_TervisShopifyCart() // Currently disabled due to random crash :/
     alert("Here we should refresh the cart")
     alert("D4.1.2")
     var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
+    alert(`Selected line item index: ${$SelectedLineItemIndex}`)
     alert("D4.1.3")
     return $Cart.line_items[$SelectedLineItemIndex]
 }
@@ -694,6 +695,7 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata
         $ProductSize,
         $ProductFormType
     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
+    alert(`Size: ${$ProductSize}\nType: ${$ProductFormType}`)
     alert("D4.3")
     return await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
 }
