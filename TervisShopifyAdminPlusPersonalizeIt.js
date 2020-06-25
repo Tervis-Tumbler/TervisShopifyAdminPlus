@@ -690,45 +690,51 @@ function Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex () {
 }
 
 async function Receive_TervisPersonalizationFontNameSelectOnChange ($Event) {
-    var $Element = document.querySelector(`[title='${$Event.target.title}']`)
-    var $IndexOfPersonalizationChargeLineBeingEdited = $Element.closest("div").querySelector("[type='hidden']").value
-    var $Cart = await Get_TervisShopifyCart()
-    var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineBeingEdited]
-    Add_PersonalizationChargeLineCustomProperties({
-        $PersonalizationChargeLineItem
-    })
-
-    var $SideNumber = $Event.target.title[4]
-    var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
-
-    var $NodesToHide
-    var $NodesToShow
-    if ($FontMetadata.MonogramStyle) {
-        if ($FontMetadata.AllCharactersRequired) {
-            $NodesToHide = document.querySelectorAll(
-                `#PersonalizationInformationContainer [type='text'][title='Side${$SideNumber}MonogramAllCharactersNotRequired']:not([hidden]), #PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}']:not([title^='Side${$SideNumber}MonogramAllCharactersRequired'])`
-            )
-            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}MonogramAllCharactersRequired'][hidden]`)
+    alert("Font name change event received")
+    try {
+        var $Element = document.querySelector(`[title='${$Event.target.title}']`)
+        var $IndexOfPersonalizationChargeLineBeingEdited = $Element.closest("div").querySelector("[type='hidden']").value
+        var $Cart = await Get_TervisShopifyCart()
+        var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineBeingEdited]
+        Add_PersonalizationChargeLineCustomProperties({
+            $PersonalizationChargeLineItem
+        })
+    
+        var $SideNumber = $Event.target.title[4]
+        var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
+    
+        var $NodesToHide
+        var $NodesToShow
+        if ($FontMetadata.MonogramStyle) {
+            if ($FontMetadata.AllCharactersRequired) {
+                $NodesToHide = document.querySelectorAll(
+                    `#PersonalizationInformationContainer [type='text'][title='Side${$SideNumber}MonogramAllCharactersNotRequired']:not([hidden]), #PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}']:not([title^='Side${$SideNumber}MonogramAllCharactersRequired'])`
+                )
+                $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}MonogramAllCharactersRequired'][hidden]`)
+            } else {
+                $NodesToHide = document.querySelectorAll(
+                    `#PersonalizationInformationContainer [type='text'][title='Side${$SideNumber}MonogramAllCharactersRequired']:not([hidden]), #PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}']:not([title^='Side${$SideNumber}MonogramAllCharactersNotRequired'])`
+                )
+                $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}MonogramAllCharactersNotRequired'][hidden]`)
+            }
         } else {
-            $NodesToHide = document.querySelectorAll(
-                `#PersonalizationInformationContainer [type='text'][title='Side${$SideNumber}MonogramAllCharactersRequired']:not([hidden]), #PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}']:not([title^='Side${$SideNumber}MonogramAllCharactersNotRequired'])`
-            )
-            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}MonogramAllCharactersNotRequired'][hidden]`)
+            $NodesToHide = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}Monogram']:not([hidden])`)
+            $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][hidden][title^='Side${$SideNumber}'][hidden]:not([title^='Side${$SideNumber}Monogram']`)
         }
-    } else {
-        $NodesToHide = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][title^='Side${$SideNumber}Monogram']:not([hidden])`)
-        $NodesToShow = document.querySelectorAll(`#PersonalizationInformationContainer [type='text'][hidden][title^='Side${$SideNumber}'][hidden]:not([title^='Side${$SideNumber}Monogram']`)
+    
+        $NodesToHide.forEach(
+            $Node =>
+            $Node.hidden = true
+        )
+    
+        $NodesToShow.forEach(
+            $Node =>
+            $Node.hidden = false
+        )
+    } catch (e) {
+        alert(e)
+        Out_TervisShopifyPOSDebug(e)
     }
-
-    $NodesToHide.forEach(
-        $Node =>
-        $Node.hidden = true
-    )
-
-    $NodesToShow.forEach(
-        $Node =>
-        $Node.hidden = false
-    )
 }
 
 function New_TervisPersonalizationPropertiesSideAndLineForm ({
