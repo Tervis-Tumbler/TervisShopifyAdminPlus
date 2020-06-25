@@ -677,8 +677,11 @@ async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiv
 }
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
+    alert("D4.1.1")
     var $Cart = await Get_TervisShopifyCart()
+    alert("D4.1.2")
     var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
+    alert("D4.1.3")
     return $Cart.line_items[$SelectedLineItemIndex]
 }
 
