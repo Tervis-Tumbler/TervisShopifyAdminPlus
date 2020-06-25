@@ -136,24 +136,26 @@ async function Receive_FontNameOnChnage ($Event) {
     if (!$Event.target.hidden && $Event.target.value) {
         var $SideNumber = $SideName[4]
         var $FontMetadata = Get_TervisPersonalizationSelectedFontMetadata({$SideNumber})
-
+        alert("D1")
         if ($FontMetadata.MonogramStyle) {
             if ($FontMetadata.AllCharactersRequired) {
                 $NodesToHide = $FormContainer.querySelectorAll(
                     `[type='text'][title='${$SideName}MonogramAllCharactersNotRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersRequired'])`
                 )
                 $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersRequired'][hidden]`)
+                alert("D2")
             } else {
                 $NodesToHide = $FormContainer.querySelectorAll(
                     `[type='text'][title='${$SideName}MonogramAllCharactersRequired']:not([hidden]), [type='text'][title^='${$SideName}']:not([title^='${$SideName}MonogramAllCharactersNotRequired'])`
                 )
                 $NodesToShow = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}MonogramAllCharactersNotRequired'][hidden]`)
+                alert("D3")
             }
         } else {
             $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
             
             var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
-
+            alert("D4")
             //This shouldn't be needed, we need to fix in TervisProductMetadata.js to set this value to 1 on all objects that don't have the values specified
             var $MaximumLineCount = $ProductMetadata.Personalization.MaximumLineCount ? 
                 $ProductMetadata.Personalization.MaximumLineCount :
@@ -166,9 +168,11 @@ async function Receive_FontNameOnChnage ($Event) {
             )
             .join(",")
             $NodesToShow = $FormContainer.querySelectorAll($Selector)
+            alert("D5")
         }
     } else {
         $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title*='${$SideName}']:not([hidden])`)
+        alert("D6")
     }
     
     $NodesToHide.forEach(
@@ -177,6 +181,7 @@ async function Receive_FontNameOnChnage ($Event) {
             $Node.disabled = true
         }
     )
+    alert("D7")
 
     $NodesToShow.forEach(
         $Node => {
@@ -184,6 +189,8 @@ async function Receive_FontNameOnChnage ($Event) {
             $Node.disabled = false
         }
     )
+    alert("D8")
+
 }
 
 function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
