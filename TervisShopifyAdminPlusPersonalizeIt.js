@@ -688,8 +688,8 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
     alert("D4.1.2")
     var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
     alert(`Selected line item index: ${$SelectedLineItemIndex}`)
-    alert("D4.1.3")
-    alert(JSON.stringify($_Cart.line_items[$SelectedLineItemIndex]))
+    alert("D4.1.3 - Result of cart")
+    alert(JSON.stringify($_Cart))
     return $Cart.line_items[$SelectedLineItemIndex]
 }
 
