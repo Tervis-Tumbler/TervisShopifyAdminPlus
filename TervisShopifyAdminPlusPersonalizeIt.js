@@ -683,11 +683,14 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
 }
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata () {
+    alert("D4.1")
     var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
+    alert("D4.2")
     var {
         $ProductSize,
         $ProductFormType
     } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
+    alert("D4.3")
     return await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
 }
 
