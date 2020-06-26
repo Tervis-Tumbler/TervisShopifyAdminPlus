@@ -25,7 +25,7 @@ var $Debug = true
 let $ItemFetchPromise = Get_ItemFetchPromise()
 let $PersonalizationFeeObjects
 let $_Cart
-ShopifyPOS.ready(() => {
+ShopifyPOS.ready( () => {
     $_Cart = Get_TervisShopifyCart()
 })
 
