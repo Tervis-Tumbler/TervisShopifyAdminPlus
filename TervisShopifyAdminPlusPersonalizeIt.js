@@ -26,7 +26,13 @@ let $ItemFetchPromise = Get_ItemFetchPromise()
 let $PersonalizationFeeObjects
 let $_Cart
 ShopifyPOS.ready( () => {
-    $_Cart = Get_TervisShopifyCart()
+    ShopifyPOS.fetchCart({
+        success: cart => {
+            alert("Cart fetched")
+            $_Cart = cart
+        },
+        error: errors => alert(errors)
+    })
 })
 
 
@@ -682,7 +688,7 @@ async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiv
     })
 }
 
-async function Get_TervisShopifyPOSPersonalizableLineItemSelected ($_Cart) {
+async function Get_TervisShopifyPOSPersonalizableLineItemSelected ($__Cart) {
     alert("D4.1.1")
     // var $Cart = await Get_TervisShopifyCart() // Currently disabled due to random crash :/
     // alert("Here we should refresh the cart")
@@ -690,8 +696,8 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected ($_Cart) {
     var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
     alert(`Selected line item index: ${$SelectedLineItemIndex}`)
     alert("D4.1.3 - Result of cart")
-    alert(JSON.stringify($_Cart))
-    return $_Cart.line_items[$SelectedLineItemIndex]
+    alert(JSON.stringify($__Cart))
+    return $__Cart.line_items[$SelectedLineItemIndex]
 }
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata ($Cart) {
