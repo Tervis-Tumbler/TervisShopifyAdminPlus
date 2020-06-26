@@ -24,7 +24,10 @@ import {
 var $Debug = true
 let $ItemFetchPromise = Get_ItemFetchPromise()
 let $PersonalizationFeeObjects
-let $_Cart = await Get_TervisShopifyCart()
+let $_Cart
+ShopifyPOS.ready(() => {
+    $_Cart = await Get_TervisShopifyCart()
+})
 
 
 function Get_ItemFetchPromise() {
