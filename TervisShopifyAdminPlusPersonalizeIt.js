@@ -676,26 +676,22 @@ async function New_TervisShopifyPOSPersonalizationQuantityOfLineQuantityToReceiv
     })
 }
 
-async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
+async function Get_TervisShopifyPOSPersonalizableLineItemSelected ($_Cart) {
     alert("D4.1.1")
     // var $Cart = await Get_TervisShopifyCart() // Currently disabled due to random crash :/
-    alert("Here we should refresh the cart")
-    ShopifyPOS.fetchCart({
-        success: $_Cart => {
-            alert("D4.1.2")
-            var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
-            alert(`Selected line item index: ${$SelectedLineItemIndex}`)
-            alert("D4.1.3 - Result of cart")
-            alert(JSON.stringify($_Cart))
-            return $_Cart.line_items[$SelectedLineItemIndex]
-        },
-        error: alert(errors)
-    })
+    // alert("Here we should refresh the cart")
+    alert("D4.1.2")
+    var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()
+    alert(`Selected line item index: ${$SelectedLineItemIndex}`)
+    alert("D4.1.3 - Result of cart")
+    alert(JSON.stringify($_Cart))
+    return $_Cart.line_items[$SelectedLineItemIndex]
 }
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata () {
     // alert("D4.1")
-    var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
+    let $Cart = await Get_TervisShopifyCart()
+    var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected($Cart)
     alert("D4.2")
     var {
         $ProductSize,
@@ -813,7 +809,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
     try {
     if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
         var $Cart = await Get_TervisShopifyCart()
-        var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
+        var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected($Cart)
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()
         var $PersonalizationChargeLineItemQuantity = Number(Get_ElementPropertyValue({
             $QuerySelector: "[title='Select number of cups to personalize']",
