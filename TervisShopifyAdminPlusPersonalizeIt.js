@@ -680,10 +680,17 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
     alert("D4.1.1")
     // var $Cart = await Get_TervisShopifyCart() // Currently disabled due to random crash :/
     alert("Here we should refresh the cart")
-    let $_Cart
-    ShopifyPOS.fetchCart({
-        success: cart => $_Cart = cart,
-        error: errors => alert(errors)
+    let $_Cart = await new Promise((resolve,reject) => {
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                alert("Cart fetched")
+                resolve(cart)
+            },
+            error: errors => {
+                alert(errors)
+                reject(errors)
+            }
+        })
     })
     alert("D4.1.2")
     var $SelectedLineItemIndex = Get_TervisShopifyPOSPersonalizationLineItemSelectedIndex()

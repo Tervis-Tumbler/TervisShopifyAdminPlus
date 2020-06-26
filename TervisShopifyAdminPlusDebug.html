@@ -75,16 +75,32 @@
         }
     }
 
+    async function getCart() {
+        return new Promise((resolve,reject) => 
+            ShopifyPOS.fetchCart({
+                success: resolve,
+                error: reject
+            })
+        )
+    }
+
     async function buttonTest() {
-        ShopifyPOS.fetchCart({
-            success: cart => cart.addProperties({
-                discounts: "discountA,discountB"
-            },{
-                success: cart => writeDebug(cart),
-                error: errors => writeDebug(errors)
-            }),
-            error: errors => writeDebug()
-        })
+        // let nCart = await getCart()
+        try {
+            let nCart = await new Promise((resolve, reject) => {
+                ShopifyPOS.fetchCart({
+                    success: cart => {
+                        writeDebug("cart fetched")
+                        resolve
+                    },
+                    error: reject
+                })
+            })
+            writeDebug(nCart)
+        } catch (e) {
+            alert(e)
+            writeDebug(e)
+        }
     }
 
     function startButtons() {
