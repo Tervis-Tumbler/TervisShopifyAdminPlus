@@ -154,9 +154,11 @@ async function Receive_FontNameOnChnage ($Event) {
             }
         } else {
             alert("D4")
+            let $Cart = await Get_TervisShopifyCart()
+
             $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
             
-            var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata()
+            var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata($Cart)
             alert("D5")
             //This shouldn't be needed, we need to fix in TervisProductMetadata.js to set this value to 1 on all objects that don't have the values specified
             var $MaximumLineCount = $ProductMetadata.Personalization.MaximumLineCount ? 
@@ -688,9 +690,8 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected ($_Cart) {
     return $_Cart.line_items[$SelectedLineItemIndex]
 }
 
-async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata () {
+async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata ($Cart) {
     alert("D4.1")
-    let $Cart = await Get_TervisShopifyCart()
     var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected($Cart)
     alert("D4.2")
     var {
