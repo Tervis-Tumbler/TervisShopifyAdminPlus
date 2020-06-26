@@ -90,8 +90,8 @@
             let nCart = await new Promise((resolve, reject) => {
                 ShopifyPOS.fetchCart({
                     success: cart => {
-                        writeDebug("cart fetched")
-                        resolve
+                        alert("cart fetched")
+                        resolve(cart)
                     },
                     error: reject
                 })
