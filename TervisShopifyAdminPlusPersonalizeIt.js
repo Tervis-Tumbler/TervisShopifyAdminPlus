@@ -689,7 +689,7 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected ($_Cart) {
 }
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata () {
-    // alert("D4.1")
+    alert("D4.1")
     let $Cart = await Get_TervisShopifyCart()
     var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected($Cart)
     alert("D4.2")
