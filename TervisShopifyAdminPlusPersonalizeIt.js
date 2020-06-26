@@ -24,6 +24,8 @@ import {
 var $Debug = true
 let $ItemFetchPromise = Get_ItemFetchPromise()
 let $PersonalizationFeeObjects
+let $_Cart = await Get_TervisShopifyCart()
+
 
 function Get_ItemFetchPromise() {
     // $Domain, $Url, and $AzureAuthKey are global variables found in the 
@@ -154,11 +156,10 @@ async function Receive_FontNameOnChnage ($Event) {
             }
         } else {
             alert("D4")
-            let $Cart = await Get_TervisShopifyCart()
 
             $NodesToHide = $FormContainer.querySelectorAll(`[type='text'][title^='${$SideName}Monogram']:not([hidden])`)
             
-            var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata($Cart)
+            var $ProductMetadata = await Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata($_Cart)
             alert("D5")
             //This shouldn't be needed, we need to fix in TervisProductMetadata.js to set this value to 1 on all objects that don't have the values specified
             var $MaximumLineCount = $ProductMetadata.Personalization.MaximumLineCount ? 
