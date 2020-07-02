@@ -29,17 +29,17 @@ var $Debug = true
 let $ItemFetchPromise = Get_ItemFetchPromise()
 let $PersonalizationFeeObjects
 
-function Test_Button() {
-    let metafield = Get_ShopifyProductMetafield({
-        $ShopifyDomain: $Domain,
-        $ShopifyAccessToken: $ShopifyAccessToken,
-        $ShopifyProductId: "4777219621001",
-        $ShopifyNamespace: "form",
-        $ShopifyKey: "size"
-    })
-    Out_TervisShopifyPOSDebug(metafield)
-}
-document.getElementById("testButton").onclick(Test_Button)
+// function Test_Button() {
+//     let metafield = Get_ShopifyProductMetafield({
+//         $ShopifyDomain: $Domain,
+//         $ShopifyAccessToken: $ShopifyAccessToken,
+//         $ShopifyProductId: "4777219621001",
+//         $ShopifyNamespace: "form",
+//         $ShopifyKey: "size"
+//     })
+//     Out_TervisShopifyPOSDebug(metafield)
+// }
+// document.getElementById("testButton").onclick(Test_Button)
 
 function Get_ItemFetchPromise() {
     // $Domain, $Url, and $AzureAuthKey are global variables found in the 
