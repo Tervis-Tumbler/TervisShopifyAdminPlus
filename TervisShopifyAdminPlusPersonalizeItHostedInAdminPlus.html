@@ -155,9 +155,13 @@
 
     // Global variables taken from Admin+ liquid template
     window.$Domain = ("{{ shop.myshopify_domain}}").split(".")[0]
-    window.$Url = '{{ globals.tervis.itemFetchURL }}'
-    window.$AzureAuthKey = '{{ globals.tervis.authKey }}'
+    window.$ItemFetchUrl = '{{ globals.tervis.itemFetchURL }}'
+    window.$ItemFetchKey = '{{ globals.tervis.itemFetchKey }}'
     window.$ShopifyAccessToken = '{{ globals.tervis.shopifyProductAccessToken }}'
+
+    // for metafield fetch 
+    window.$ShopifyProductMetafieldKey = '{{ globals.tervis.getShopifyProductMetafieldKey }}'
+    window.$ShopifyProductMetafieldURL = '{{ globals.tervis.getShopifyProductMetafieldURL }}'
 </script>
 
-<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.394?module"></script>
+<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.395?module"></script>

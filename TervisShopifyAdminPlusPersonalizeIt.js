@@ -29,30 +29,27 @@ var $Debug = true
 let $ItemFetchPromise = Get_ItemFetchPromise()
 let $PersonalizationFeeObjects
 
-async function Test_Button() {
-    let metafield = await Get_ShopifyProductMetafield({
-        $ShopifyDomain: $Domain,
-        $ShopifyAccessToken: $ShopifyAccessToken,
-        $ShopifyProductId: "4777219621001",
-        $ShopifyNamespace: "form",
-        $ShopifyKey: "size"
-    })
-    Out_TervisShopifyPOSDebug(metafield)
+// for metafield fetch 
+let $ProductEBSDescriptonTable
+
+async function main () {
+    $ProductEBSDescriptonTable = await New_ProductEBSDescriptionTable()
+    Initialize_TervisShopifyPOSPersonalizationFormStructure()
+    Receive_ShopifyPOSPersonalizationCart()
 }
-// document.getElementById("testButton").onclick(Test_Button)
 
 function Get_ItemFetchPromise() {
-    // $Domain, $Url, and $AzureAuthKey are global variables found in the 
+    // $Domain, $Url, and $ItemFetchKey are global variables found in the 
     // Admin+ template that imports this module.
     let $Options = {
         method: 'POST',
         headers: {
             'content-type': 'application/json',
-            'x-functions-key': $AzureAuthKey
+            'x-functions-key': $ItemFetchKey
         },
         body: `{"domain":"${$Domain}"}`
     }
-    return fetch($Url, $Options)
+    return fetch($ItemFetchUrl, $Options)
 }
 
 async function Resolve_ItemFetchPromise() {
@@ -68,9 +65,56 @@ async function Resolve_ItemFetchPromise() {
     return
 }
 
-async function main () {
-    Initialize_TervisShopifyPOSPersonalizationFormStructure()
-    Receive_ShopifyPOSPersonalizationCart()
+async function Get_ShopifyProductMetafield(
+    {
+        $ProductId,
+        $Namespace,
+        $Key
+    }
+) {
+    let $Payload = JSON.stringify({
+        domain: $Domain,
+        productId: $ProductId,
+        namespace: $Namespace,
+        key: $Key
+    })
+
+    let $Options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-functions-key': $ShopifyProductMetafieldKey
+        },
+        body: $Payload
+    }
+    let $Response = await fetch($ShopifyProductMetafieldURL,$Options)
+    return $Response.json()
+}
+
+async function New_ProductEBSDescriptionTable() {
+    let $Cart = await Get_TervisShopifyCart()
+
+    let $MetafieldPromises = $Cart.line_items.map(lineItem => {
+        if (!lineItem.product_id) { return }
+        return Get_ShopifyProductMetafield({
+            $ProductId: lineItem.product_id,
+            $Namespace: 'tervis',
+            $Key: 'ebsDescription'
+        })
+    })
+
+    let $Result = await Promise.all($MetafieldPromises)
+    return $Result.filter(element => element) // filters out nulls
+}
+
+function Get_EBSDescriptionFromProductId({
+    $ProductId
+}) {
+    $Result = $ProductEBSDescriptonTable.find(entry => {
+        return entry.productId == $ProductId
+    })
+    if ($Result === undefined) { return }
+    return $Result.value
 }
 
 async function Receive_SideCheckboxOnChnage ($Event) {
@@ -691,10 +735,12 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata () {
     var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
+    alert($SelectedPersonalizableLineItem.product_id)
+    let $EBSDescription = await Get_EBSDescriptionFromProductId({ $ProductId: $SelectedPersonalizableLineItem.product_id })
     var {
         $ProductSize,
         $ProductFormType
-    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $SelectedPersonalizableLineItem.title })
+    } = ConvertFrom_TervisShopifyPOSProductTitle({ $ProductTitle: $EBSDescription })
     return await Get_TervisProductMetaDataUsingIndex({$ProductSize, $ProductFormType})
 }
 

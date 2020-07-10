@@ -17,6 +17,22 @@
 </div>
 
 <script>
+    async function Get_TervisShopifyCart () {
+        return new Promise((resolve, reject) => {
+            ShopifyPOS.fetchCart({
+                success: resolve,
+                error: reject
+            })
+        })
+    }
+
+    // for metafield fetch 
+    let $ShopifyProductMetafieldKey = '{{ globals.tervis.getShopifyProductMetafieldKey }}'
+    let $ShopifyProductMetafieldURL = '{{ globals.tervis.getShopifyProductMetafieldURL }}'
+    let $Domain = ("{{ shop.myshopify_domain }}").split(".")[0]
+    let $ProductEBSDescriptonTable
+
+    // everything else 
     let domain = ("{{ shop.myshopify_domain }}").split(".")[0]
     writeDebug(`Domain: ${domain}`)
     writeDebug("Shop Name: {{ shop.name }}")
@@ -84,23 +100,64 @@
         )
     }
 
-    async function buttonTest() {
-        // let nCart = await getCart()
-        try {
-            let nCart = await new Promise((resolve, reject) => {
-                ShopifyPOS.fetchCart({
-                    success: cart => {
-                        alert("cart fetched")
-                        resolve(cart)
-                    },
-                    error: reject
-                })
-            })
-            writeDebug(nCart)
-        } catch (e) {
-            alert(e)
-            writeDebug(e)
+    async function Get_ShopifyProductMetafield(
+        {
+            $ProductId,
+            $Namespace,
+            $Key
         }
+    ) {
+        let $Payload = JSON.stringify({
+            domain: $Domain,
+            productId: $ProductId,
+            namespace: $Namespace,
+            key: $Key
+        })
+
+        let $Options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-functions-key': $ShopifyProductMetafieldKey
+            },
+            body: $Payload
+        }
+        let $Response = await fetch($ShopifyProductMetafieldURL,$Options)
+        return $Response.json()
+    }
+
+    async function New_ProductEBSDescriptionTable() {
+        let $Cart = await Get_TervisShopifyCart()
+
+        let $MetafieldPromises = $Cart.line_items.map(lineItem => {
+            if (!lineItem.product_id) { return }
+            return Get_ShopifyProductMetafield({
+                $ProductId: lineItem.product_id,
+                $Namespace: 'tervis',
+                $Key: 'ebsDescription'
+            })
+        })
+
+        let $Result = await Promise.all($MetafieldPromises)
+        writeDebug("Product Table ready")
+        return $Result.filter(element => element) // filters out nulls
+    }
+
+    function Get_EBSDescriptionFromProductId({
+        $ProductId
+    }) {
+        writeDebug($ProductEBSDescriptonTable)
+        writeDebug(`Finding ${$ProductId}`)
+        $Result = $ProductEBSDescriptonTable.find(entry => {
+            return entry.productId == $ProductId
+        })
+        if ($Result === undefined) { return }
+        return $Result.value
+    }
+
+    async function buttonTest() {
+        writeDebug(Get_EBSDescriptionFromProductId({ $ProductId: '4777219621001'}))
+        writeDebug("Button called")
     }
 
     function startButtons() {
@@ -111,9 +168,10 @@
         document.getElementById("btn-test").addEventListener("click", buttonTest)
     }
 
-    ShopifyPOS.ready(() => {
-        try {
+    ShopifyPOS.ready(async () => {
+        try {        
             //App view is now rendered
+            $ProductEBSDescriptonTable = await New_ProductEBSDescriptionTable()
             writeDebug("Ready.")
             startButtons()
         } catch (err) {
