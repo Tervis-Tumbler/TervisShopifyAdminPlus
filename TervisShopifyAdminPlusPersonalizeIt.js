@@ -21,10 +21,6 @@ import {
     Test_IsTervisItemPersonalizable
 } from 'https://unpkg.com/@tervis/tervispersonalizableitemsjs?module'
 
-import {
-    Get_ShopifyProductMetafield
-} from 'https://unpkg.com/@tervis/shopifyproduct?module'
-
 var $Debug = true
 let $ItemFetchPromise = Get_ItemFetchPromise()
 let $PersonalizationFeeObjects
