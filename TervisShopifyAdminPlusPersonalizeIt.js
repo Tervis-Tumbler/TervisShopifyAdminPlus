@@ -29,11 +29,7 @@ let $PersonalizationFeeObjects
 let $ProductEBSDescriptonTable
 
 async function main () {
-    try {
-        $ProductEBSDescriptonTable = await New_ProductEBSDescriptionTable()
-    } catch (e) {
-        alert(`${e.message}\n${e.fileName}:${e.lineNumber}\n${e.stack}`)
-    }
+    $ProductEBSDescriptonTable = await New_ProductEBSDescriptionTable()
     Initialize_TervisShopifyPOSPersonalizationFormStructure()
     Receive_ShopifyPOSPersonalizationCart()
 }
@@ -87,8 +83,6 @@ async function Get_ShopifyProductMetafield(
         },
         body: $Payload
     }
-    alert($ShopifyProductMetafieldURL)
-    alert($Options)
     let $Response = await fetch($ShopifyProductMetafieldURL,$Options)
     return $Response.json()
 }
@@ -649,7 +643,6 @@ function Get_LineItemRelatedToPersonalizationChargeLineItem ({
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($Event) {
     try {
-        alert(JSON.stringify($Event, null, ' '))
     var $IndexOfPersonalizationChargeLineToRemove = $Event.target.id
     var $Cart = await Get_TervisShopifyCart()
     var $PersonalizationChargeLineItem = $Cart.line_items[$IndexOfPersonalizationChargeLineToRemove]
@@ -737,7 +730,6 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata () {
     var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
-    alert($SelectedPersonalizableLineItem.product_id)
     let $EBSDescription = await Get_EBSDescriptionFromProductId({ $ProductId: $SelectedPersonalizableLineItem.product_id })
     var {
         $ProductSize,
