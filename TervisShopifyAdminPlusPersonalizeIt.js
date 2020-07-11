@@ -29,7 +29,11 @@ let $PersonalizationFeeObjects
 let $ProductEBSDescriptonTable
 
 async function main () {
-    $ProductEBSDescriptonTable = await New_ProductEBSDescriptionTable()
+    try {
+        $ProductEBSDescriptonTable = await New_ProductEBSDescriptionTable()
+    } catch (e) {
+        alert(e)
+    }
     Initialize_TervisShopifyPOSPersonalizationFormStructure()
     Receive_ShopifyPOSPersonalizationCart()
 }
