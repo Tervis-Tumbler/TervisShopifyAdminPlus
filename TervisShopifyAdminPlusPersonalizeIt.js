@@ -106,7 +106,7 @@ async function New_ProductEBSDescriptionTable() {
 function Get_EBSDescriptionFromProductId({
     $ProductId
 }) {
-    $Result = $ProductEBSDescriptonTable.find(entry => {
+    let $Result = $ProductEBSDescriptonTable.find(entry => {
         return entry.productId == $ProductId
     })
     if ($Result === undefined) { return }
