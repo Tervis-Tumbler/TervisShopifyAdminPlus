@@ -46,12 +46,8 @@
         font-weight: bold;
         color: slategray;
     }
-    #Debug {
-        display: none;
-    }
 </style>
-
-
+<button id="testButton">TEST</button>
 <div id="content">Loading Personalization...</div>
 <script type="module">
     import {
@@ -77,15 +73,17 @@
         $Title,
         $VariantID
     }) {
+        let $TrimmedObject = Remove_ObjectKeyWithEmptyOrNullValue({
+            price: $Price,
+            quantity: $Quantity,
+            title: $Title,
+            variant_id: $VariantID
+        })
+        // alert(JSON.stringify($TrimmedObject))
         return new Promise(
             (resolve, reject) => {
                 $Cart.addLineItem(
-                    Remove_ObjectKeyWithEmptyOrNullValue({
-                        price: $Price,
-                        quantity: $Quantity,
-                        title: $Title,
-                        variant_id: $VariantID
-                    }),
+                    $TrimmedObject,
                     {
                         success: resolve,
                         error: reject
@@ -134,83 +132,252 @@
         )
     }
     window.Remove_TervisShopifyCartLineItem = Remove_TervisShopifyCartLineItem
-    
+
+    async function Update_TervisShopifyCartLineItem ({
+        $Cart,
+        $LineItemIndex,
+        $Quantity
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.updateLineItem(
+                    $LineItemIndex,
+                    {
+                        quantity: $Quantity
+                    },
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Update_TervisShopifyCartLineItem = Update_TervisShopifyCartLineItem
+
+    // Global variables taken from Admin+ liquid template
+    window.$Domain = ("{{ shop.myshopify_domain}}").split(".")[0]
+    window.$ItemFetchUrl = '{{ globals.tervis.itemFetchURL }}'
+    window.$ItemFetchKey = '{{ globals.tervis.itemFetchKey }}'
+    window.$ShopifyAccessToken = '{{ globals.tervis.shopifyProductAccessToken }}'
+
+    // for metafield fetch 
+    window.$ShopifyProductMetafieldKey = '{{ globals.tervis.getShopifyProductMetafieldKey }}'
+    window.$ShopifyProductMetafieldURL = '{{ globals.tervis.getShopifyProductMetafieldURL }}'
+
     var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)
     if (isChrome) {
+        // var ShopifyPOS = {
+        //     fetchCart: function ({
+        //         success,
+        //         error
+        //     }) {
+        //         var $Cart = localStorage.getItem("Cart") ? JSON.parse(localStorage.getItem("Cart")) : undefined
+        //         if (!$Cart) {
+        //             $Cart = {
+        //                 line_items: [
+        //                     {
+        //                         title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
+        //                         sku: "1001842",
+        //                         quantity: 2
+        //                     },
+        //                     {
+        //                         title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
+        //                         sku: "1001837",
+        //                         quantity: 3
+        //                     },
+        //                     {
+        //                         title: "CLEAR.DWT.CL1.NA.24.OZ.EA.NA",
+        //                         sku: "1001839",
+        //                         quantity: 1
+        //                     },
+        //                     {
+        //                         title: "CLEAR.WB.CL1.NA.24.OZ.EA.GY1",
+        //                         sku: "1070185P",
+        //                         quantity: 1
+        //                     }
+        //                 ]
+        //             }
+        //         }
+
+        //         $Cart.addLineItemProperties = function (
+        //             $LineItemIndex,
+        //             $Properties,
+        //             {success, error}
+        //         ) {
+        //             this.line_items[$LineItemIndex].properties = Object
+        //                 .entries($Properties)
+        //                 .map(
+        //                     ([$Name, $Value]) => (
+        //                         {
+        //                             name: $Name,
+        //                             value: $Value
+        //                         }
+        //                     )
+        //                 )
+        //             localStorage.setItem("Cart", JSON.stringify(this))
+        //             success(this)
+        //         }
+
+        //         $Cart.addLineItem = function ( 
+        //             $LineItem,
+        //             {success, error}
+        //         ) {
+        //             this.line_items.push( $LineItem )
+        //             localStorage.setItem("Cart", JSON.stringify(this))
+        //             success(this)
+        //         }
+
+        //         $Cart.removeLineItem = function (
+        //             $LineItemIndex,
+        //             {success, error}
+        //         ) {
+        //             this.line_items.splice($LineItemIndex, 1)
+        //             localStorage.setItem("Cart", JSON.stringify(this))
+        //             success(this)
+        //         }
+
+        //         success($Cart)
+        //     }
+        // }
+
         var ShopifyPOS = {
-            fetchCart: function ({
-                success,
-                error
-            }) {
-                var $Cart = localStorage.getItem("Cart") ? JSON.parse(localStorage.getItem("Cart")) : undefined
-                if (!$Cart) {
-                    $Cart = {
-                        line_items: [
+            cart: {
+                "grand_total": "58.83",
+                "line_items": [
+                    {
+                        "quantity": 1,
+                        "tax_lines": [
                             {
-                                title: "CLEAR.ICE.CL1.NA.87.OZ.BX.NA",
-                                sku: "1001842",
-                                quantity: 2
+                                "price": "0.9",
+                                "title": "Florida State Tax",
+                                "rate": "0.06"
                             },
                             {
-                                title: "CLEAR.DWT.CL1.NA.16.OZ.EA.NA",
-                                sku: "1001837",
-                                quantity: 3
+                                "price": "0.15",
+                                "title": "Sarasota County Tax",
+                                "rate": "0.01"
+                            }
+                        ],
+                        "taxable": true,
+                        "sku": "1000032",
+                        "variant_id": 33140897284233,
+                        "title": "Margaritaville - It's 5 O'Clock Somewhere - Red Parrot",
+                        "price": 14.99,
+                        "product_id": 4777219621001,
+                        "vendor": "Tervis",
+                        "grams": 0,
+                        "variant_title": "",
+                        "requires_shipping": true
+                    },
+                    {
+                        "quantity": 1,
+                        "tax_lines": [
+                            {
+                                "price": "2.1",
+                                "title": "Florida State Tax",
+                                "rate": "0.06"
                             },
                             {
-                                title: "CLEAR.DWT.CL1.NA.24.OZ.EA.NA",
-                                sku: "1001839",
-                                quantity: 1
+                                "price": "0.35",
+                                "title": "Sarasota County Tax",
+                                "rate": "0.01"
+                            }
+                        ],
+                        "taxable": true,
+                        "sku": "1344638",
+                        "variant_id": 33143803609225,
+                        "title": "30A Beach Happy Palms",
+                        "price": 34.99,
+                        "product_id": 4778229170313,
+                        "vendor": "Tervis",
+                        "grams": 0,
+                        "variant_title": "",
+                        "requires_shipping": true
+                    },
+                    {
+                        "custom": true,
+                        "quantity": 1,
+                        "taxable": true,
+                        "requires_shipping": true,
+                        "price": 5,
+                        "title": "Somefin",
+                        "tax_lines": [
+                            {
+                                "price": "0.3",
+                                "title": "Florida State Tax",
+                                "rate": "0.06"
                             },
                             {
-                                title: "CLEAR.WB.CL1.NA.24.OZ.EA.GY1",
-                                sku: "1070185P",
-                                quantity: 1
+                                "price": "0.05",
+                                "title": "Sarasota County Tax",
+                                "rate": "0.01"
                             }
                         ]
                     }
+                ],
+                "subtotal": "54.98",
+                "tax_total": "3.85"
+            },
+            fetchCart: function ({success, error}) {
+                if (true) {
+                    success(this.cart)
+                } else {
+                    error("error")
                 }
-
-                $Cart.addLineItemProperties = function (
-                    $LineItemIndex,
-                    $Properties,
-                    {success, error}
-                ) {
-                    this.line_items[$LineItemIndex].properties = Object
-                        .entries($Properties)
-                        .map(
-                            ([$Name, $Value]) => (
-                                {
-                                    name: $Name,
-                                    value: $Value
-                                }
-                            )
-                        )
-                    localStorage.setItem("Cart", JSON.stringify(this))
-                    success(this)
+            },
+            addLineItem: function (lineItem, {success, error}) {
+                try {
+                    this.cart.line_items.push(lineItem)
+                    success(this.cart)
+                } catch (errors) {
+                    error(errors)
                 }
+            },
+            addLineItemProperties: function (index, properties, {success, error}) {
+                try {
+                    let item = this.cart.line_items[index]
+                    if (item.properties === undefined) {
+                        item.properties = []
+                    }
+                    let keys = Object.keys(properties)
+                    keys.forEach(key => {
 
-                $Cart.addLineItem = function ( 
-                    $LineItem,
-                    {success, error}
-                ) {
-                    this.line_items.push( $LineItem )
-                    localStorage.setItem("Cart", JSON.stringify(this))
-                    success(this)
+                        let propIndex = item.properties.findIndex( prop => prop.name === key)
+
+                        if (propIndex > -1) {
+                            item.properties[propIndex].value = properties[key]
+                        } else {
+                            item.properties.push({
+                                name: key,
+                                value: properties[key]
+                            })
+                        }
+                    })
+                    success(this.cart)
+                } catch (errors) {
+                    error(errors)
                 }
-
-                $Cart.removeLineItem = function (
-                    $LineItemIndex,
-                    {success, error}
-                ) {
-                    this.line_items.splice($LineItemIndex, 1)
-                    localStorage.setItem("Cart", JSON.stringify(this))
-                    success(this)
+            },
+            removeLineItem: function (index, {success, error}) {
+                try {
+                    this.cart.line_items.splice(index, 1)
+                    success(this.cart)
+                } catch (errors) {
+                    error(errors)
                 }
-
-                success($Cart)
+            },
+            updateLineItem: function (index, {quantity}, {success, error}) {
+                try {
+                    let lineItem = this.cart.line_items[index]
+                    lineItem.quantity = quantity
+                    success(this.cart)
+                } catch (errors) {
+                    error(errors)
+                }
             }
         }
     }
 </script>
 
-<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.325?module"></script>
+<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.396?module"></script>
