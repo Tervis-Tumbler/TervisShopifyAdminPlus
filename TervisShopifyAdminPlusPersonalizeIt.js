@@ -87,6 +87,8 @@ async function Get_ShopifyProductMetafield(
         },
         body: $Payload
     }
+    alert($ShopifyProductMetafieldURL)
+    alert($Options)
     let $Response = await fetch($ShopifyProductMetafieldURL,$Options)
     return $Response.json()
 }
