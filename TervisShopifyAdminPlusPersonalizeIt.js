@@ -32,7 +32,7 @@ async function main () {
     try {
         $ProductEBSDescriptonTable = await New_ProductEBSDescriptionTable()
     } catch (e) {
-        Out_TervisShopifyPOSDebug(e)
+        alert(`${e.message}\n${e.fileName}:${e.lineNumber}\n${e.stack}`)
     }
     Initialize_TervisShopifyPOSPersonalizationFormStructure()
     Receive_ShopifyPOSPersonalizationCart()
