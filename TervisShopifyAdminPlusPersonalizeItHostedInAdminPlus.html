@@ -155,8 +155,8 @@
 
     // Global variables taken from Admin+ liquid template
     window.$Domain = ("{{ shop.myshopify_domain}}").split(".")[0]
-    window.$ItemFetchUrl = '{{ globals.tervis.itemFetchURL }}'
-    window.$ItemFetchKey = '{{ globals.tervis.itemFetchKey }}'
+    window.$ItemFetchUrl = '{{ globals.tervis.getTervisCustomItemsURL }}'
+    window.$ItemFetchKey = '{{ globals.tervis.getTervisCustomItemsKey }}'
     window.$ShopifyAccessToken = '{{ globals.tervis.shopifyProductAccessToken }}'
 
     // for metafield fetch 
