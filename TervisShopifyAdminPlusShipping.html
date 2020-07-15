@@ -103,12 +103,12 @@
 
     function getItemFetchPromise() {
         let domain = ("{{ shop.myshopify_domain}}").split(".")[0]
-        let url = '{{ globals.tervis.itemFetchURL }}'
+        let url = '{{ globals.tervis.getTervisCustomItemsURL }}'
         let options = {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
-                'x-functions-key':'{{ globals.tervis.authKey }}'
+                'x-functions-key':'{{ globals.tervis.getTervisCustomItemsKey }}'
             },
             body: `{"domain":"${domain}"}`
         }
