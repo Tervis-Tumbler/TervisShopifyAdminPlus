@@ -1,7 +1,8 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
 
-<div id="content">
+<div id="loading"><h1>Loading...</h1></div>
+<div id="content" hidden>
     <!-- <div id="customer">
         <h4>
             Ship To 
@@ -54,55 +55,26 @@
             <span id="appliedCartDiscount"></span>
         </div>
     </div>
-    <div id="debug" class="">
-        <div>
-            <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
-            <button class="btn" type="button" id="btn-showCart">Show Cart</button>
-            <button class="btn" type="button" id="btn-getSubtotal">Show Cart Subtotal</button>
-            <button class="btn" type="button" id="btn-test">Test</button>
-        </div>
-        <div>
-            <pre><code id="debugArea">Debug:</code></pre>
-        </div>
+</div>
+<div id="debug" class="">
+    <div>
+        <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
+        <button class="btn" type="button" id="btn-showCart">Show Cart</button>
+        <button class="btn" type="button" id="btn-getSubtotal">Show Cart Subtotal</button>
+        <button class="btn" type="button" id="btn-test">Test</button>
+    </div>
+    <div>
+        <pre><code id="debugArea">Debug:</code></pre>
     </div>
 </div>
 <script>
+    writeDebug("Testing write debug")
     // Line Item
     // type: flat, percent
     // discount_description - defaults to "Discount"
     // amount: flat > 0, percent between 0 and 1
-    const discounts = [
-        {
-            discount_description: "$1 Dollar Off",
-            type: "flat",
-            amount: 1,
-            kind: "line"
-        },
-        {
-            discount_description: "BOGO 50% off",
-            type: "percent",
-            amount: .5,
-            kind: "line"
-        },
-        {
-            discount_description: "10% off order",
-            type: "percent",
-            amount: 0.1,
-            kind: "cart"
-        },
-        {
-            discount_description: "25% off order",
-            type: "percent",
-            amount: 0.25,
-            kind: "cart"
-        },
-        {
-            discount_description: "Misc",
-            type: "flat",
-            amount: 0,
-            kind: "cart"
-        }
-    ]
+    let discounts
+
     const lineItemSelect = document.getElementById("select-lineItem")
     const lineItemDiscountSelect = document.getElementById("select-lineItemDiscount")
     const cartDiscountSelect = document.getElementById("select-cartDiscount")
@@ -124,6 +96,29 @@
             success: cart => writeDebug(cart),
             error: errors => ShopifyPOS.flashError("Failed to retrieve cart")
         })
+    }
+
+    async function getTervisDiscountList() {
+        writeDebug("Getting discount list")
+        const url = '{{ globals.tervis.getTervisDiscountListURL }}'
+        const options = {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+                'x-functions-key': '{{ globals.tervis.getTervisDiscountListKey }}'
+            }
+        }
+        writeDebug(url)
+        writeDebug(options)
+        let response = await fetch(url, options)
+        let result = await response.json()
+        writeDebug("Got discount list")
+        return result
+    }
+
+    function showForm() {
+        document.getElementById("loading").setAttribute("hidden","")
+        document.getElementById("content").removeAttribute("hidden")
     }
 
     function addLineItemsToDropdown(cart) {
@@ -343,9 +338,11 @@
         cartDiscountSelect.addEventListener("change", setCartDiscount)
     }
 
-    ShopifyPOS.ready(() => {
+    ShopifyPOS.ready(async () => {
         try {
             //App view is now rendered
+            discounts = await getTervisDiscountList()
+            showForm()
             writeDebug("Ready.")
             addEventListeners()
             startForm()
