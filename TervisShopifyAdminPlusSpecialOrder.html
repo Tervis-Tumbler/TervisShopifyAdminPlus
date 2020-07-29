@@ -15,7 +15,7 @@
     <div></div>
     <div id="specialOrderProps">
         <p id="isSpecialOrder" class="muted">
-            Waiting on item...
+            Select an item
         </p>
         <div>
             <label for="SpecialOrderNote">
@@ -155,7 +155,9 @@
             success: async (cart) => {
                 cachedCart = cart
                 currentLineItem = cachedCart.line_items[index]
+                let isCustomMissingItem = testIsLineAMissingItem(currentLineItem)
                 writeDebug(currentLineItem)
+                writeDebug(`is missing item: ${isCustomMissingItem}`)
                 try {
                     let doNotOrder = !(await testCanItemBeSpecialOrdered(currentLineItem.sku))
                     writeDebug(`doNotOrder: ${doNotOrder}`)
@@ -170,9 +172,9 @@
                         specialOrderNoteTextbox.value = currentLineItem.properties.filter(prop => prop.name === "specialOrderNote")[0].value
                         enableSubmitButton(true)
                     } else if (
-                        currentLineItem.custom || 
+                        (currentLineItem.custom && !isCustomMissingItem) || 
                         currentLineItem.title === "Shipping" ||
-                        doNotOrder
+                        (doNotOrder && !isCustomMissingItem)
                     ) {
                         specialOrderStatusElement.innerText = "This item cannot be special ordered."
                         specialOrderStatusElement.className = "text-error"
@@ -192,6 +194,15 @@
             },
             error: errors => ShopifyPOS.flashError(errors)
         })
+    }
+
+    function testIsLineAMissingItem(lineItem) {
+        if (lineItem.properties) {
+            let missingItem = lineItem.properties.find(prop => prop.name === "missingItem")
+            return !!missingItem
+        } else {
+            return false
+        }
     }
     
     function enableSubmitButton(boolean) {
