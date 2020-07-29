@@ -1,0 +1,135 @@
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" integrity="sha384-4FeI0trTH/PCsLWrGCD1mScoFu9Jf2NdknFdFoJhXZFwsvzZ3Bo5sAh7+zL8Xgnd" crossorigin="anonymous"> -->
+
+<style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    }
+</style>
+
+
+<div id="loading"><h1>Loading...</h1></div>
+<div id="content">
+    <div>
+        <label for="EBSItemNumber">
+            <h4>EBS Item Number:</h4>
+        </label>
+        <input type="number" id="EBSItemNumber" placeholder="1234567" class="form-control form-control-lg"></textarea>
+    </div>
+
+    <div>
+        <label for="ItemName">
+            <h4>Item Name (Optional):</h4>
+        </label>
+        <input type="text" id="ItemName" placeholder="16oz clear blue" class="form-control form-control-lg"></textarea>
+    </div>
+
+    <div>
+        <label for="Price">
+            <h4>Price:</h4>
+        </label>
+        <b>$</b><input type="number" id="Price" placeholder="5.99" class="form-control form-control-lg"></textarea>
+    </div>
+
+    <div>
+        <label for="Quantity">
+            <h4>Quantity:</h4>
+        </label>
+        <input type="number" id="Quantity" placeholder="1" class="form-control form-control-lg"></textarea>
+    </div>
+
+    <div>
+        <button onclick="buttonSubmit()" class="btn btn-success">Submit</button>
+    </div>
+</div>
+
+<script>
+    if (!!window.chrome) {
+        var ShopifyPOS = {
+            ready: callback => {
+                callback()
+            },
+            addLineItem: ({title, price, quantity}, {success, error}) => {
+                if (title) {
+                    success("Item Added")
+                } else {
+                    error("Item not added")
+                }
+            },
+            flashNotice: message => {
+                console.log(message)
+            },
+            flashError: message => {
+                console.error(message)
+            }
+        }
+    }
+    const ebsItemNumberField = document.getElementById("EBSItemNumber")
+    const itemNameField = document.getElementById("ItemName")
+    const priceField = document.getElementById("Price")
+    const quantityField = document.getElementById("Quantity")
+
+    function buttonSubmit() {
+        const isEBSItemNumberValid = testEBSItemNumber()
+        const isPriceValid = testPrice()
+        const isQuantityValid = testQuantity()
+        if (isEBSItemNumberValid && isPriceValid) {
+            ShopifyPOS.fetchCart({
+                success: cart => {
+                    cart.addLineItem({
+                        title: `[${ebsItemNumberField.value}] ${itemNameField.value}`,
+                        price: parseFloat(priceField.value),
+                        quantity: 1
+                    },{
+                        success: cart => {
+                            let lastItemIndex = cart.line_items.length - 1
+                            cart.addLineItemProperties(
+                                lastItemIndex, 
+                                {
+                                    missingItem: `${ebsItemNumberField.value}`
+                                },
+                                {
+                                    success: () => {
+                                        ShopifyPOS.flashNotice("Missing item added")
+                                        ShopifyPOS.Modal.close()
+                                    },
+                                    error: errors => ShopifyPOS.flashError(errors)
+                                }
+                            )
+                        },
+                        error: errors => ShopifyPOS.flashError(errors)
+                    })
+                }
+            })
+        } else if (!isEBSItemNumberValid) {
+            ShopifyPOS.flashError("EBS item number is invalid.")
+        } else if (!isPriceValid) {
+            ShopifyPOS.flashError("Price is invalid")
+        }
+    }
+
+    function testEBSItemNumber() {
+        return ebsItemNumberField.value.length > 6
+    }
+
+    function testPrice() {
+        const parsedPrice = parseFloat(priceField.value)
+        return !!parsedPrice && parsedPrice > 0
+    }
+
+    function testQuantity() {
+        return quantityField.value > 0
+    }
+
+    function showForm() {
+        document.getElementById("loading").setAttribute("hidden","")
+        document.getElementById("content").removeAttribute("hidden")
+    }
+
+    ShopifyPOS.ready(() => {
+        showForm()
+    })
+</script>
