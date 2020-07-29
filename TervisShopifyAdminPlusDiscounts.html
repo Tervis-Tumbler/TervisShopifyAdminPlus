@@ -1,85 +1,519 @@
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
+<!-- <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" /> -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" integrity="sha384-4FeI0trTH/PCsLWrGCD1mScoFu9Jf2NdknFdFoJhXZFwsvzZ3Bo5sAh7+zL8Xgnd" crossorigin="anonymous">
 
 <div id="loading"><h1>Loading...</h1></div>
-<div id="content" hidden>
-    <!-- <div id="customer">
-        <h4>
-            Ship To 
-        </h4>
-        <select name="Ship To" class="input-block-level" id="select-shipTo">
-            <option disabled selected value="">Select "ship to" address</option>
-        </select>
-        <div id="customerInfo">None</div>
-    </div> -->
-    <div id="lineItemDiv">
-        <label for="select-lineItem">
-            <h4>
-                Line Item
-            </h4>
-        </label>
-        <select name="lineItems" class="input-block-level" id="select-lineItem">
-            <option disabled selected value="">Select Line Item</option>
-        </select>
-        <!-- <button type="button" class="btn btn-large btn-block btn-success" id="btn-submit" disabled>Submit</button> -->
-        <!-- <button type="button" class="btn btn-large btn-block btn-danger hidden" id="btn-remove">Remove</button> -->
-    </div>
-    <div id="lineItemDiscountDiv">
-        <label for="select-lineItemDiscount">
-            <h4>
-                Line Item Discounts
-            </h4>
-        </label>
-        <select name="lineItemDiscounts" class="input-block-level" id="select-lineItemDiscount" disabled>
-            <option disabled selected value="-1">Select Line Item Discount</option>
-            <option value="-1">None</option>
-        </select>
-        <div id="lineItemDiscountInfo">
-            <span class="text-success">Current Discount: </span>
-            <span id="appliedLineItemDiscount"></span>
-            <!-- <button type="button" class="btn btn-large btn-block btn-danger" id="btn-remove">Remove</button> -->
+<div id="content" class="row-fluid" hidden>
+    <div id="discountsDiv" class="span6">
+        <div id="lineItemDiscountDiv">
+            <label for="select-lineItemDiscount">
+                <h4>
+                    Line Item Discounts
+                </h4>
+            </label>
+            <select name="lineItemDiscounts" class="input-block-level" id="select-lineItemDiscount">
+                <option disabled selected value="-1">Select Line Item Discount</option>
+            </select>
+            <button onclick="buttonApplyDiscountToAllLines()" class="btn btn-success">Apply to all lines</button>
+            <button onclick="buttonRemoveDiscountFromAllLines()" class="btn btn-danger">Remove all line discounts</button>
+        </div>
+        <div id="cartDiscountDiv">
+            <label for="select-cartDiscount">
+                <h4>
+                    Cart Discounts
+                </h4>
+            </label>
+            <select name="cartDiscounts" class="input-block-level" id="select-cartDiscount">
+                <option disabled selected value="">Select Cart Discount</option>
+            </select>
+
+            <p><h5>Applied cart discount:</h5><span id="appliedCartDiscount"></span></p>
+            <button onclick="applyCartDiscount()" class="btn btn-success">Apply cart discount</button>
+            <button onclick="removeCartDiscount()" class="btn btn-danger">Remove cart discount</button>
         </div>
     </div>
-    <div id="cartDiscountDiv">
-        <label for="select-cartDiscount">
-            <h4>
-                Cart Discounts
-            </h4>
-        </label>
-        <select name="cartDiscounts" class="input-block-level" id="select-cartDiscount">
-            <option disabled selected value="">Select Cart Discount</option>
-            <option value="-1">None</option>
-        </select>
-        <div id="cartDiscountInfo">
-            <span class="text-success">Current Discount: </span>
-            <span id="appliedCartDiscount"></span>
-        </div>
+    <div class="span6">
+        <div id="lineList"><h4>Shopping Cart</h4></div>
     </div>
 </div>
-<div id="debug" class="">
+<p><hr></p>
+<div id="debug" class="hidden">
     <div>
-        <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
-        <button class="btn" type="button" id="btn-showCart">Show Cart</button>
-        <button class="btn" type="button" id="btn-getSubtotal">Show Cart Subtotal</button>
-        <button class="btn" type="button" id="btn-test">Test</button>
+        <button class="btn" onclick="clearDebug()">Clear Log </button>
+        <button class="btn" onclick="showCart()">Show Cart</button>
+        <button class="btn" onclick="showDiscountProperties()">Show Discount Properties</button>
+        <button class="btn" onclick="showDiscounts()">Show Discounts</button>
     </div>
     <div>
         <pre><code id="debugArea">Debug:</code></pre>
     </div>
+    <div id="lineNum">
+        <h5>Item Title</h5>
+        <p>Current Discount: <span id="currentLineDiscount">None</span></p>
+        <button onclick="">Apply</button>
+        <button onclick="">Remove</button>
+    </div>
 </div>
-<script>
-    writeDebug("Testing write debug")
-    // Line Item
-    // type: flat, percent
-    // discount_description - defaults to "Discount"
-    // amount: flat > 0, percent between 0 and 1
-    let discounts
 
-    const lineItemSelect = document.getElementById("select-lineItem")
+<script>
+
+if (!!window.chrome) {
+    var ShopifyPOS = {
+        "grand_total": "68.2",
+        "line_items": [
+            {
+            "quantity": 2,
+            "discount": {
+                "amount": 2,
+                "type": "flat",
+                "discount_description": "$1.99 Lids"
+            },
+            "tax_lines": [
+                {
+                "price": "3.06",
+                "title": "Florida State Tax",
+                "rate": "0.06"
+                },
+                {
+                "price": "0.51",
+                "title": "Sarasota County Tax",
+                "rate": "0.01"
+                }
+            ],
+            "taxable": true,
+            "sku": "1344638",
+            "variant_id": 33143803609225,
+            "title": "30A Beach Happy Palms",
+            "price": 34.99,
+            "product_id": 4778229170313,
+            "vendor": "Tervis",
+            "grams": 0,
+            "variant_title": "",
+            "requires_shipping": true,
+            "discounts": [
+                {
+                "amount": 2,
+                "type": "flat",
+                "discount_description": "$1.99 Lids"
+                }
+            ]
+            },
+            {
+            "quantity": 1,
+            "tax_lines": [
+                {
+                "price": "0.77",
+                "title": "Florida State Tax",
+                "rate": "0.06"
+                },
+                {
+                "price": "0.13",
+                "title": "Sarasota County Tax",
+                "rate": "0.01"
+                }
+            ],
+            "taxable": true,
+            "sku": "1352248",
+            "variant_id": 33144690376841,
+            "title": "30A Logo",
+            "price": 16.99,
+            "product_id": 4778592501897,
+            "vendor": "Tervis",
+            "grams": 0,
+            "variant_title": "",
+            "requires_shipping": true
+            }
+        ],
+        "subtotal": "63.73",
+        "tax_total": "4.47",
+        "cart_discount": {
+            "amount": 0.25,
+            "type": "percent",
+            "discount_description": "Last Chance 25%"
+        },
+        "properties": [
+            {
+            "name": "discountReport",
+            "value": "[{\"discount_description\":\"$1.99 Lids\",\"type\":\"flat\",\"amount\":2,\"kind\":\"line\",\"description_text\":\"$1.99 Lid with tumbler purchase\",\"parameters\":\"\",\"count\":2,\"discountedAmount\":0,\"discountAmount\":0},{\"discount_description\":\"Last Chance 25%\",\"type\":\"percent\",\"amount\":0.25,\"kind\":\"cart\",\"description_text\":\"25% off Last Chance \",\"parameters\":\"\",\"count\":1,\"discountedAmount\":0,\"discountAmount\":0}]"
+            }
+        ],
+        ready: function(callback) {
+            callback()
+        },
+        fetchCart: function ({success, error}) {
+            if (true) {
+                success(this)
+            } else {
+                error("error")
+            }
+        },
+        fetchLocation: function ({success, error}) {
+            try {
+                success({
+                    "phone": "+19419668614",
+                    "city": "Osprey",
+                    "address1": "928 S Tamiami Trail",
+                    "id": 44018073737,
+                    "active": true,
+                    "country_name": "United States",
+                    "zip": "34229",
+                    "country_code": "US",
+                    "name": "Tervis Factory Store - Osprey, FL",
+                    "province": "Florida"
+                })
+            } catch (errors) {
+                error(errors)
+            }
+        },
+        flashNotice: function(message) {
+            console.log(message)
+        },
+        addLineItem: function (lineItem, {success, error}) {
+            try {
+                this.line_items.push(lineItem)
+                success(this)
+            } catch (errors) {
+                error(errors)
+            }
+        },
+        addLineItemProperties: function (index, properties, {success, error}) {
+            try {
+                let item = this.line_items[index]
+                if (item.properties === undefined) {
+                    item.properties = []
+                }
+                let keys = Object.keys(properties)
+                keys.forEach(key => {
+
+                    let propIndex = item.properties.findIndex( prop => prop.name === key)
+
+                    if (propIndex > -1) {
+                        item.properties[propIndex].value = properties[key]
+                    } else {
+                        item.properties.push({
+                            name: key,
+                            value: properties[key]
+                        })
+                    }
+                })
+                success(this)
+            } catch (errors) {
+                error(errors)
+            }
+        },
+        removeLineItem: function (index, {success, error}) {
+            try {
+                this.line_items.splice(index, 1)
+                success(this)
+            } catch (errors) {
+                error(errors)
+            }
+        },
+        updateLineItem: function (index, {quantity}, {success, error}) {
+            try {
+                let lineItem = this.line_items[index]
+                lineItem.quantity = quantity
+                success(this)
+            } catch (errors) {
+                error(errors)
+            }
+        },
+        setDiscount: function (
+                {amount, discount_description, type} = {type: "flat"}, 
+                // {success, error}
+            ) {
+            try {
+                this.cart_discount = {
+                    amount: amount,
+                    discount_description: discount_description,
+                    type: type
+                }
+                // success(this)
+            } catch (errors) {
+                // error(errors)
+            }
+        },
+        removeDiscount: function ({success, error}) {
+            try {
+                delete this.cart_discount
+                success(this)
+            } catch (errors) {
+                error(errors)
+            }
+        },
+        setLineItemDiscount: function (
+                index, 
+                {amount, discount_description, type} = {type: "flat"},
+                // {success, error}
+            ) {
+                try {
+                    this.line_items[index].discount = {
+                        amount: amount,
+                        discount_description: discount_description,
+                        type: type
+                    }
+                    // success(this)
+                } catch (errors) {
+                    // error(errors)
+                }
+            },
+        removeLineItemDiscount: function (index) {
+            delete this.line_items[index].discount
+        },
+        addProperties: function (properties, {success, error}) {
+            try {
+                if (this.properties === undefined) {
+                    this.properties = []
+                }
+                let keys = Object.keys(properties)
+                keys.forEach(key => {
+
+                    let propIndex = this.properties.findIndex( prop => prop.name === key)
+
+                    if (propIndex > -1) {
+                        this.properties[propIndex].value = properties[key]
+                    } else {
+                        this.properties.push({
+                            name: key,
+                            value: properties[key]
+                        })
+                    }
+                })
+                success(this)
+            } catch (errors) {
+                error(errors)
+            }
+        }
+    }
+}
+    let discounts
+    const lineList = document.getElementById("lineList")
     const lineItemDiscountSelect = document.getElementById("select-lineItemDiscount")
     const cartDiscountSelect = document.getElementById("select-cartDiscount")
-    const appliedLineItemDiscountSpan = document.getElementById("appliedLineItemDiscount")
     const appliedCartDiscountSpan = document.getElementById("appliedCartDiscount")
+
+    async function getTervisDiscountList() {
+        writeDebug("Getting discount list")
+        const url = '{{ globals.tervis.getTervisDiscountListURL }}'
+        const options = {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+                'x-functions-key': '{{ globals.tervis.getTervisDiscountListKey }}'
+            }
+        }
+        let response = await fetch(url, options)
+        let result = await response.json()
+        writeDebug("Got discount list")
+        return result
+    }
+
+    function addItemsToLineList(cart) {
+        cart.line_items.forEach((item, index) => {
+            if (!item.sku) { return }
+            let lineElement = document.createElement("div")
+            lineElement.id = `line${index}`
+            lineElement.innerHTML = `
+            <div id="line${index}">
+                <h5>[${item.sku}] ${item.title}</h5>
+                <p>Applied Discount: <span id="line${index}Discount"></span></p>
+                <button onclick="buttonApplyDiscountToLine(${index})" class="btn btn-success">Apply</button>
+                <button onclick="buttonRemoveDiscountFromLine(${index})" class="btn btn-danger">Remove</button>
+            </div>
+            `
+            lineList.appendChild(lineElement)
+        })
+    }
+
+    function buttonApplyDiscountToLine(itemIndex) {
+        console.log("Apply to item " + itemIndex)
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                let discount = discounts[lineItemDiscountSelect.value]
+                let item = cart.line_items[itemIndex]
+                if (!discount) { return }
+                let processedDiscount = invokeDiscountProcessing(discount, item)
+                cart.setLineItemDiscount(itemIndex, processedDiscount)
+                updateDiscountSpans()
+                addDiscountsToCartProperties()
+            },
+            error: errors => ShopifyPOS.flashError(errors)
+        })
+    }
+
+    function buttonRemoveDiscountFromLine(itemIndex) {
+        console.log("Remove discount from item " + itemIndex)
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                cart.removeLineItemDiscount(itemIndex)
+                updateDiscountSpans(cart)
+                addDiscountsToCartProperties(cart)
+            },
+            error: errors => ShopifyPOS.flashError(errors)
+        })
+    }
+
+    function buttonApplyDiscountToAllLines() {
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                cart.line_items.forEach((item, index) => {
+                    if (!item.sku) { return }
+                    buttonApplyDiscountToLine(index)
+                })
+            },
+            error: errors => writeDebug(errors)
+        })
+    }
+
+    function buttonRemoveDiscountFromAllLines() {
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                cart.line_items.forEach((item, index) => {
+                    if (!item.sku) { return }
+                    buttonRemoveDiscountFromLine(index)
+                })
+            },
+            error: errors => writeDebug(errors)
+        })
+    }
+
+    function applyCartDiscount() {
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                let currentDiscount = discounts[cartDiscountSelect.value]
+                if (!currentDiscount) { return }
+                if (currentDiscount.type === "variable") {
+                    currentDiscount = getVariableDiscount(currentDiscount)
+                }
+                cart.setDiscount(
+                    {
+                        type: currentDiscount.type,
+                        amount: currentDiscount.amount,
+                        discount_description: currentDiscount.discount_description
+                    }
+                )
+                try {
+                    updateDiscountSpans(cart)
+                    writeDebug("Updated cart discount")
+                }
+                catch (e) {
+                    writeDebug(e)
+                }
+                addDiscountsToCartProperties(cart)
+            },
+            error: errors => writeDebug(errors)
+        })
+    }
+
+    function removeCartDiscount() {
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                cart.removeDiscount({
+                    success: () => ShopifyPOS.flashNotice("Removed Cart Discount"),
+                    error: errors => writeDebug(errors)
+                })
+                updateDiscountSpans(cart)
+                addDiscountsToCartProperties(cart)
+            },
+            error: errors => writeDebug(errors)
+        })
+
+    }
+
+    function invokeDiscountProcessing(discount, item) {
+        let processedDiscount
+        switch (discount.type) {
+            case "variable":
+                processedDiscount = getProcessedVariableDiscount(discount)
+                break;
+            case "flat":
+                processedDiscount = getProcessedFlatDiscount(discount, item)
+                break;
+            case "buyxquantity_getydollaroff":
+                processedDiscount = getProcessedBuyXDollarYOffDiscount(discount, item)
+                break;
+            case "buyxquantity_getyquantity_zpercentoff":
+                processedDiscount = getProcessedBuyXGetYPercentZOffDiscount(discount, item)
+                break;
+            default:
+                break;
+        }
+        return processedDiscount
+    }
+
+    // What happens if discount is greater than item price?
+    function getProcessedVariableDiscount(discount) {
+            let amount
+            while(!amount) {
+                let amountInput = prompt("Enter dollar amount")
+                amount = parseFloat(amountInput)
+            }
+            return {
+                discount_description: discount.discount_description,
+                type: "flat",
+                amount: amount
+            }
+    }
+
+    function getProcessedFlatDiscount(discount, item) {
+        let finalAmount = discount.amount * item.quantity
+        writeDebug(`Discount rate: ${discount.amount}\nItem Qty: ${item.quantity}\nFinal amount: ${finalAmount}`)
+        return {
+            discount_description: discount.discount_description,
+            type: "flat",
+            amount: finalAmount
+        }
+    }
+
+    function getProcessedBuyXDollarYOffDiscount(discount, item) {
+        let quantity
+            while(!quantity) {
+                let quantityInput = prompt("Enter quantity of items for coupon:")
+                quantity = parseInt(quantityInput)
+            }
+        let multiplier = Math.floor(quantity / discount.parameters[0])
+        let finalAmount = discount.parameters[1] * multiplier
+        writeDebug(`
+        Qty:    ${item.quantity}
+        BuyX:   ${discount.parameters[0]}
+        $YOff:  ${discount.parameters[1]}
+        Total:  ${finalAmount}
+        `)
+        return {
+            discount_description: discount.discount_description,
+            type: "flat",
+            amount: finalAmount
+        }
+    }
+
+    function getProcessedBuyXGetYPercentZOffDiscount() {
+        // buy 2, get 1 @ 50% off - 
+        // if buy 6, then get 2 @ 50% off 
+    }
+
+    function updateDiscountSpans() {
+        writeDebug("Updating spans")
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                cart.line_items.forEach((item, index) => {
+                    if (!item.sku) { return }
+                    let currentDiscountSpan = document.getElementById(`line${index}Discount`)
+                    if (item.discount) {
+                        currentDiscountSpan.innerText = item.discount.discount_description
+                    } else {
+                        currentDiscountSpan.innerText = "None"
+                    }
+                })
+        
+                if (cart.cart_discount) {
+                    appliedCartDiscountSpan.innerText = cart.cart_discount.discount_description
+                } else {
+                    appliedCartDiscountSpan.innerText = "None"
+                }
+            },
+            error: errors => writeDebug(errors)
+        })
+    }
 
     function writeDebug(msg) {
         let debugWindow = document.getElementById("debugArea")
@@ -98,36 +532,30 @@
         })
     }
 
-    async function getTervisDiscountList() {
-        writeDebug("Getting discount list")
-        const url = '{{ globals.tervis.getTervisDiscountListURL }}'
-        const options = {
-            method: 'GET',
-            headers: {
-                'content-type': 'application/json',
-                'x-functions-key': '{{ globals.tervis.getTervisDiscountListKey }}'
+    function showDiscounts() {
+        writeDebug(discounts)
+    }
+
+    function showDiscountProperties() {
+        ShopifyPOS.fetchCart({
+            success: cart => {
+                if (!cart.properties) {
+                    writeDebug("No cart properties.")
+                    return
+                }
+                let discountReport = cart.properties.find(prop => {
+                    return prop.name === "discountReport"
+                })
+                if (discountReport) {
+                    writeDebug(JSON.parse(discountReport.value))
+                }
             }
-        }
-        writeDebug(url)
-        writeDebug(options)
-        let response = await fetch(url, options)
-        let result = await response.json()
-        writeDebug("Got discount list")
-        return result
+        })
     }
 
     function showForm() {
         document.getElementById("loading").setAttribute("hidden","")
         document.getElementById("content").removeAttribute("hidden")
-    }
-
-    function addLineItemsToDropdown(cart) {
-        cart.line_items.forEach((item, index) => {
-            let option = document.createElement("option")
-            option.text = `${item.sku} - ${item.title}`
-            option.value = index
-            lineItemSelect.add(option)
-        });
     }
 
     function addDiscountsToDropdowns() {
@@ -143,87 +571,6 @@
         })
     }
 
-    // make sure to enable setting a discount only after a line item has been selected
-    function setLineItemDiscount() {
-        ShopifyPOS.fetchCart({
-            success: cart => {
-                if (lineItemDiscountSelect.value === "-1") {
-                    writeDebug("Removing line item discount")
-                    cart.removeLineItemDiscount(lineItemSelect.value)
-                } else {
-                    let currentDiscount = discounts[lineItemDiscountSelect.value]
-                    cart.setLineItemDiscount(
-                        lineItemSelect.value,
-                        {
-                            type: currentDiscount.type,
-                            amount: currentDiscount.amount,
-                            discount_description: currentDiscount.discount_description
-                        }
-                    )
-                }
-                refreshForm()
-            },
-            error: errors => ShopifyPOS.flashError(errors)
-        })
-    }
-
-    function setCartDiscount() {
-        writeDebug("Cart discount changed")
-        ShopifyPOS.fetchCart({
-            success: async cart => {
-                if (cartDiscountSelect.value === "-1") {
-                    writeDebug("Removing cart discount")
-                    cart.removeDiscount()
-                } else {
-                    writeDebug("Setting cart discount")
-                    writeDebug(`Cart discount index: ${cartDiscountSelect.value}`)
-                    let currentDiscount = discounts[cartDiscountSelect.value]
-                    try {
-                        if (currentDiscount.discount_description === "Misc") {
-                            writeDebug("Discount is Misc")
-                            setMiscDiscount(currentDiscount)
-                        }
-                    } catch (e) {
-                        writeDebug(`${e}`)
-                        writeDebug(e)
-                    }
-                    // writeDebug(currentDiscount)
-                    cart.setDiscount(
-                        {
-                            type: currentDiscount.type,
-                            amount: currentDiscount.amount,
-                            discount_description: currentDiscount.discount_description
-                        }
-                    )
-                }
-                refreshForm()
-            },
-            error: errors => ShopifyPOS.flashError(errors)
-        })
-    }
-
-    function setMiscDiscount(miscDiscount) {
-        writeDebug("Setting Misc Discount")
-        try {
-            let amount
-            writeDebug(amount)
-            while(!amount) {
-                let amountInput = prompt("Enter dollar amount")
-                amount = parseFloat(amountInput)
-            }
-            miscDiscount.amount = amount
-            writeDebug("Misc discount result:")
-            writeDebug(miscDiscount)
-        } catch (e) {
-            writeDebug(`${e}`)
-            writeDebug(e)
-        }
-    }
-    
-    function enableLineItemDiscountSelect() {
-        lineItemDiscountSelect.removeAttribute("disabled")
-    }
-
     function getDiscountIndexByName(discount_description) {
         let result = discounts.findIndex(discount => {
             return discount.discount_description === discount_description
@@ -235,84 +582,69 @@
         discountSelectElement.value = discountIndex
     }
 
-    function addDiscountsToCartProperties(cart) {
-        let discountObjects = JSON.parse(JSON.stringify(discounts))
-        discountObjects.forEach(discount => {
-            discount.count = 0
-            discount.discountedAmount = 0
-            discount.discountAmount = 0
-        })
-        // writeDebug(discountObjects)
-        cart.line_items.forEach(item => {
-            if (item.discount === undefined) {return}
-            discountIndex = getDiscountIndexByName(item.discount.discount_description)
-            discountObjects[discountIndex].count += item.quantity
-            writeDebug(`Added ${item.quantity} to ${discountObjects[discountIndex].discount_description}`)
-            // something something for calculating discount amounts
-        })
-        if (cart.cart_discount !== undefined) {
-            discountIndex = getDiscountIndexByName(cart.cart_discount.discount_description)
-            discountObjects[discountIndex].count += 1
-        }
-        let usedDiscountObjects = discountObjects.filter(discount => {
-            return discount.count > 0
-        })
-        writeDebug(`Total discounts used: ${usedDiscountObjects.length}`)
-        let jsonString = JSON.stringify(usedDiscountObjects)
-        cart.addProperties({
-            discountReport: jsonString
-        }, {
-            success: ShopifyPOS.flashNotice("Properties added to cart"),
-            error: errors => writeDebug(errors)
-        })
-    }
-
-    function refreshForm() {
-        // writeDebug("refreshForm: Starting")
+    function addDiscountsToCartProperties() {
         ShopifyPOS.fetchCart({
             success: cart => {
-                // writeDebug("refreshForm: Cart fetched")
-                let currentItem = cart.line_items[lineItemSelect.value]
-                // writeDebug(`refreshForm: Current Item value: ${currentItem}`)
-                try {
-                    if (currentItem !== undefined && currentItem.discount !== undefined) {
-                        // writeDebug("refreshForm: Current Item has a value")
-                        // writeDebug(`Should set line item discount to ${currentItem.discount.discount_description}`)
-                        let discountIndex = getDiscountIndexByName(currentItem.discount.discount_description)
-                        setDiscountSelect(lineItemDiscountSelect, discountIndex)
-                        appliedLineItemDiscountSpan.innerText = currentItem.discount.discount_description
-                    } else {
-                        // writeDebug("No line item discount")
-                        appliedLineItemDiscountSpan.innerText = "None"
-                    }
-                    if (cart.cart_discount !== undefined) {
-                        // writeDebug(`Should set cart discount to ${cart.cart_discount.discount_description}`)
-                        let discountIndex = getDiscountIndexByName(cart.cart_discount.discount_description)
-                        setDiscountSelect(cartDiscountSelect, discountIndex)
-                        appliedCartDiscountSpan.innerText = cart.cart_discount.discount_description
-                    } else {
-                        writeDebug("No cart discount")
-                        appliedCartDiscountSpan.innerText = "None"
-                    }
-                    addDiscountsToCartProperties(cart)
-                } catch (e) {
-                    writeDebug(`${e}`)
-                    writeDebug(e)
+                let discountObjects = JSON.parse(JSON.stringify(discounts)) // cloning discounts
+                discountObjects.forEach(discount => {
+                    discount.count = 0
+                    discount.discountedDollarAmount = 0
+                })
+                // writeDebug(discountObjects)
+                cart.line_items.forEach(item => {
+                    if (item.discount === undefined) {return}
+                    discountIndex = getDiscountIndexByName(item.discount.discount_description)
+                    discountObjects[discountIndex].count += 1
+                    writeDebug(`Added 1 to ${discountObjects[discountIndex].discount_description}`)
+                    discountObjects[discountIndex].discountedDollarAmount += getLineItemDollarAmountDiscounted(item)
+                })
+                if (cart.cart_discount !== undefined) {
+                    discountIndex = getDiscountIndexByName(cart.cart_discount.discount_description)
+                    discountObjects[discountIndex].count += 1
+                    discountObjects[discountIndex].discountedDollarAmount += getCartDollarAmountDiscounted(cart)
                 }
+                let usedDiscountObjects = discountObjects.filter(discount => {
+                    return discount.count > 0
+                })
+                writeDebug(`Total discounts used: ${usedDiscountObjects.length}`)
+                let jsonString = JSON.stringify(usedDiscountObjects)
+                cart.addProperties({
+                    discountReport: jsonString
+                }, {
+                    success: () => ShopifyPOS.flashNotice("Properties added to cart"),
+                    error: errors => writeDebug(errors)
+                })
             },
             error: errors => writeDebug(errors)
         })
-        // writeDebug("refreshForm: Done")
+    }
+
+    function getLineItemDollarAmountDiscounted(item) {
+        if (item.discount.type === "flat") {
+            return item.discount.amount
+        } else {
+            let dollarAmountDiscounted = item.price * item.quantity * item.discount.amount
+            return parseFloat(dollarAmountDiscounted.toFixed(2))
+        }
+    }
+
+    function getCartDollarAmountDiscounted(cart) {
+        if (cart.cart_discount.type === "flat") {
+            return cart.cart_discount.amount
+        } else {
+            let prediscountSubtotal = cart.subtotal / (1 - cart.cart_discount.amount)
+            let dollarAmountDiscounted = prediscountSubtotal - cart.subtotal
+            return parseFloat(dollarAmountDiscounted.toFixed(2))
+        }
     }
 
     function startForm() {
-        // writeDebug("startForm: Starting")
         ShopifyPOS.fetchCart({
             success: cart => {
-                // writeDebug("startForm: Cart fetched")
-                addLineItemsToDropdown(cart)
+                addItemsToLineList(cart)
                 addDiscountsToDropdowns()
-                refreshForm()
+                updateDiscountSpans()
+                addDiscountsToCartProperties()
             },
             error: errors => ShopifyPOS.flashError(errors)
         })
@@ -320,22 +652,6 @@
             success: location => storeLocation = location,
             error: errors => ShopifyPOS.flashError(errors)
         })
-        // writeDebug("startForm: Done")
-    }
-
-    function buttonTest() {
-    }
-
-    function addEventListeners() {
-        document.getElementById("btn-clearLog").addEventListener("click", clearDebug)
-        document.getElementById("btn-showCart").addEventListener("click", showCart)
-        document.getElementById("btn-test").addEventListener("click", buttonTest)
-        // document.getElementById("btn-remove").addEventListener("click", removeLineItemDiscount)
-
-        lineItemSelect.addEventListener("change", refreshForm)
-        lineItemSelect.addEventListener("change", enableLineItemDiscountSelect)
-        lineItemDiscountSelect.addEventListener("change", setLineItemDiscount)
-        cartDiscountSelect.addEventListener("change", setCartDiscount)
     }
 
     ShopifyPOS.ready(async () => {
@@ -344,7 +660,6 @@
             discounts = await getTervisDiscountList()
             showForm()
             writeDebug("Ready.")
-            addEventListeners()
             startForm()
         } catch (err) {
             writeDebug(err)
