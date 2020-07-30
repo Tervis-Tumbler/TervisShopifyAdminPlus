@@ -332,8 +332,8 @@ function Out_TervisShopifyPOSDebug ({
 async function Get_TervisShopifyPOSPersonalizableLineItem ({
     $Cart
 }) {
-    let $PendingLookup = $Cart.line_items.map($Line => {
-        let $LineItemSKU = Get_TervisLineItemSKU($Line)
+    let $PendingLookup = $Cart.line_items.map($LineItem => {
+        let $LineItemSKU = Get_TervisLineItemSKU({$LineItem})
         Test_IsTervisItemPersonalizable({ $ItemNumber: $LineItemSKU })
     })
 
