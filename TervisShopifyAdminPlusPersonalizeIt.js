@@ -332,9 +332,10 @@ function Out_TervisShopifyPOSDebug ({
 async function Get_TervisShopifyPOSPersonalizableLineItem ({
     $Cart
 }) {
-    let $PendingLookup = $Cart.line_items.map(
-        $Line => Test_IsTervisItemPersonalizable({ $ItemNumber: $Line.sku })
-    )
+    let $PendingLookup = $Cart.line_items.map($Line => {
+        let $LineItemSKU = Get_TervisLineItemSKU($Line)
+        Test_IsTervisItemPersonalizable({ $ItemNumber: $LineItemSKU })
+    })
 
     let $IsIndexPersonalizable = await Promise.all($PendingLookup)
 
@@ -345,6 +346,15 @@ async function Get_TervisShopifyPOSPersonalizableLineItem ({
     )
 
     return $PersonalizableLineItems
+}
+
+function Get_TervisLineItemSKU ({$LineItem}) {
+    if ($LineItem.properties) {
+        let $MissingItemSKU = $LineItem.properties.find( prop => prop.name === "missingItem" )
+        return $MissingItemSKU ? $MissingItemSKU.value : $LineItem.sku
+    } else {
+        return $LineItem.sku
+    }
 }
 
 async function New_TervisShopifyPOSPersonalizableLineItemSelect ({
@@ -635,10 +645,10 @@ function Get_LineItemRelatedToPersonalizationChargeLineItem ({
     $PersonalizationChargeLineItem,
     $Cart
 }) {
-    return $Cart.line_items.filter( 
-        $LineItem =>
-        $LineItem.sku === $PersonalizationChargeLineItem.PropertiesObject.RelatedLineItemSKU
-    )[0]
+    return $Cart.line_items.filter($LineItem => {
+        let $LineItemSKU = Get_TervisLineItemSKU({$LineItem})
+        return $LineItemSKU === $PersonalizationChargeLineItem.PropertiesObject.RelatedLineItemSKU
+    })[0]
 }
 
 async function Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick ($Event) {
@@ -697,7 +707,8 @@ function Get_IndexOfLineItemBySKU ({
 }) {
     let $ResultingIndex = -1
     $Cart.line_items.forEach(($LineItem, $Index) => {
-        if ($LineItem.sku === $SKU) {
+        let $LineItemSKU = Get_TervisLineItemSKU({$LineItem})
+        if ($LineItemSKU === $SKU) {
             $ResultingIndex = $Index
         }
     })
@@ -730,7 +741,17 @@ async function Get_TervisShopifyPOSPersonalizableLineItemSelected () {
 
 async function Get_TervisShopifyPOSPersonalizableLineItemSelectedProductMetadata () {
     var $SelectedPersonalizableLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
-    let $EBSDescription = await Get_EBSDescriptionFromProductId({ $ProductId: $SelectedPersonalizableLineItem.product_id })
+    let $EBSDescription
+    if (!!$SelectedPersonalizableLineItem.custom) {
+        let missingItemMetadata = $SelectedPersonalizableLineItem.properties.find(props => props.name === "productMetadata")
+        if (!!missingItemMetadata && missingItemMetadata.value !== "NA") {
+            $EBSDescription = missingItemMetadata.value
+        } else {
+            alert("Custom missing item with no metadata being customized. This will fail.")
+        }
+    } else {
+        $EBSDescription = await Get_EBSDescriptionFromProductId({ $ProductId: $SelectedPersonalizableLineItem.product_id })
+    }
     var {
         $ProductSize,
         $ProductFormType
@@ -849,7 +870,7 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         var $PersonalizationFeeObject = await Get_TervisPersonalizationFeeObject({$NumberOfPersonalizedSides})
         var $LineItemProperties = $PersonalizationProperties
 
-        $LineItemProperties.RelatedLineItemSKU = $SelectedLineItem.sku
+        $LineItemProperties.RelatedLineItemSKU = Get_TervisLineItemSKU({$LineItem: $SelectedLineItem})
         $LineItemProperties.PersonalizationFeeSKU = $PersonalizationFeeObject.sku
         
         var $Price = 0.00000001 // This makes the item basically free, even at the max qty of 99,999
@@ -980,6 +1001,7 @@ function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChar
     $Cart,
     $PersonalizableLineItem
 }) {
+    let $LineItemSKU = Get_TervisLineItemSKU({$LineItem: $PersonalizableLineItem})
     var $PersonalizationChargeLineItems = $Cart.line_items
     .filter(
         $CartLineItem => {
@@ -988,7 +1010,7 @@ function Get_TervisShopifyPOSPersonalizableLineItemAssociatedPersonalizationChar
                     .filter( 
                         $Property =>
                         $Property.name === "RelatedLineItemSKU" &&
-                        $Property.value === $PersonalizableLineItem.sku
+                        $Property.value === $LineItemSKU
                     )[0]
             }
         }

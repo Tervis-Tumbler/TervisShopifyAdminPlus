@@ -16,7 +16,12 @@
     </div>
 </div>
 
-<script>
+<script type="module">
+    import {
+        Get_TervisProductMetaData,
+        Get_TervisProductMetaDataUsingIndex
+    } from 'https://unpkg.com/@tervis/tervisproductmetadata?module'
+
     async function Get_TervisShopifyCart () {
         return new Promise((resolve, reject) => {
             ShopifyPOS.fetchCart({
@@ -156,8 +161,18 @@
     }
 
     async function buttonTest() {
-        writeDebug(Get_EBSDescriptionFromProductId({ $ProductId: '4777219621001'}))
-        writeDebug("Button called")
+        // writeDebug(Get_EBSDescriptionFromProductId({ $ProductId: '4777219621001'}))
+        // writeDebug("Button called")
+        const productMetadata = await Get_TervisProductMetaData()
+        const optionArray = productMetadata.map(element => {
+            return {
+                title: `${element.Size}${element.FormType}: ${element.MarketingName}`,
+                productSize: element.Size,
+                productType: element.FormType
+            }
+        })
+        
+        writeDebug(optionArray)
     }
 
     function startButtons() {
@@ -171,7 +186,7 @@
     ShopifyPOS.ready(async () => {
         try {        
             //App view is now rendered
-            $ProductEBSDescriptonTable = await New_ProductEBSDescriptionTable()
+            // $ProductEBSDescriptonTable = await New_ProductEBSDescriptionTable()
             writeDebug("Ready.")
             startButtons()
         } catch (err) {

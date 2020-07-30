@@ -1,6 +1,6 @@
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
-<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" integrity="sha384-4FeI0trTH/PCsLWrGCD1mScoFu9Jf2NdknFdFoJhXZFwsvzZ3Bo5sAh7+zL8Xgnd" crossorigin="anonymous"> -->
+<!-- <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" /> -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" integrity="sha384-4FeI0trTH/PCsLWrGCD1mScoFu9Jf2NdknFdFoJhXZFwsvzZ3Bo5sAh7+zL8Xgnd" crossorigin="anonymous">
 
 <style>
     input::-webkit-outer-spin-button,
@@ -10,86 +10,93 @@
     }
 </style>
 
-
 <div id="loading"><h1>Loading...</h1></div>
-<div id="content">
-    <div>
-        <label for="EBSItemNumber">
-            <h4>EBS Item Number:</h4>
-        </label>
-        <input type="number" id="EBSItemNumber" placeholder="1234567" class="form-control form-control-lg"></textarea>
-    </div>
-
-    <div>
-        <label for="ItemName">
-            <h4>Item Name (Optional):</h4>
-        </label>
-        <input type="text" id="ItemName" placeholder="16oz clear blue" class="form-control form-control-lg"></textarea>
-    </div>
-
-    <div>
-        <label for="Price">
-            <h4>Price:</h4>
-        </label>
-        <b>$</b><input type="number" id="Price" placeholder="5.99" class="form-control form-control-lg"></textarea>
-    </div>
-
-    <div>
-        <label for="Quantity">
-            <h4>Quantity:</h4>
-        </label>
-        <input type="number" id="Quantity" placeholder="1" class="form-control form-control-lg"></textarea>
-    </div>
-
-    <div>
-        <button onclick="buttonSubmit()" class="btn btn-success">Submit</button>
-    </div>
+<div id="content" hidden class="container">
+    <form onsubmit="return false">
+        <div>
+            <label for="ItemType">
+                <h4>Item Type</h4>
+            </label>
+            <select name="Item Type" id="ItemType" required>
+                <option value="" disabled selected>Select item type</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+    
+        <div>
+            <label for="EBSItemNumber">
+                <h4>EBS Item Number:</h4>
+            </label>
+            <input type="number" id="EBSItemNumber" placeholder="1234567" class="form-control form-control-lg" required></textarea>
+        </div>
+    
+        <div>
+            <label for="ItemName">
+                <h4>Item Name:</h4>
+            </label>
+            <input type="text" id="ItemName" placeholder="16oz clear blue" class="form-control form-control-lg" required></textarea>
+        </div>
+    
+        <div>
+            <label for="Price">
+                <h4>Price:</h4>
+            </label>
+            <b>$</b><input type="number" id="Price" placeholder="5.99" class="form-control form-control-lg" required></textarea>
+        </div>
+    
+        <!-- <div>
+            <label for="Quantity">
+                <h4>Quantity:</h4>
+            </label>
+            <input type="number" id="Quantity" placeholder="1" class="form-control form-control-lg" required></textarea>
+        </div> -->
+    
+        <div>
+            <button type="submit" onclick="buttonSubmit()" class="btn btn-success">Submit</button>
+        </div>
+    </form>
 </div>
 
-<script>
-    if (!!window.chrome) {
-        var ShopifyPOS = {
-            ready: callback => {
-                callback()
-            },
-            addLineItem: ({title, price, quantity}, {success, error}) => {
-                if (title) {
-                    success("Item Added")
-                } else {
-                    error("Item not added")
-                }
-            },
-            flashNotice: message => {
-                console.log(message)
-            },
-            flashError: message => {
-                console.error(message)
-            }
-        }
-    }
+<script type="module">
+    import {
+        Get_TervisProductMetaData
+    } from 'https://unpkg.com/@tervis/tervisproductmetadata?module'
+
+    let productMetadata
+    const productTypeSelect = document.getElementById("ItemType")
     const ebsItemNumberField = document.getElementById("EBSItemNumber")
     const itemNameField = document.getElementById("ItemName")
     const priceField = document.getElementById("Price")
-    const quantityField = document.getElementById("Quantity")
+    // const quantityField = document.getElementById("Quantity")
 
     function buttonSubmit() {
         const isEBSItemNumberValid = testEBSItemNumber()
         const isPriceValid = testPrice()
-        const isQuantityValid = testQuantity()
+        // const isQuantityValid = testQuantity()
         if (isEBSItemNumberValid && isPriceValid) {
             ShopifyPOS.fetchCart({
                 success: cart => {
                     cart.addLineItem({
                         title: `[${ebsItemNumberField.value}] ${itemNameField.value}`,
                         price: parseFloat(priceField.value),
+                        // quantity: priceField.value
                         quantity: 1
                     },{
                         success: cart => {
                             let lastItemIndex = cart.line_items.length - 1
+                            let productMetadataString 
+                            if (productTypeSelect.value === "other") {
+                                productMetadataString = "NA"
+                            } else {
+                                productMetadataString = `.${productMetadata[productTypeSelect.value].FormType}...${productMetadata[productTypeSelect.value].Size}`
+                            }
+                            
+                            productMetadata[productTypeSelect.value]
                             cart.addLineItemProperties(
                                 lastItemIndex, 
                                 {
-                                    missingItem: `${ebsItemNumberField.value}`
+                                    missingItem: `${ebsItemNumberField.value}`,
+                                    productMetadata: productMetadataString
                                 },
                                 {
                                     success: () => {
@@ -110,6 +117,16 @@
             ShopifyPOS.flashError("Price is invalid")
         }
     }
+    window.buttonSubmit = buttonSubmit
+
+    function addProductTypesToSelect() {
+        productMetadata.forEach((productType, index) => {
+            let opt = document.createElement("option")
+            opt.innerText = `${productType.Size}${productType.FormType}: ${productType.MarketingName}`
+            opt.value = index
+            productTypeSelect.appendChild(opt)
+        })
+    }
 
     function testEBSItemNumber() {
         return ebsItemNumberField.value.length > 6
@@ -129,7 +146,34 @@
         document.getElementById("content").removeAttribute("hidden")
     }
 
-    ShopifyPOS.ready(() => {
-        showForm()
-    })
+    function main() {
+        if (!!window.chrome) {
+            window.ShopifyPOS = {
+                ready: callback => {
+                    callback()
+                },
+                addLineItem: ({title, price, quantity}, {success, error}) => {
+                    if (title) {
+                        success("Item Added")
+                    } else {
+                        error("Item not added")
+                    }
+                },
+                flashNotice: message => {
+                    console.log(message)
+                },
+                flashError: message => {
+                    console.error(message)
+                }
+            }
+        }
+
+        ShopifyPOS.ready(async () => {
+            productMetadata = await Get_TervisProductMetaData()
+            addProductTypesToSelect()
+            showForm()
+        })
+    }
+
+    main()
 </script>
