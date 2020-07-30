@@ -334,7 +334,7 @@ async function Get_TervisShopifyPOSPersonalizableLineItem ({
 }) {
     let $PendingLookup = $Cart.line_items.map($LineItem => {
         let $LineItemSKU = Get_TervisLineItemSKU({$LineItem})
-        Test_IsTervisItemPersonalizable({ $ItemNumber: $LineItemSKU })
+        return Test_IsTervisItemPersonalizable({ $ItemNumber: $LineItemSKU })
     })
 
     let $IsIndexPersonalizable = await Promise.all($PendingLookup)
