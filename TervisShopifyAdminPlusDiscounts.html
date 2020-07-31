@@ -636,7 +636,11 @@ if (!!window.chrome) {
             let option = document.createElement("option")
             option.text = `${discount.discount_description}`
             option.value = index
-            if (discount.kind === "line") {
+            if (discount.kind === "both") {
+                let cartOption = option.cloneNode(true)
+                lineItemDiscountSelect.add(option)
+                cartDiscountSelect.add(cartOption)
+            } else if (discount.kind === "line") {
                 lineItemDiscountSelect.add(option)
             } else if (discount.kind === "cart") {
                 cartDiscountSelect.add(option)
