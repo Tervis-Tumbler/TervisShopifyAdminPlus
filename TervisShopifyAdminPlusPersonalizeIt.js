@@ -21,7 +21,7 @@ import {
     Test_IsTervisItemPersonalizable
 } from 'https://unpkg.com/@tervis/tervispersonalizableitemsjs?module'
 
-var $Debug = true
+var $Debug = false
 let $ItemFetchPromise = Get_ItemFetchPromise()
 let $PersonalizationFeeObjects
 
