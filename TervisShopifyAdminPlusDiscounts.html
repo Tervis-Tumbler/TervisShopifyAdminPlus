@@ -1,11 +1,15 @@
 <!-- <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" /> -->
 <!-- <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" /> -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" integrity="sha384-4FeI0trTH/PCsLWrGCD1mScoFu9Jf2NdknFdFoJhXZFwsvzZ3Bo5sAh7+zL8Xgnd" crossorigin="anonymous">
-
+<style>
+    .DiscountDropdown {
+        padding-bottom: 3em;
+    }
+</style>
 <div id="loading"><h1>Loading...</h1></div>
 <div id="content" class="row-fluid" hidden>
     <div id="discountsDiv" class="span6">
-        <div id="lineItemDiscountDiv">
+        <div id="lineItemDiscountDiv" class="DiscountDropdown">
             <label for="select-lineItemDiscount">
                 <h4>
                     Line Item Discounts
@@ -17,7 +21,7 @@
             <button onclick="buttonApplyDiscountToAllLines()" class="btn btn-success">Apply to all lines</button>
             <button onclick="buttonRemoveDiscountFromAllLines()" class="btn btn-danger">Remove all line discounts</button>
         </div>
-        <div id="cartDiscountDiv">
+        <div id="cartDiscountDiv" class="DiscountDropdown">
             <label for="select-cartDiscount">
                 <h4>
                     Cart Discounts
@@ -61,6 +65,52 @@ if (!!window.chrome) {
     var ShopifyPOS = {
         "grand_total": "68.2",
         "line_items": [
+            {
+                "custom": true,
+                "quantity": 1,
+                "taxable": true,
+                "requires_shipping": true,
+                "price": 14.99,
+                "title": "[1000032] Parrot",
+                "tax_lines": [
+                    {
+                        "price": "0.9",
+                        "title": "Florida State Tax",
+                        "rate": "0.06"
+                    },
+                    {
+                        "price": "0.15",
+                        "title": "Sarasota County Tax",
+                        "rate": "0.01"
+                    }
+                ],
+                "properties": [
+                    {
+                        "name": "missingItem",
+                        "value": "1000032"
+                    }
+                ]
+            },
+            {
+                "custom": true,
+                "quantity": 1,
+                "taxable": true,
+                "requires_shipping": true,
+                "price": 10,
+                "title": "Random",
+                "tax_lines": [
+                    {
+                        "price": "0.6",
+                        "title": "Florida State Tax",
+                        "rate": "0.06"
+                    },
+                    {
+                        "price": "0.1",
+                        "title": "Sarasota County Tax",
+                        "rate": "0.01"
+                    }
+                ]
+            },
             {
             "quantity": 2,
             "discount": {
@@ -308,14 +358,29 @@ if (!!window.chrome) {
         return result
     }
 
+    function getItemSku(item) {
+        let itemSku
+        if (item.sku) {
+            itemSku = item.sku
+        } else if (
+            !!item.properties && 
+            !!item.properties.find(props => props.name === "missingItem")
+        ) {
+            itemSku = item.properties.find(props => props.name === "missingItem").value
+        } else {
+            itemSku = "N/A"
+        }
+        return itemSku
+    }
+
     function addItemsToLineList(cart) {
         cart.line_items.forEach((item, index) => {
-            if (!item.sku) { return }
+            let itemSku = getItemSku(item)
             let lineElement = document.createElement("div")
             lineElement.id = `line${index}`
             lineElement.innerHTML = `
             <div id="line${index}">
-                <h5>[${item.sku}] ${item.title}</h5>
+                <h5>[${itemSku}] ${item.title}</h5>
                 <p>Applied Discount: <span id="line${index}Discount"></span></p>
                 <button onclick="buttonApplyDiscountToLine(${index})" class="btn btn-success">Apply</button>
                 <button onclick="buttonRemoveDiscountFromLine(${index})" class="btn btn-danger">Remove</button>
@@ -357,7 +422,6 @@ if (!!window.chrome) {
         ShopifyPOS.fetchCart({
             success: cart => {
                 cart.line_items.forEach((item, index) => {
-                    if (!item.sku) { return }
                     buttonApplyDiscountToLine(index)
                 })
             },
@@ -369,7 +433,6 @@ if (!!window.chrome) {
         ShopifyPOS.fetchCart({
             success: cart => {
                 cart.line_items.forEach((item, index) => {
-                    if (!item.sku) { return }
                     buttonRemoveDiscountFromLine(index)
                 })
             },
@@ -429,6 +492,9 @@ if (!!window.chrome) {
             case "flat":
                 processedDiscount = getProcessedFlatDiscount(discount, item)
                 break;
+            case "percent":
+                processedDiscount = getProcessedPercentDiscount(discount, item)
+                break;
             case "buyxquantity_getydollaroff":
                 processedDiscount = getProcessedBuyXDollarYOffDiscount(discount, item)
                 break;
@@ -465,6 +531,14 @@ if (!!window.chrome) {
         }
     }
 
+    function getProcessedPercentDiscount(discount, item) {
+        return {
+            discount_description: discount.discount_description,
+            type: "percent",
+            amount: discount.amount
+        }
+    }
+
     function getProcessedBuyXDollarYOffDiscount(discount, item) {
         let quantity
             while(!quantity) {
@@ -496,7 +570,6 @@ if (!!window.chrome) {
         ShopifyPOS.fetchCart({
             success: cart => {
                 cart.line_items.forEach((item, index) => {
-                    if (!item.sku) { return }
                     let currentDiscountSpan = document.getElementById(`line${index}Discount`)
                     if (item.discount) {
                         currentDiscountSpan.innerText = item.discount.discount_description
