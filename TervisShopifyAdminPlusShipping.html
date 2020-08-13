@@ -1,7 +1,8 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
 
-<div id="content">
+<div id="loading"><h1>Loading...</h1></div>
+<div id="content" class="container" hidden>
     <div id="customer">
         <h4>
             Ship To 
@@ -347,6 +348,7 @@
                     try {
                         addShipToOptionsToDropdown()
                         enableSubmitButton(true)
+                        showForm()
                     } catch (e) {
                         alert(e)
                         writeDebug(e)
@@ -364,6 +366,11 @@
         addShipMethodsToDropdown()
     }
 
+    function showForm() {
+        document.getElementById("loading").setAttribute("hidden","")
+        document.getElementById("content").removeAttribute("hidden")
+    }
+
     function buttonTest() {
         writeDebug(shipToSelect.value)
     }
@@ -378,15 +385,20 @@
         document.getElementById("btn-test").addEventListener("click", buttonTest)
     }
 
-    ShopifyPOS.ready(() => {
-        try {
-            //App view is now rendered
-            writeDebug("Ready.")
-            addEventListeners()
-            startForm()
-        } catch (err) {
-            writeDebug(err)
-            alert(err)
-        }
-    });
+    async function main() {
+        await resolveItemFetchPromise()
+        ShopifyPOS.ready(() => {
+            try {
+                //App view is now rendered
+                writeDebug("Ready.")
+                addEventListeners()
+                startForm()
+            } catch (err) {
+                writeDebug(err)
+                alert(err)
+            }
+        });
+    }
+
+    main()
 </script>
