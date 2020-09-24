@@ -119,8 +119,8 @@
         if (index !== "") {
             cachedCart.addLineItemProperties(index, newSpecialOrderProps,{
                 success: () => {
-                    ShopifyPOS.flashNotice("Added special order notes successfully.")
-                    ShopifyPOS.Modal.close()
+                    ShopifyPOS.flashNotice("Added special order note successfully. Please add shipping when finished with order.")
+                    refreshForm()
                 },
                 failure: error => {
                     ShopifyPOS.flashError(error)
