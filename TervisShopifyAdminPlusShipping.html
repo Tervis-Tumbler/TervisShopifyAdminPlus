@@ -2,37 +2,49 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
 
 <div id="loading"><h1>Loading...</h1></div>
-<div id="content" class="container" hidden>
-    <div id="customer">
-        <h4>
-            Ship To 
-        </h4>
-        <select name="Ship To" class="input-block-level" id="select-shipTo">
-            <option disabled selected value="">Select "ship to" address</option>
-        </select>
-        <div id="customerInfo">None</div>
-    </div>
-    <div id="shipForm">
-        <label for="select-shipMethod">
+<div id="content" class="container row-fluid" hidden>
+    <div class="span6">
+        <div id="customer">
             <h4>
-                Select ship method
+                Ship To 
             </h4>
-        </label>
-        <select name="Ship Methods" class="input-block-level" id="select-shipMethod"></select>
-        <button type="button" class="btn btn-large btn-block btn-success" id="btn-submit" disabled>Submit</button>
-        <button type="button" class="btn btn-large btn-block btn-danger hidden" id="btn-removeShipping">Remove shipping</button>
+            <select name="Ship To" class="input-block-level" id="select-shipTo">
+                <option disabled selected value="">Select "ship to" address</option>
+            </select>
+            <!-- <div id="customerInfo">None</div> -->
+        </div>
+        <div id="shipForm">
+            <label for="select-shipMethod">
+                <h4>
+                    Select ship method
+                </h4>
+            </label>
+            <select name="Ship Methods" class="input-block-level" id="select-shipMethod"></select>
+            <button type="button" class="btn btn-large btn-block btn-success" id="btn-submit" disabled>Submit</button>
+            <button type="button" class="btn btn-large btn-block btn-danger hidden" id="btn-removeShipping">Remove shipping</button>
+        </div>
     </div>
-    <div id="debug" class="">
-        <div>
-            <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
-            <button class="btn" type="button" id="btn-showCart">Show Cart</button>
-            <button class="btn" type="button" id="btn-showShip">Show Ship Method Object</button>
-            <button class="btn" type="button" id="btn-getSubtotal">Show Cart Subtotal</button>
-            <button class="btn" type="button" id="btn-test">Test</button>
-        </div>
-        <div>
-            <pre><code id="debugArea">Debug:</code></pre>
-        </div>
+    <div class="span6">
+        <h5>Address:</h5>
+        <div id="current-address">None</div>
+        <h5>Ship method:</h5>
+        <div id="current-ship-method">N/A</div>
+        <hr>
+        <p>
+            <em>The information above reflects shipping currently applied to the order. If you do not see an address above, it has not been added to the order.</em>
+        </p>
+    </div>
+</div>
+<div id="debug" class="hidden">
+    <div>
+        <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
+        <button class="btn" type="button" id="btn-showCart">Show Cart</button>
+        <button class="btn" type="button" id="btn-showShip">Show Ship Method Object</button>
+        <button class="btn" type="button" id="btn-getSubtotal">Show Cart Subtotal</button>
+        <button class="btn" type="button" id="btn-test">Test</button>
+    </div>
+    <div>
+        <pre><code id="debugArea">Debug:</code></pre>
     </div>
 </div>
 <script>
@@ -184,7 +196,6 @@
 
     function updateCurrentShipToAddress() {
         currentShipToAddress = getAddressFromDropdown()
-        showCustomerInformation()
     }
 
     function addShipMethodsToDropdown() {
@@ -218,7 +229,15 @@
     }
 
     function enableSubmitButton(bool) {
-        document.getElementById("btn-submit").disabled = !bool
+        let button = document.getElementById("btn-submit")
+        button.disabled = !bool
+        if (bool) {
+            button.innerText = "Submit"
+            button.classList.remove("disabled")
+        } else {
+            button.innerText = "Saving..."
+            button.classList.add("disabled")
+        }
     }
 
     function getIndexOfShippingItemInCart(cart) {
@@ -228,21 +247,12 @@
         return index
     }
 
-    function showCustomerInformation() {
-        try {
-            let customerInfo = `${currentShipToAddress.name}
-                ${currentShipToAddress.address1} ${currentShipToAddress.address2 ? `\n${currentShipToAddress.address2}` : ""}
-                ${currentShipToAddress.city}, ${currentShipToAddress.province_code} ${currentShipToAddress.zip}
-            `
-            document.getElementById("customerInfo").innerText = customerInfo
-        } catch (e) {alert(e);writeDebug(e)}
-    }
-
     function testIsOverFreeShippingThreshold(cart, shipMethod) {
         return shipMethod.threshold ? cart.subtotal > shipMethod.threshold : true
     }
 
     async function submitShippingLineItem() {
+        enableSubmitButton(false)
         let shipMethod = getShipMethod()
         let freeFreight = ""
         if (
@@ -250,13 +260,14 @@
             shipToSelect.value === ""
         ) {
             ShopifyPOS.flashError("Please select a Ship To location")
+            enableSubmitButton(true)
         }
         else {
             try {
                 await removeShipping()
                 if (shipMethod.name === "None - Remove Shipping") {
                     ShopifyPOS.flashNotice(`Shipping removed.`)
-                    ShopifyPOS.Modal.close()
+                    enableSubmitButton(true)
                 } else {
                     ShopifyPOS.fetchCart({
                         success: async cart => {
@@ -266,8 +277,9 @@
                                     variantId: await getShippingItemVariantId(shipMethod),
                                     quantity: 1
                                 }, {
-                                    success: {},
-                                    error: errors => ShopifyPOS.flashError(errors)
+                                    success: () => {},
+                                    // error: errors => ShopifyPOS.flashError(errors)
+                                    error: errors => writeDebug(errors)
                                 })
                             } else {
                                 freeFreight = "Y"
@@ -288,19 +300,27 @@
                                 customerZip: currentShipToAddress.zip,
                                 customerCountryCode: currentShipToAddress.country_code
                             }, {
-                                success: () => {
+                                success: cart => {
                                     ShopifyPOS.flashNotice(`${shipMethod.name} shipping added.`)
-                                    ShopifyPOS.Modal.close()
+                                    enableSubmitButton(true)
+                                    updateCurrentShippingInformationDiv(cart)
                                 },
-                                error: errors => ShopifyPOS.flashError(errors)
+                                error: errors => {
+                                    ShopifyPOS.flashError(errors)
+                                    writeDebug(errors)
+                                    enableSubmitButton(true)
+                                }
                             })
-                            writeDebug(cart)
                         },
-                        error: () => ShopifyPOS.flashError("Error adding shipping.")
+                        error: () => {
+                            ShopifyPOS.flashError("Error adding shipping.")
+                            enableSubmitButton(true)
+                        }
                     })
                 }
             } catch {
                 ShopifyPOS.flashError("Error sumbitting changes.")
+                enableSubmitButton(true)
             }
         }
     }
@@ -311,6 +331,7 @@
                 success: cart => {
                     cart.removeProperties(["shipMethod", "shipMethodCode", "freightTerms", "freeFreight","customerFirstName","customerLastName","customerAddress1","customerAddress2","customerCity","customerState","customerZip","customerCountryCode"], {
                         success: cart => {
+                            updateCurrentShippingInformationDiv(cart)
                             let shippingItemIndex = getIndexOfShippingItemInCart(cart)
                             if (shippingItemIndex !== -1) {
                                 cart.removeLineItem(shippingItemIndex, {
@@ -339,11 +360,54 @@
         })
     }
 
+    function updateCurrentShippingInformationDiv(cart) {
+        let cartProps = getCartProperties(cart)
+        let customerInfo
+        let shipMethodName
+        if (cartProps.shipMethodCode) {
+            customerInfo = `${cartProps.customerFirstName} ${cartProps.customerLastName}
+                ${cartProps.customerAddress1} ${cartProps.customerAddress2 ? `\n${cartProps.customerAddress2}` : ""}
+                ${cartProps.customerCity}, ${cartProps.customerState} ${cartProps.customerZip}
+            `
+        } else {
+            customerInfo = "None"
+        }
+        document.getElementById("current-address").innerText = customerInfo
+        document.getElementById("current-ship-method").innerText = cartProps.shipMethod ? cartProps.shipMethod : "N/A"
+    }
+
+    function getCartProperties(cart) {
+        let cartProperties = {}
+        cart.properties.forEach(prop => {
+            cartProperties[`${prop.name}`] = prop.value
+        })
+        return cartProperties
+    }
+
+    function testForSpecialOrPersonalizedOrders(cart) {
+        let result = false
+        cart.line_items.forEach(line => {
+            if (line.properties) {
+                let specialOrderProp = line.properties.find( prop => {
+                    return (
+                        prop.name === "PersonalizationFeeSKU" || 
+                        (prop.name === "isSpecialOrder" && prop.value === "true")
+                    )
+                })
+                if (specialOrderProp) { result = true } 
+            }
+        })
+        if (!result) {
+            alert("No special or personalized items detected. Make sure to finish the order before applying shipping")
+        }
+    }
+
     function startForm() {
         ShopifyPOS.fetchCart({
             success: cart => {
+                testForSpecialOrPersonalizedOrders(cart)
+                updateCurrentShippingInformationDiv(cart)
                 cartCustomer = cart.customer
-                writeDebug(cartCustomer)
                 if (cartCustomer !== undefined) {
                     try {
                         addShipToOptionsToDropdown()
@@ -360,7 +424,10 @@
             error: errors => ShopifyPOS.flashError(errors)
         })
         ShopifyPOS.fetchLocation({
-            success: location => storeLocation = location,
+            success: location => {
+                writeDebug(location)
+                storeLocation = location
+            },
             error: errors => ShopifyPOS.flashError(errors)
         })
         addShipMethodsToDropdown()
@@ -386,6 +453,7 @@
     }
 
     async function main() {
+        writeDebug("Loading objects...")
         await resolveItemFetchPromise()
         ShopifyPOS.ready(() => {
             try {
