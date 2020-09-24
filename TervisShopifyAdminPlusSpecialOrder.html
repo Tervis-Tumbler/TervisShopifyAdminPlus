@@ -11,12 +11,20 @@
         <select id="select-item" class="input-block-level">
             <option disabled selected value="">Please select an item</option>
         </select>
-    </div>
-    <div></div>
-    <div id="specialOrderProps">
         <p id="isSpecialOrder" class="muted">
             Select an item
         </p>
+    </div>
+    <div>
+        <label for="select-quantity"></label>
+        <h4>Quantity:</h4>
+        <div class="input-append">
+            <input type="number" name="Quantity" id="select-quantity" class="span2" value="1">
+            <button class="btn" onclick="setQuantityInputValue('increment')"><i class="icon-plus"></i></button>
+            <button class="btn" onclick="setQuantityInputValue('decrement')"><i class="icon-minus"></i></button>
+        </div>
+    </div>
+    <div id="specialOrderProps">
         <div>
             <label for="SpecialOrderNote">
                 <h4>
@@ -28,10 +36,10 @@
 
     </div>
     <div id="buttons">
-        <button type="button" class="btn btn-large btn-block btn-success" id="btn-submit">Add</button>
-        <button type="button" class="btn btn-large btn-block btn-danger" id="btn-remove">Remove</button>
+        <button type="button" class="btn btn-large btn-block btn-success disabled" id="btn-submit" disabled>Add</button>
+        <button type="button" class="btn btn-large btn-block btn-danger disabled" id="btn-remove" disabled>Remove</button>
     </div>
-    <div id="debug" class="hidden">
+    <div id="debug" class="">
         <div>
             <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
             <button class="btn" type="button" id="btn-showCart">Show Cart</button>
@@ -48,8 +56,10 @@
     let currentLineItem
     let itemSelector = document.getElementById("select-item")
     let specialOrderStatusElement = document.getElementById("isSpecialOrder")
+    let quantityInput = document.getElementById("select-quantity")
     let specialOrderNoteTextbox = document.getElementById("SpecialOrderNote")
     let buttonSubmit = document.getElementById("btn-submit")
+    let buttonRemove = document.getElementById("btn-remove")
     let endlessAisleItems
     let endlessAisleItemsFetchPromise = getEndlessAisleItemFetchPromise()
     
@@ -111,12 +121,16 @@
 
     function addSpecialOrderProps() {
         let index = itemSelector.value
+        let itemMaxQuantity = cachedCart.line_items[index].quantity
         let newSpecialOrderProps = {
             isSpecialOrder: "true",
+            specialOrderQuantity: quantityInput.value,
             specialOrderNote: specialOrderNoteTextbox.value
         }
 
-        if (index !== "") {
+        if (quantityInput.value < 1 || quantityInput.value > itemMaxQuantity) {
+            ShopifyPOS.flashError(`Please select a quantity from 1 to ${itemMaxQuantity}`)
+        } else {
             cachedCart.addLineItemProperties(index, newSpecialOrderProps,{
                 success: () => {
                     ShopifyPOS.flashNotice("Added special order note successfully. Please add shipping when finished with order.")
@@ -127,23 +141,25 @@
                     refreshForm()
                 }
             })
-        } else {
-            ShopifyPOS.flashError("Please select an item.")
         }
     }
 
     function removeSpecialOrderProps() {
         let index = itemSelector.value
 
-        if (index !== "") {
-            cachedCart.removeLineItemProperties(index, ["isSpecialOrder","specialOrderNote"], {
-                success: ShopifyPOS.flashNotice("Removed special order notes successfully."),
-            },{
-                failure: error => ShopifyPOS.flashError(error)
-            })
-            refreshForm()
-        } else {
-            ShopifyPOS.flashError("Please select an item.")
+        cachedCart.removeLineItemProperties(index, ["isSpecialOrder","specialOrderNote"], {
+            success: ShopifyPOS.flashNotice("Removed special order notes successfully."),
+        },{
+            failure: error => ShopifyPOS.flashError(error)
+        })
+        refreshForm()
+    }
+
+    function setQuantityInputValue(action) {
+        if (action === "increment") {
+            quantityInput.value++
+        } else if (action === "decrement") {
+            quantityInput.value--
         }
     }
 
@@ -168,8 +184,9 @@
                     ) {
                         specialOrderStatusElement.innerText = "This item is currently a special order"
                         specialOrderStatusElement.className = "text-success"
-                        writeDebug(currentLineItem.properties.filter(prop => prop.name === "specialOrderNote")[0])
-                        specialOrderNoteTextbox.value = currentLineItem.properties.filter(prop => prop.name === "specialOrderNote")[0].value
+                        writeDebug(currentLineItem.properties.find(prop => prop.name === "specialOrderNote"))
+                        specialOrderNoteTextbox.value = currentLineItem.properties.find(prop => prop.name === "specialOrderNote").value
+                        quantityInput.value = currentLineItem.properties.find(prop => prop.name === "specialOrderQuantity").value
                         enableSubmitButton(true)
                     } else if (
                         (currentLineItem.custom && !isCustomMissingItem) || 
@@ -184,6 +201,7 @@
                     } else {
                         specialOrderStatusElement.innerText = "This item is not currently a special order"
                         specialOrderStatusElement.className = "text-warning"
+                        quantityInput.value = currentLineItem.quantity
                         specialOrderNoteTextbox.value = ""
                         enableSubmitButton(true)
                     }
@@ -209,10 +227,14 @@
         try {
             if (boolean) {
                 buttonSubmit.classList.remove("disabled")
+                buttonRemove.classList.remove("disabled")
                 buttonSubmit.disabled = false
+                buttonRemove.disabled = false
             } else {
                 buttonSubmit.classList.add("disabled")
+                buttonRemove.classList.add("disabled")
                 buttonSubmit.disabled = true
+                buttonRemove.disabled = true
             }
         } catch (e) {
             alert(e)
