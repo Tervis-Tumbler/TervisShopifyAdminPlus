@@ -361,26 +361,33 @@
     }
 
     function updateCurrentShippingInformationDiv(cart) {
-        let cartProps = getCartProperties(cart)
-        let customerInfo
-        let shipMethodName
-        if (cartProps.shipMethodCode) {
-            customerInfo = `${cartProps.customerFirstName} ${cartProps.customerLastName}
-                ${cartProps.customerAddress1} ${cartProps.customerAddress2 ? `\n${cartProps.customerAddress2}` : ""}
-                ${cartProps.customerCity}, ${cartProps.customerState} ${cartProps.customerZip}
-            `
-        } else {
-            customerInfo = "None"
+        try {
+            let cartProps = getCartProperties(cart)
+            let customerInfo
+            let shipMethodName
+            if (cartProps.shipMethodCode) {
+                customerInfo = `${cartProps.customerFirstName} ${cartProps.customerLastName}
+                    ${cartProps.customerAddress1} ${cartProps.customerAddress2 ? `\n${cartProps.customerAddress2}` : ""}
+                    ${cartProps.customerCity}, ${cartProps.customerState} ${cartProps.customerZip}
+                `
+            } else {
+                customerInfo = "None"
+            }
+            document.getElementById("current-address").innerText = customerInfo
+            document.getElementById("current-ship-method").innerText = cartProps.shipMethod ? cartProps.shipMethod : "N/A"
+        } catch (e) {
+            alert(e)
+            writeDebug(e)
         }
-        document.getElementById("current-address").innerText = customerInfo
-        document.getElementById("current-ship-method").innerText = cartProps.shipMethod ? cartProps.shipMethod : "N/A"
     }
 
     function getCartProperties(cart) {
         let cartProperties = {}
-        cart.properties.forEach(prop => {
-            cartProperties[`${prop.name}`] = prop.value
-        })
+        if (cart.properties) {
+            cart.properties.forEach(prop => {
+                cartProperties[`${prop.name}`] = prop.value
+            })
+        }
         return cartProperties
     }
 
@@ -403,15 +410,21 @@
     }
 
     function startForm() {
+        writeDebug("Starting form...")
         ShopifyPOS.fetchCart({
             success: cart => {
+                writeDebug("Checking for shippable lines...")
                 testForSpecialOrPersonalizedOrders(cart)
+                writeDebug("Updating shipping info on form...")
                 updateCurrentShippingInformationDiv(cart)
                 cartCustomer = cart.customer
                 if (cartCustomer !== undefined) {
                     try {
+                        writeDebug("Adding ship options to forms...")
                         addShipToOptionsToDropdown()
+                        writeDebug("Enabling buttons...")
                         enableSubmitButton(true)
+                        writeDebug("Showing form...")
                         showForm()
                     } catch (e) {
                         alert(e)
@@ -427,10 +440,11 @@
             success: location => {
                 writeDebug(location)
                 storeLocation = location
+                writeDebug("Adding ship methods to dropdown...")
+                addShipMethodsToDropdown()
             },
             error: errors => ShopifyPOS.flashError(errors)
         })
-        addShipMethodsToDropdown()
     }
 
     function showForm() {
