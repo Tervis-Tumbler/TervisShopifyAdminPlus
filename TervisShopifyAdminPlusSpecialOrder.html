@@ -147,7 +147,7 @@
     function removeSpecialOrderProps() {
         let index = itemSelector.value
 
-        cachedCart.removeLineItemProperties(index, ["isSpecialOrder","specialOrderNote"], {
+        cachedCart.removeLineItemProperties(index, ["isSpecialOrder","specialOrderQuantity","specialOrderNote"], {
             success: ShopifyPOS.flashNotice("Removed special order notes successfully."),
         },{
             failure: error => ShopifyPOS.flashError(error)
