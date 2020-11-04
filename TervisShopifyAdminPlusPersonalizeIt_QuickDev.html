@@ -525,19 +525,6 @@ function Get_TervisLineItemSKU ({$LineItem}) {
     }
 }
 
-function Get_TervisLineItemVariantId ({$LineItem}) {
-    if ($LineItem.properties) {
-        let $MissingItemSKU = $LineItem.properties.find( prop => prop.name === "missingItem" )
-        if (!$MissingItemSKU) {
-            alert('Item cannot be personalized')
-            throw 'Item cannot be personalized'
-        }
-        return 
-    } else {
-        return $LineItem.variant_id
-    }
-}
-
 async function New_TervisShopifyPOSPersonalizableLineItemSelect ({
     $Cart
 }) {
@@ -1052,12 +1039,9 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         var $LineItemProperties = $PersonalizationProperties
 
         $LineItemProperties.RelatedLineItemSKU = Get_TervisLineItemSKU({$LineItem: $SelectedLineItem})
-        $LineItemProperties.RelatedLineItemVariantID = Get_TervisLineItemVariantId({$LineItem: $SelectedLineItem})
-        $LineItemProperties.RelatedLineItemTitle = $SelectedLineItem.title
         $LineItemProperties.PersonalizationFeeSKU = $PersonalizationFeeObject.sku
         
-        // var $Price = 0.00000001 // This makes the item basically free, even at the max qty of 99,999
-        var $Price = $SelectedLineItem.price // This makes the item basically free, even at the max qty of 99,999
+        var $Price = 0.00000001 // This makes the item basically free, even at the max qty of 99,999
 
         // This is no longer needed because we are removing the item upon edit
         // var $IndexOfPersonalizationChargeLineBeingEdited = Get_ElementPropertyValue({
@@ -1396,6 +1380,7 @@ main ()
 // var $ItemSKUToAddToCartForOneSidedPersonaliztaion = "1154266"
 // var $ItemSKUToAddToCartForTwoSidedPersonaliztaion = "1154269"
 // var $ItemVariantIDToAddToCartForOneSidedPersonaliztaion = "30370826125393"
-// var $ItemVariantIDToAddToCartForTwoSidedPersonaliztaion = "31038255431761"m
+// var $ItemVariantIDToAddToCartForTwoSidedPersonaliztaion = "31038255431761"
+
 
 </script>
