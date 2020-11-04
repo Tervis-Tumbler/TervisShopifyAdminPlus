@@ -14,9 +14,16 @@
         font-size: 1em;
     }
     #ShopifyPOSPersonalizationForm {
-        display: flex;
-        flex-flow: column wrap;
-        justify-content: space-around;
+        display: grid;
+        grid-template-columns: 60% 40%;
+    }
+    #PersonalizationOptions {
+        grid-column: 1 / 2;
+    }
+    #PersonalizationCartContainer {
+        grid-column: 2 / 3;
+        margin-left: 2em;
+        margin-right: 2em;
     }
     #PersonalizationInformationContainer {
         display: flex;
@@ -43,6 +50,11 @@
     .PersonalizationPropertyName {
         font-weight: bold;
         color: rgb(46, 78, 109);
+    }
+    .buttonDisabled {
+        cursor: not-allowed;
+        pointer-events: none;
+        background: #c7cceb;
     }
 </style>
 <!-- <button id="testButton">TEST</button> -->
@@ -164,4 +176,4 @@
     window.$ShopifyProductMetafieldURL = '{{ globals.tervis.getShopifyProductMetafieldURL }}'
 </script>
 
-<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.406?module"></script>
+<script type="module" src="https://unpkg.com/@tervis/tervisshopifyadminpluspersonalizeit@0.1.407?module"></script>

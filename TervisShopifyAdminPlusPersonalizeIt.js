@@ -294,12 +294,16 @@ function Initialize_TervisShopifyPOSPersonalizationFormStructure () {
                                 <input type="text" title="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1" maxlength="3" hidden disabled pattern="[A-Z]*" placeholder="Side${$SideNumber}MonogramAllCharactersNotRequiredLine1">
                             `
                         )}
-                        <button type="button" @click=${Receive_TervisShopifyPOSPersonalizationSaveOnClick} title="Save" hidden>Save</button>
-                        <br>
+                        <button type="button" @click=${Receive_TervisShopifyPOSPersonalizationSaveOnClick} title="Save" id="Save" hidden>Save</button>
+                        <hr>
+                        <strong>NOTE:</strong>
+                        Please add shipping with the Admin+ Shipping module after personalizing cups.
+                        Do not mark personalized cups as "Special Order" unless you intend to special order non-personalized cups.
+
                     </div>
                 </div>
-                <div>
-                    <strong>Personalization Cart:</strong>
+                <div id="PersonalizationCartContainer">
+                    <strong>Personalizations for selected item:</strong>
                     <div id="PersonalizationChargeLineItemsContainer"></div>
                 <div>
             </form>
@@ -367,7 +371,7 @@ async function New_TervisShopifyPOSPersonalizableLineItemSelect ({
         $Options: $PersonalizableLineItems.map(
             $LineItem => ({
                 Value: $Cart.line_items.indexOf($LineItem),
-                Text: `${$LineItem.title} ${$LineItem.quantity}`
+                Text: `[${$LineItem.sku}] ${$LineItem.title} (Qty: ${$LineItem.quantity})`
             })
         ),
         $OnChange: Receive_TervisShopifyPOSPersonalizableLineItemSelectOnChange
@@ -624,12 +628,20 @@ async function New_TervisShopifyPOSPersonaliztaionChargeLineItemDisplay ({
     )
 
     $Content.push(html`<span class="PersonalizationPropertyName">Quantity:</span> ${$PersonalizationChargeLineItem.quantity}<br />`)
+    // $Content.push(html`
+    //     <button
+    //         type="button"
+    //         id=${$IndexOfPersonalizationChargeLineItem}
+    //         @click=${Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick}
+    //     >Edit</button>
+    //     <button
+    //         type="button"
+    //         id=${$IndexOfPersonalizationChargeLineItem}
+    //         @click=${Receive_TervisShopifyPOSPersonalizationChargeLineRemoveOnClick}
+    //     >Remove</button>
+    //     <br>
+    // `)
     $Content.push(html`
-        <button
-            type="button"
-            id=${$IndexOfPersonalizationChargeLineItem}
-            @click=${Receive_TervisShopifyPOSPersonalizationChargeLineEditOnClick}
-        >Edit</button>
         <button
             type="button"
             id=${$IndexOfPersonalizationChargeLineItem}
@@ -859,6 +871,7 @@ var $MonogramValidCharactersPatternAttributeRegex = "[A-Z]*"
 async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
     try {
     if (document.querySelector("#ShopifyPOSPersonalizationForm").reportValidity()) {
+        Set_ButtonActive({$ButtonId: "Save", $Enabled: false})
         var $Cart = await Get_TervisShopifyCart()
         var $SelectedLineItem = await Get_TervisShopifyPOSPersonalizableLineItemSelected()
         var $PersonalizationProperties = await Get_TervisPersonalizationFormProperties()
@@ -916,11 +929,25 @@ async function Receive_TervisShopifyPOSPersonalizationSaveOnClick () {
         Clear_Form()
         Update_PersonalizationForm()
         Out_TervisShopifyPOSDebug({$Object: $Cart})
+        Set_ButtonActive({$ButtonId: "Save", $Enabled: true})
     }
     } catch (e) {
         alert(e)
         alert(e.stack)
         Out_TervisShopifyPOSDebug({$Object: e})
+        Set_ButtonActive({$ButtonId: "Save", $Enabled: true})
+    }
+}
+
+function Set_ButtonActive({
+    $ButtonId,
+    $Enabled
+}) {
+    let $Button = document.getElementById($ButtonId)
+    if ($Enabled === true) {
+        $Button.classList.remove("buttonDisabled")
+    } else if ($Enabled === false) {
+        $Button.classList.add("buttonDisabled")
     }
 }
 
