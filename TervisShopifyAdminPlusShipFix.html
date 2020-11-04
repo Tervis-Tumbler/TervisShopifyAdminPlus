@@ -1,0 +1,243 @@
+{% if form.method == "POST" %}
+    {% assign new_order = "Order" | new: form.params.id.first %}
+    {% assign new_order.note_attributes = [] %}
+    {% assign total_values = form.params.order-keys.size %}
+    {% assign total_values = total_values - 1 %}
+    
+    {% for i in (0..total_values) %}
+        {% if form.params['order-keys'][i] && form.params['order-values'][i] %}
+            {% assign new_order.note_attributes[i] = "Order::NoteAttribute" | new %}
+            {% assign new_order.note_attributes[i].name = form.params['order-keys'][i] %}
+            {% assign new_order.note_attributes[i].value = form.params['order-values'][i] %}
+        {% endif %}
+    {% endfor %}
+    
+    {% assign api_order = new_order | update %}
+    
+    {% assign success = "You have successfully modified this order's Note Attributes." %}
+    
+{% endif %}
+
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
+{% include 'css-wizard' %}
+{% comment %}
+	The files in the 'include' tags can be accessed by going to Templates > Snippets.
+{% endcomment %}
+
+<div id="top-nav">
+    <div class="container">
+        <h1>Order Editor</h1>
+    </div>
+</div>
+<div id="top-nav">
+    <div class="container">
+        <h2>{{ api_order.name }}</h2>
+    </div>
+</div>
+
+<div id="OrderInformation" class="container" hidden>
+    <!-- Here I'm testing what just calling on api_order -->
+    {% assign tervisOrder = api_order.id | get: 'Order' %}
+    <p>Tervis order: {{ tervisOrder }}</p>
+    <p>order: {{ order }}</p>
+    <p>api_order: {{ api_order }}</p>
+    <p>api_order.customer: {{ api_order }}</p>
+    <p>api_order.loca</p>
+    
+    <!--
+        <h3>Customer (order)</h3>
+        {% for address in tervisOrder.customer.addresses %}
+        <h4>{{ address.first_name }} {{ address.last_name }}</h4>
+        <p>
+            {{ address.address1 }}
+            {{ address.address2 }}
+            {{ address.city }}
+            {{ address.province_code }}
+            {{ address.zip }}
+            {{ address.country_code }}
+        </p>
+        {% endfor %}
+    
+        <h3>Customer (api_order)</h3>    
+        {% for address in api_order.customer.addresses %}
+        <h4>{{ address.first_name }} {{ address.last_name }}</h4>
+        <p>
+            {{ address.address1 }}
+            {{ address.address2 }}
+            {{ address.city }}
+            {{ address.province_code }}
+            {{ address.zip }}
+            {{ address.country_code }}
+        </p>
+        {% endfor %}
+    -->
+</div>
+
+{% if success %}
+<div class="message">
+	{{ success }}
+</div>
+{% endif %}
+{% assign value_hash = {} %}
+{% for n in api_order.note_attributes %}
+    {% assign value_hash[n.name] = n.value %}
+{% endfor %}
+
+<form method="POST">
+    <div id="linked-collections-orders" class="orders container">
+        <div class="row" id="ordercols">
+           <div class="col-md-6">
+               <p>Name: customerFirstName</p>
+               <input type="hidden" name="order-keys" value="customerFirstName"/>
+               <input type="text" name="order-values" value="{{ value_hash["customerFirstName"] }}"/>
+            </div>
+            <div class="col-md-6">
+                <p>Name: customerLastName</p>
+                <input type="hidden" name="order-keys" value="customerLastName"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerLastName"] }}"/>
+            </div>
+            <div class="col-md-6">
+                <p>Name: customerAddress1</p>
+                <input type="hidden" name="order-keys" value="customerAddress1"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerAddress1"] }}"/>
+            </div>
+            <div class="col-md-6">
+                <p>Name: customerAddress2</p>
+                <input type="hidden" name="order-keys" value="customerAddress2"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerAddress2"] }}"/>
+            </div>
+            <div class="col-md-6">
+                <p>Name: customerCity</p>
+                <input type="hidden" name="order-keys" value="customerCity"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerCity"] }}"/>
+            </div>
+            <div class="col-md-6">
+                <p>Name: customerState</p>
+                <input type="hidden" name="order-keys" value="customerState"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerState"] }}"/>
+            </div>
+            <div class="col-md-6">
+                <p>Name: customerZip</p>
+                <input type="hidden" name="order-keys" value="customerZip"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerZip"] }}"/>
+            </div>
+            <div class="col-md-6">
+                <p>Name: customerCountryCode</p>
+                <input type="hidden" name="order-keys" value="customerCountryCode"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerCountryCode"] }}" id="countryCode" />
+            </div>
+            <div>
+                <p>Select Ship Method:</p>
+                <select name="Select Ship Method" id="select-shipMethod" required>
+                    <option value="" disabled selected>Select a ship method</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <p>shipMethod:</p>
+                <input type="hidden" name="order-keys" value="shipMethod"/>
+                <input type="text" name="order-values" value="{{ value_hash["shipMethod"] }}" id="shipMethodName"/>
+            </div>
+            <div class="col-md-6">
+                <p>shipMethodCode:</p>
+                <input type="hidden" name="order-keys" value="shipMethodCode"/>
+                <input type="text" name="order-values" value="{{ value_hash["shipMethodCode"] }}" id="shipMethodCode"/>
+            </div>
+            <div class="col-md-6">
+                <p>freightTerms:</p>
+                <input type="hidden" name="order-keys" value="freightTerms"/>
+                <input type="text" name="order-values" value="{{ value_hash["freightTerms"] }}" id="freightTerms"/>
+            </div>
+            <div class="col-md-6">
+                <p>Name: freeFreight</p>
+                <input type="hidden" name="order-keys" value="freeFreight"/>
+                <input type="text" name="order-values" value="{{ value_hash["freeFreight"] }}" id="freeFreight"/>
+                <p>Y if yes, leave blank if no. If cashier did not add shipping fee to order, enter Y.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="order-submit">
+        <div class="container">
+            <input type="submit" class="button" value="Update Order" />
+        </div>
+    </div>
+</form>
+
+<script>
+	$(window).load(function(){
+		setTimeout(function(){ $('.message').fadeOut() }, 5000);
+	});
+
+    let shipMethodSelect = document.getElementById("select-shipMethod")
+    let shipMethodInput = document.getElementById("shipMethodName")
+    let shipMethodCodeInput = document.getElementById("shipMethodCode")
+    let freightTermsInput = document.getElementById("freightTerms")
+    let shipMethods = [
+        {
+            name: "Other Store Pickup",
+            value: "000001_FEDEX_P_GND",
+            freightTerms: "Freight Collect",
+        },
+        {
+            name: "Osprey Store Pickup",
+            value: "000001_PICKUP_P_TRV",
+            freightTerms: "Prepaid",
+        },
+        {
+            name: "Home Delivery - Regional",
+            value: "000001_FEDEX_P_HDY",
+            freightTerms: "Freight Collect",
+        },
+        {
+            name: "Home Delivery - Extended",
+            value: "000001_FEDEX_P_HDY",
+            freightTerms: "Freight Collect",
+        },
+        {
+            name: "Business Delivery - Regional",
+            value: "000001_FEDEX_P_GND",
+            freightTerms: "Freight Collect",
+        },
+        {
+            name: "Business Delivery - Extended",
+            value: "000001_FEDEX_P_GND",
+            freightTerms: "Freight Collect",
+        },
+        {
+            name: "Overnight Delivery",
+            value: "000001_FEDEXP_A_SON",
+            freightTerms: "Freight Collect",
+        }
+    ]
+
+    function addShipMethodsToDropdown() {
+        shipMethods.forEach((method, index) => {
+            let shipOption = document.createElement("option")
+            shipOption.value = index
+            shipOption.innerText = method.name
+            shipMethodSelect.appendChild(shipOption)
+        })
+    }
+
+    function setShipMethodInputs() {
+        let method = shipMethods[shipMethodSelect.value]
+        shipMethodInput.value = method.name
+        shipMethodCodeInput.value = method.value
+        freightTermsInput.value = method.freightTerms
+    }
+
+    function setDefaultValues() {
+        document.getElementById("countryCode").value = "US"
+        document.getElementById("freeFreight").value = "Y"
+    }
+
+    function main() {
+        setDefaultValues()
+        shipMethodSelect.addEventListener("change",setShipMethodInputs)
+        addShipMethodsToDropdown()
+    }
+
+    main()
+
+</script>
