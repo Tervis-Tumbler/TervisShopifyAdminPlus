@@ -27,7 +27,7 @@
             <label for="EBSItemNumber">
                 <h4>EBS Item Number:</h4>
             </label>
-            <input type="number" id="EBSItemNumber" placeholder="1234567" class="form-control form-control-lg" required></textarea>
+            <input type="text" id="EBSItemNumber" placeholder="1234567" class="form-control form-control-lg" required></textarea>
         </div>
     
         <div>
@@ -52,7 +52,7 @@
         </div> -->
     
         <div>
-            <button type="submit" onclick="buttonSubmit()" class="btn btn-success">Submit</button>
+            <button type="submit" id="SubmitButton" onclick="buttonSubmit()" class="btn btn-success">Submit</button>
         </div>
     </form>
 </div>
@@ -68,8 +68,20 @@
     const itemNameField = document.getElementById("ItemName")
     const priceField = document.getElementById("Price")
     // const quantityField = document.getElementById("Quantity")
+    const submitButton = document.getElementById("SubmitButton")
+
+    function disableSubmitButton() {
+        submitButton.innerText = "Saving..."
+        submitButton.classList.add("disabled")
+    }
+
+    function enableSubmitButton() {
+        submitButton.innerText = "Saving..."
+        submitButton.classList.remove("disabled")
+    }
 
     function buttonSubmit() {
+        disableSubmitButton()
         const isEBSItemNumberValid = testEBSItemNumber()
         const isPriceValid = testPrice()
         // const isQuantityValid = testQuantity()
@@ -103,7 +115,10 @@
                                         ShopifyPOS.flashNotice("Missing item added")
                                         ShopifyPOS.Modal.close()
                                     },
-                                    error: errors => ShopifyPOS.flashError(errors)
+                                    error: errors => {
+                                        ShopifyPOS.flashError(errors)
+                                        enableSubmitButton()
+                                    }
                                 }
                             )
                         },
@@ -113,8 +128,10 @@
             })
         } else if (!isEBSItemNumberValid) {
             ShopifyPOS.flashError("EBS item number is invalid.")
+            enableSubmitButton()
         } else if (!isPriceValid) {
             ShopifyPOS.flashError("Price is invalid")
+            enableSubmitButton()
         }
     }
     window.buttonSubmit = buttonSubmit
