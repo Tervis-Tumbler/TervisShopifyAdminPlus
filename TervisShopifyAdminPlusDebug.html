@@ -1,14 +1,21 @@
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/compiled/catalyst/bootstrap-responsive.css" />
 
-<div id="content" class="container">
-    <div id="debug" class="">
+<div id="content" class="container row-fluid">
+    <div class="span3">
+        <h4>Cart List</h4>
+        <ul id="cart-list"></ul>
+    </div>
+    <div id="debug" class="span9">
         <div>
             <button class="btn" type="button" id="btn-clearLog">Clear Log </button>
             <button class="btn" type="button" id="btn-showCart">Show Cart</button>
             <button class="btn" type="button" id="btn-showUser">Show User</button>
             <button class="btn" type="button" id="btn-showLocation">Show Location</button>
             <button class="btn" type="button" id="btn-test">Test</button>
+            <button class="btn" id="btn-addItemToCart">Add item</button>
+            <button class="btn" id="btn-updateItemInCart">Update item to qty 5</button>
+            <button class="btn" id="btn-removeItemFromCart">Remove item</button>
         </div>
         <div>
             <pre><code id="debugArea">Debug:</code></pre>
@@ -18,9 +25,8 @@
 
 <script type="module">
     import {
-        Get_TervisProductMetaData,
-        Get_TervisProductMetaDataUsingIndex
-    } from 'https://unpkg.com/@tervis/tervisproductmetadata?module'
+        Remove_ObjectKeyWithEmptyOrNullValue
+    } from 'https://unpkg.com/@tervis/tervisutilityjs?module'
 
     async function Get_TervisShopifyCart () {
         return new Promise((resolve, reject) => {
@@ -30,6 +36,146 @@
             })
         })
     }
+    window.Get_TervisShopifyCart = Get_TervisShopifyCart
+
+    // https://help.shopify.com/en/api/embedded-apps/shopify-pos-app-sdk/methods#add-line-item
+    async function Add_TervisShopifyCartLineItem ({
+        $Cart,
+        $Price,
+        $Quantity,
+        $Title,
+        $VariantID
+    }) {
+        let $TrimmedObject = Remove_ObjectKeyWithEmptyOrNullValue({
+            price: $Price,
+            quantity: $Quantity,
+            title: $Title,
+            variant_id: $VariantID
+        })
+        // alert(JSON.stringify($TrimmedObject))
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.addLineItem(
+                    $TrimmedObject,
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Add_TervisShopifyCartLineItem = Add_TervisShopifyCartLineItem
+
+    // https://help.shopify.com/en/api/embedded-apps/shopify-pos-app-sdk/methods#add-line-item-properties
+    async function Add_TervisShopifyCartLineItemProperties ({
+        $Cart,
+        $LineItemIndex,
+        $LineItemProperties
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.addLineItemProperties(
+                    $LineItemIndex,
+                    $LineItemProperties,
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Add_TervisShopifyCartLineItemProperties = Add_TervisShopifyCartLineItemProperties
+
+    async function Remove_TervisShopifyCartLineItem ({
+        $Cart,
+        $LineItemIndex
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.removeLineItem(
+                    $LineItemIndex,
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Remove_TervisShopifyCartLineItem = Remove_TervisShopifyCartLineItem
+
+    async function Update_TervisShopifyCartLineItem ({
+        $Cart,
+        $LineItemIndex,
+        $Quantity
+    }) {
+        return new Promise(
+            (resolve, reject) => {
+                $Cart.updateLineItem(
+                    $LineItemIndex,
+                    {
+                        quantity: $Quantity
+                    },
+                    {
+                        success: resolve,
+                        error: reject
+                    }
+                )
+            }
+        )
+    }
+    window.Update_TervisShopifyCartLineItem = Update_TervisShopifyCartLineItem
+</script>
+
+<script type="module">
+    import {
+        Get_TervisProductMetaData,
+        Get_TervisProductMetaDataUsingIndex
+    } from 'https://unpkg.com/@tervis/tervisproductmetadata?module'
+
+    async function refreshCartDiv() {
+        writeDebug('getting lines...')
+        let $Cart = await Get_TervisShopifyCart()
+        writeDebug('adding lines to cart list...')
+        let cartList = document.getElementById("cart-list")
+        cartList.innerHTML = ''
+        $Cart.line_items.forEach(line => {
+            let li = document.createElement("li")
+            li.innerText = `(${line.quantity}) ${line.title}`
+            cartList.appendChild(li)
+        })
+        writeDebug('added lines to cart list.')
+    }
+
+    async function addItemToCart() {
+        try {
+            writeDebug('fetching cart...')
+            let $Cart = await Get_TervisShopifyCart()
+            writeDebug('adding item to cart...')
+            $Cart = await Add_TervisShopifyCartLineItem({
+                $Cart,
+                $Quantity: 1,
+                $VariantID: 33140897284233
+            })
+            writeDebug('refreshing cart...')
+            refreshCartDiv()
+        } catch (e) {
+            writeDebug('Add item error')
+            alert(e)
+            writeDebug(e)
+        }
+    }
+
+    function updateItemInCart() {
+        refreshCartDiv()
+    }
+
+    function removeItemFromCart() {
+        refreshCartDiv()
+    }
+
 
     // for metafield fetch 
     let $ShopifyProductMetafieldKey = '{{ globals.tervis.getShopifyProductMetafieldKey }}'
@@ -181,6 +327,9 @@
         document.getElementById("btn-showUser").addEventListener("click", showUser)
         document.getElementById("btn-showLocation").addEventListener("click", showLocation)
         document.getElementById("btn-test").addEventListener("click", buttonTest)
+        document.getElementById('btn-addItemToCart').addEventListener('click', addItemToCart)
+        document.getElementById('btn-updateItemInCart').addEventListener('click', updateItemInCart)
+        document.getElementById('btn-removeItemFromCart').addEventListener('click', removeItemFromCart)
     }
 
     ShopifyPOS.ready(async () => {
