@@ -14,7 +14,7 @@
     
     {% assign api_order = new_order | update %}
     
-    {% assign success = "You have successfully modified this order's Note Attributes." %}
+    {% assign success = "Shipping information added to order." %}
     
 {% endif %}
 
@@ -23,62 +23,43 @@
 {% include 'css-wizard' %}
 {% comment %}
 	The files in the 'include' tags can be accessed by going to Templates > Snippets.
-{% endcomment %}
-
-<div id="top-nav">
-    <div class="container">
-        <h1>Order Editor</h1>
-    </div>
-</div>
-<div id="top-nav">
-    <div class="container">
-        <h2>{{ api_order.name }}</h2>
-    </div>
-</div>
-
-<div id="OrderInformation" class="container" hidden>
-    <!-- Here I'm testing what just calling on api_order -->
-    {% assign tervisOrder = api_order.id | get: 'Order' %}
-    <p>Tervis order: {{ tervisOrder }}</p>
-    <p>order: {{ order }}</p>
-    <p>api_order: {{ api_order }}</p>
-    <p>api_order.customer: {{ api_order }}</p>
-    <p>api_order.loca</p>
+    {% endcomment %}
     
-    <!--
-        <h3>Customer (order)</h3>
-        {% for address in tervisOrder.customer.addresses %}
-        <h4>{{ address.first_name }} {{ address.last_name }}</h4>
-        <p>
-            {{ address.address1 }}
-            {{ address.address2 }}
-            {{ address.city }}
-            {{ address.province_code }}
-            {{ address.zip }}
-            {{ address.country_code }}
-        </p>
-        {% endfor %}
-    
-        <h3>Customer (api_order)</h3>    
-        {% for address in api_order.customer.addresses %}
-        <h4>{{ address.first_name }} {{ address.last_name }}</h4>
-        <p>
-            {{ address.address1 }}
-            {{ address.address2 }}
-            {{ address.city }}
-            {{ address.province_code }}
-            {{ address.zip }}
-            {{ address.country_code }}
-        </p>
-        {% endfor %}
-    -->
-</div>
+<!-- <div id="top-nav">
+    <div class="container">
+    </div>
+</div> -->
+<h1>Add Missing Shipping</h1>
+<h2>{{ api_order.name }}</h2>
 
 {% if success %}
-<div class="message">
-	{{ success }}
+<div class="alert alert-success">
+    {{ success }} 
 </div>
 {% endif %}
+
+<button onclick="ShopifyApp.redirect('/orders/{{ order.id }}')">Return to order</button>
+
+<div id="OrderInformation" class="container row-fluid">
+    {% assign customerAddress = order.customer.default_address %}
+    {% assign storeAddress = order.line_items.first.origin_location %}
+    <div class="span3">
+        <!-- <p>Shopify Order ID: {{ order.id }}</p> -->
+        <h4>Customer Default Address <button id="addCustomerAddress" onclick="addAddressToForm('Customer')">Add to order</button></h4>
+        <p>{{ customerAddress.name }}</p>
+        <p>{{ customerAddress.address1 }}</p>
+        {% if customerAddress.address2 %}
+        <p>{{ customerAddress.address2 }}</p>
+        {% endif %}
+        <p>{{ customerAddress.city }}, {{ customerAddress.province_code }} {{ customerAddress.zip }}</p>
+        <p class="text-error">Make sure this is the actual destination address.</p>
+    </div>
+    <div class="span3">
+        <h4>Store Address <button id="addStoreAddress" onclick="addAddressToForm('Store')">Add to order</button></h4>
+        <p>{{ storeAddress.name }}</p>
+    </div>
+</div>
+
 {% assign value_hash = {} %}
 {% for n in api_order.note_attributes %}
     {% assign value_hash[n.name] = n.value %}
@@ -90,42 +71,42 @@
            <div class="col-md-6">
                <p>Name: customerFirstName</p>
                <input type="hidden" name="order-keys" value="customerFirstName"/>
-               <input type="text" name="order-values" value="{{ value_hash["customerFirstName"] }}"/>
+               <input type="text" name="order-values" value="{{ value_hash["customerFirstName"] }}" id="firstNameField" required/>
             </div>
             <div class="col-md-6">
                 <p>Name: customerLastName</p>
                 <input type="hidden" name="order-keys" value="customerLastName"/>
-                <input type="text" name="order-values" value="{{ value_hash["customerLastName"] }}"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerLastName"] }}" id="lastNameField" />
             </div>
             <div class="col-md-6">
                 <p>Name: customerAddress1</p>
                 <input type="hidden" name="order-keys" value="customerAddress1"/>
-                <input type="text" name="order-values" value="{{ value_hash["customerAddress1"] }}"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerAddress1"] }}" id="address1Field" required/>
             </div>
             <div class="col-md-6">
                 <p>Name: customerAddress2</p>
                 <input type="hidden" name="order-keys" value="customerAddress2"/>
-                <input type="text" name="order-values" value="{{ value_hash["customerAddress2"] }}"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerAddress2"] }}" id="address2Field" />
             </div>
             <div class="col-md-6">
                 <p>Name: customerCity</p>
                 <input type="hidden" name="order-keys" value="customerCity"/>
-                <input type="text" name="order-values" value="{{ value_hash["customerCity"] }}"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerCity"] }}" id="cityField" required/>
             </div>
             <div class="col-md-6">
                 <p>Name: customerState</p>
                 <input type="hidden" name="order-keys" value="customerState"/>
-                <input type="text" name="order-values" value="{{ value_hash["customerState"] }}"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerState"] }}" id="stateField" required/>
             </div>
             <div class="col-md-6">
                 <p>Name: customerZip</p>
                 <input type="hidden" name="order-keys" value="customerZip"/>
-                <input type="text" name="order-values" value="{{ value_hash["customerZip"] }}"/>
+                <input type="text" name="order-values" value="{{ value_hash["customerZip"] }}" id="zipField" required/>
             </div>
             <div class="col-md-6">
                 <p>Name: customerCountryCode</p>
                 <input type="hidden" name="order-keys" value="customerCountryCode"/>
-                <input type="text" name="order-values" value="{{ value_hash["customerCountryCode"] }}" id="countryCode" />
+                <input type="text" name="order-values" value="{{ value_hash["customerCountryCode"] }}" id="countryField" />
             </div>
             <div>
                 <p>Select Ship Method:</p>
@@ -134,25 +115,28 @@
                 </select>
             </div>
             <div class="col-md-6">
-                <p>shipMethod:</p>
-                <input type="hidden" name="order-keys" value="shipMethod"/>
-                <input type="text" name="order-values" value="{{ value_hash["shipMethod"] }}" id="shipMethodName"/>
-            </div>
-            <div class="col-md-6">
-                <p>shipMethodCode:</p>
-                <input type="hidden" name="order-keys" value="shipMethodCode"/>
-                <input type="text" name="order-values" value="{{ value_hash["shipMethodCode"] }}" id="shipMethodCode"/>
-            </div>
-            <div class="col-md-6">
-                <p>freightTerms:</p>
-                <input type="hidden" name="order-keys" value="freightTerms"/>
-                <input type="text" name="order-values" value="{{ value_hash["freightTerms"] }}" id="freightTerms"/>
-            </div>
-            <div class="col-md-6">
-                <p>Name: freeFreight</p>
+                <p>
+                    Name: freeFreight
+                    <input type="checkbox" name="freeFreightCheckbox" id="ffCheck" checked >
+                </p>
                 <input type="hidden" name="order-keys" value="freeFreight"/>
-                <input type="text" name="order-values" value="{{ value_hash["freeFreight"] }}" id="freeFreight"/>
-                <p>Y if yes, leave blank if no. If cashier did not add shipping fee to order, enter Y.</p>
+                <input type="hidden" name="order-values" value="{{ value_hash["freeFreight"] }}" id="freeFreight"/>
+                <p hidden>Y if yes, leave blank if no. If cashier did not add shipping fee to order, enter Y.</p>
+            </div>
+            <div class="col-md-6">
+                <!-- <p>shipMethod:</p> -->
+                <input type="hidden" name="order-keys" value="shipMethod"/>
+                <input type="hidden" name="order-values" value="{{ value_hash["shipMethod"] }}" id="shipMethodName"/>
+            </div>
+            <div class="col-md-6">
+                <!-- <p>shipMethodCode:</p> -->
+                <input type="hidden" name="order-keys" value="shipMethodCode"/>
+                <input type="hidden" name="order-values" value="{{ value_hash["shipMethodCode"] }}" id="shipMethodCode"/>
+            </div>
+            <div class="col-md-6">
+                <!-- <p>freightTerms:</p> -->
+                <input type="hidden" name="order-keys" value="freightTerms"/>
+                <input type="hidden" name="order-values" value="{{ value_hash["freightTerms"] }}" id="freightTerms"/>
             </div>
         </div>
     </div>
@@ -173,6 +157,18 @@
     let shipMethodInput = document.getElementById("shipMethodName")
     let shipMethodCodeInput = document.getElementById("shipMethodCode")
     let freightTermsInput = document.getElementById("freightTerms")
+    let freeFreightField = document.getElementById("freeFreight")
+    let freeFreightCheckbox = document.getElementById("ffCheck")
+
+    let firstNameField = document.getElementById("firstNameField")
+    let lastNameField = document.getElementById("lastNameField")
+    let address1Field = document.getElementById("address1Field")
+    let address2Field = document.getElementById("address2Field")
+    let cityField = document.getElementById("cityField")
+    let stateField = document.getElementById("stateField")
+    let zipField = document.getElementById("zipField")
+    let countryField = document.getElementById("countryField")
+
     let shipMethods = [
         {
             name: "Other Store Pickup",
@@ -227,14 +223,43 @@
         freightTermsInput.value = method.freightTerms
     }
 
+    function setFreeFreightValue() {
+        if (freeFreightCheckbox.checked) {
+            freeFreightField.value = "Y"
+        } else {
+            freeFreightField.value = "N"
+        }
+    }
+
     function setDefaultValues() {
-        document.getElementById("countryCode").value = "US"
+        document.getElementById("countryField").value = "US"
         document.getElementById("freeFreight").value = "Y"
+    }
+
+    function addAddressToForm(location) {
+        firstNameField.value = "{{ customerAddress.first_name }}"
+        lastNameField.value = "{{ customerAddress.last_name }}"
+        if (location === "Customer") {
+            address1Field.value = "{{ customerAddress.address1 }}"
+            address2Field.value = "{{ customerAddress.address2 }}"
+            cityField.value = "{{ customerAddress.city }}"
+            stateField.value = "{{ customerAddress.province_code }}"
+            zipField.value = "{{ customerAddress.zip }}"
+            countryField.value = "{{ customerAddress.country_code }}"
+        } else if (location === "Store") {
+            address1Field.value = "{{ storeAddress.address1 }}"
+            address2Field.value = "{{ storeAddress.address2 }}"
+            cityField.value = "{{ storeAddress.city }}"
+            stateField.value = "{{ storeAddress.province_code }}"
+            zipField.value = "{{ storeAddress.zip }}"
+            countryField.value = "{{ storeAddress.country_code }}"
+        }
     }
 
     function main() {
         setDefaultValues()
         shipMethodSelect.addEventListener("change",setShipMethodInputs)
+        freeFreightCheckbox.addEventListener("change",setFreeFreightValue)
         addShipMethodsToDropdown()
     }
 
