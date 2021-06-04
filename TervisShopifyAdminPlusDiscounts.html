@@ -375,6 +375,7 @@ if (!!window.chrome) {
 
     function addItemsToLineList(cart) {
         cart.line_items.forEach((item, index) => {
+            if (0 >= item.price) { return }
             let itemSku = getItemSku(item)
             let lineElement = document.createElement("div")
             lineElement.id = `line${index}`
@@ -382,6 +383,7 @@ if (!!window.chrome) {
             <div id="line${index}">
                 <h5>[${itemSku}] ${item.title}</h5>
                 <p>Applied Discount: <span id="line${index}Discount"></span></p>
+                <p>Line Total: <span id="line${index}Total"></span></p>
                 <button onclick="buttonApplyDiscountToLine(${index})" class="btn btn-success">Apply</button>
                 <button onclick="buttonRemoveDiscountFromLine(${index})" class="btn btn-danger">Remove</button>
             </div>
@@ -522,7 +524,7 @@ if (!!window.chrome) {
     }
 
     function getProcessedFlatDiscount(discount, item) {
-        let finalAmount = discount.amount * item.quantity
+        let finalAmount = parseFloat((discount.amount * item.quantity).toFixed(2))
         writeDebug(`Discount rate: ${discount.amount}\nItem Qty: ${item.quantity}\nFinal amount: ${finalAmount}`)
         return {
             discount_description: discount.discount_description,
@@ -560,9 +562,18 @@ if (!!window.chrome) {
         }
     }
 
-    function getProcessedBuyXGetYPercentZOffDiscount() {
+    function getProcessedBuyXGetYPercentZOffDiscount(discount, item) {
         // buy 2, get 1 @ 50% off - 
         // if buy 6, then get 2 @ 50% off 
+        let [buyX, getY, zOff] = [...discount.parameters]
+        let discountGroup = (+buyX) + (+getY)
+        let discountableQty = Math.floor(item.quantity / discountGroup)
+        let discountAmount = parseFloat((item.price * (zOff / 100) * discountableQty).toFixed(2))
+        return {
+            discount_description: discount.discount_description,
+            type: "flat",
+            amount: discountAmount
+        }
     }
 
     function updateDiscountSpans() {
@@ -571,11 +582,14 @@ if (!!window.chrome) {
             success: cart => {
                 cart.line_items.forEach((item, index) => {
                     let currentDiscountSpan = document.getElementById(`line${index}Discount`)
+                    let currentLineTotalSpan = document.getElementById(`line${index}Total`)
                     if (item.discount) {
                         currentDiscountSpan.innerText = item.discount.discount_description
                     } else {
                         currentDiscountSpan.innerText = "None"
                     }
+                    let lineTotalInfo = getLineTotal(item)
+                    currentLineTotalSpan.innerText = `$${lineTotalInfo.total} (-$${lineTotalInfo.discount})`
                 })
         
                 if (cart.cart_discount) {
@@ -586,6 +600,29 @@ if (!!window.chrome) {
             },
             error: errors => writeDebug(errors)
         })
+    }
+
+    function getLineTotal(item) {
+        let subtotal = item.price * item.quantity
+        let discount = 0
+        if (item.discount) {
+            switch (item.discount.type) {
+                case 'percent':
+                    discount = parseFloat((subtotal * item.discount.amount).toFixed(2))
+                    break;
+                case 'flat':
+                    discount = item.discount.amount
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return {
+            subtotal: subtotal,
+            discount: discount,
+            total: (subtotal - discount)
+        }
     }
 
     function writeDebug(msg) {
