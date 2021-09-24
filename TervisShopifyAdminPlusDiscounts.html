@@ -491,6 +491,9 @@ if (!!window.chrome) {
             case "variable":
                 processedDiscount = getProcessedVariableDiscount(discount)
                 break;
+            case "variable_percent":
+                processedDiscount = getProcessedVariablePercentDiscount(discount)
+                break;
             case "flat":
                 processedDiscount = getProcessedFlatDiscount(discount, item)
                 break;
@@ -519,6 +522,19 @@ if (!!window.chrome) {
             return {
                 discount_description: discount.discount_description,
                 type: "flat",
+                amount: amount
+            }
+    }
+
+    function getProcessedVariablePercentDiscount(discount) {
+            let amount
+            while(!amount) {
+                let amountInput = prompt("Enter discount percent")
+                amount = parseFloat(amountInput) / 100
+            }
+            return {
+                discount_description: discount.discount_description,
+                type: "percent",
                 amount: amount
             }
     }
