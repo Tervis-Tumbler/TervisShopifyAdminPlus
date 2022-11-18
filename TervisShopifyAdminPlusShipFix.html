@@ -38,7 +38,9 @@
 </div>
 {% endif %}
 
-<button onclick="ShopifyApp.redirect('/orders/{{ order.id }}')">Return to order</button>
+<!-- both methods below have stopped working. Removing to fix later. -->
+<!-- <button onclick="ShopifyApp.redirect('/orders/{{ order.id }}')">Return to order</button> -->
+<!-- <button onclick="AppBridge.actions.Redirect.create(ModdApp).dispatch(AppBridge.actions.Redirect.Action.APP, '/orders/{{ order.id }}');">Return to order</button> -->
 
 <div id="OrderInformation" class="container row-fluid">
     {% assign customerAddress = order.customer.default_address %}
@@ -172,7 +174,7 @@
     let shipMethods = [
         {
             name: "Other Store Pickup",
-            value: "000001_FEDEX_P_GND",
+            value: "000001_UPS_P_GND",
             freightTerms: "Freight Collect",
         },
         {
@@ -182,27 +184,27 @@
         },
         {
             name: "Home Delivery - Regional",
-            value: "000001_FEDEX_P_HDY",
+            value: "000001_UPS_P_GND",
             freightTerms: "Freight Collect",
         },
         {
             name: "Home Delivery - Extended",
-            value: "000001_FEDEX_P_HDY",
+            value: "000001_UPS_P_GND",
             freightTerms: "Freight Collect",
         },
         {
             name: "Business Delivery - Regional",
-            value: "000001_FEDEX_P_GND",
+            value: "000001_UPS_P_GND",
             freightTerms: "Freight Collect",
         },
         {
             name: "Business Delivery - Extended",
-            value: "000001_FEDEX_P_GND",
+            value: "000001_UPS_P_GND",
             freightTerms: "Freight Collect",
         },
         {
             name: "Overnight Delivery",
-            value: "000001_FEDEXP_A_SON",
+            value: "000001_UPS_A_1DA",
             freightTerms: "Freight Collect",
         }
     ]
